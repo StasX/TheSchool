@@ -1,0 +1,20 @@
+.swal2-container.swal2-shown{
+    background-color: rgba(255,255,255,0.3);
+}
+.swal2-modal{
+    border: 2px solid #555555;
+    border-radius:5px;
+}
+.swal2-icon ,.swal2-warning{
+    animation: pulseWarningIns 3s infinite;
+}
+@keyframes pulseWarningIns{
+    0% {
+        color: orange;
+        border-color: orange; 
+    }
+    100% {
+        color: orangered;
+        border-color: orangered;
+    }
+}
