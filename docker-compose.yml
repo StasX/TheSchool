@@ -1,0 +1,50 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: PHP
+    environment:
+      DB_HOST: database
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_CHARSET: ${DB_CHARSET}
+      DB_COLLATION: ${DB_COLLATION}
+    depends_on:
+      - database
+    networks:
+      - app-network
+      - web-network
+
+  database:
+    build: ./database
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - database-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  nginx:
+    build:
+        context: .
+        dockerfile: Dockerfile
+        target: WEB
+    ports:
+      - "8090:80"
+    depends_on:
+      - app
+    networks:
+      - web-network
+
+volumes:
+  database-data:
+
+networks:
+  app-network:
+  web-network:

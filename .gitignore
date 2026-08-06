@@ -1,0 +1,10 @@
+node_modules/
+vendor/
+public/fonts/
+public/assets/
+public/js/
+public/css/
+public/images/
+public/manifest.json
+*.log
+.env
