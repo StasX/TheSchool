@@ -18,7 +18,7 @@ Route::delete('/administrator/{id}', [AdministratorController::class, 'remove'])
 Route::get('/student', [StudentController::class, 'getAll']);
 Route::get('/student/{id}', [StudentController::class, 'getById']);
 Route::post('/student', [StudentController::class, 'add']);
-Route::put('/student', [StudentController::class, 'update']);
+Route::put('/student/{id}', [StudentController::class, 'update']);
 Route::delete('/student/{id}', [StudentController::class, 'remove']);
 
 Route::get('/course', [CourseController::class, 'getAll']);
