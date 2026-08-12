@@ -1,7 +1,7 @@
 import './bootstrap';
-import schoolTemplate from '..templates/school.html';
-import administrationTemplate from '..templates/administration.html';
-import notFoundTemplate from '..templates/administration.html';
+import schoolTemplate from '../templates/school.html?raw';
+import administrationTemplate from '../templates/administration.html?raw';
+import notFoundTemplate from '../templates/404.html?raw';
 
 $(document).ready(function () {
     $(window).on('hashchange', function () {
