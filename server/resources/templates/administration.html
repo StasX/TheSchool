@@ -1,0 +1,47 @@
+<nav class='navbar navbar-default'>
+    <div class='container-fluid'>
+        <div class='navbar-header'>
+            <img alt='Logo' src='img/logo.png' class=' img-rounded logo' height='50' width='67'>
+        </div>
+        <div class='collapse navbar-collapse'>
+            <ul class='nav navbar-nav'>
+                <li><a href='/#!school' id='school'>School</a></li>
+                <li class='active'><a href='/#!administration' id='administration'>Administration</a></li>
+            </ul>
+            <div class='container col-md-3 col-sm-4 col-xs-6' style='float:right;'>
+                <div class='row'><img alt='manager image' src='' width='50' height='50' style='border-radius: 50%; float:right;' />
+                    <div class='container col-lg-6 col-md-8 col-sm-9 col-xs-9 nav-user-info-container'
+                        style='float:left'>
+                        <div class='row'></div>
+                        <div class='row'><a href='/logout' id='logout'>Logout</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class='container-fluid'>
+    <div class="row">
+        <div class='container col-lg-3 col-md-3 col-sm-3 col-xs-3'>
+            <div class='row'>
+                <div class='container col-sm-11 col-xs-11 col-sm-offset-1  col-xs-offset-1'>
+                    <div class='row'>
+                        <div class='col-sm-9 col-xs-9'>Administrators</div>
+                        <div class='col-sm-1 col-xs-1'>
+                            <button class="btn btn-xs" id="add-administrator" aria-label="Add administrator">
+                                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='row'>
+                <hr class='col-sm-9 col-xs-9 col-sm-offset-1 col-xs-offset-1'>
+            </div>
+            <div class='row'>
+                <div class='container col-sm-12 col-xs-12' id='administrators-container'></div>
+            </div>
+        </div>
+        <div class='container col-sm-9 col-xs-9' id='main-container'></div>
+    </div>
+</div>
