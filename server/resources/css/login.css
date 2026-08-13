@@ -1,0 +1,18 @@
+#login-img {
+    width: 164px;
+    height: 164px;
+    display: block;
+    margin: auto;
+    border: solid 1px #ddd;
+    object-fit: cover;
+}
+
+#login>.row:first-child {
+    margin-top: 140px;
+}
+
+#login .btn {
+    width: 240px;
+    display: block;
+    margin: auto;
+}
