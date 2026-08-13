@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -11,7 +10,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'Email' => ['required', 'email'],
+            'Email'    => ['required', 'email'],
             'Password' => ['required', 'string'],
         ]);
 
@@ -26,12 +25,12 @@ class AuthController extends Controller
         $administrator = Auth::user();
 
         return response()->json([
-            'message' => 'Login successful',
+            'message'       => 'Login successful',
             'administrator' => [
                 'Administrator_ID' => $administrator->Administrator_ID,
-                'Email' => $administrator->Email,
-                'Name' => $administrator->Name,
-                'Role' => $administrator->Role,
+                'Email'            => $administrator->Email,
+                'Name'             => $administrator->Name,
+                'Role'             => $administrator->Role,
             ],
         ]);
     }
@@ -45,6 +44,26 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Logout successful',
+        ]);
+    }
+
+    public function auth()
+    {
+        if (! Auth::check()) {
+            return response()->json([
+                'error' => 'Unauthorized',
+            ], 401);
+        }
+
+        $administrator = Auth::user();
+
+        return response()->json([
+            'Administrator_ID' => $administrator->Administrator_ID,
+            'Email'            => $administrator->Email,
+            'Name'             => $administrator->Name,
+            'Role'             => $administrator->Role,
+            'Phone'            => $administrator->Phone,
+            'Image'            => $administrator->Image,
         ]);
     }
 }
