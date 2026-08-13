@@ -127,7 +127,6 @@ class AdministratorController extends Controller
             ], 404);
         }
 
-        // Only an owner can modify itself.
         if ($administrator->Role === 'owner' && $admin->Role !== 'owner') {
             return response()->json([
                 'error' => 'Only an owner can modify an owner',
@@ -139,6 +138,8 @@ class AdministratorController extends Controller
                 'sometimes',
                 'required',
                 'email',
+                Rule::unique('administrators', 'Email')
+                    ->ignore($id, 'Administrator_ID'),
             ],
             'Name'     => [
                 'sometimes',
@@ -170,6 +171,17 @@ class AdministratorController extends Controller
                 'min:8',
             ],
         ]);
+
+        if ($administrator->Role === 'owner') {
+            unset($validated['Role']);
+        } elseif (
+            isset($validated['Role']) &&
+            $validated['Role'] === 'owner'
+        ) {
+            return response()->json([
+                'error' => 'Owner role cannot be assigned',
+            ], 403);
+        }
 
         if (isset($validated['Password'])) {
             $validated['Password'] = Hash::make(

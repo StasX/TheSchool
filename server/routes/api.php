@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
+Route::get('/auth', [AuthController::class, 'auth']);
 
 Route::get('/administrator', [AdministratorController::class, 'getAll']);
 Route::get('/administrator/{id}', [AdministratorController::class, 'getById']);

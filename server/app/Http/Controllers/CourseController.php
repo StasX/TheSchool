@@ -1,22 +1,20 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
 class CourseController extends Controller
 {
     public function getAll()
     {
-        return Course::all();
+        return Course::with('students')->get();
     }
 
     public function getById(int $id)
     {
-        $course = Course::find($id);
+        $course = Course::with('students')->find($id);
 
         if (! $course) {
             return response()->json(['error' => 'Course not found'], 404);
@@ -38,9 +36,9 @@ class CourseController extends Controller
         }
 
         $validated = $request->validate([
-            'Name' => ['required', 'string', 'max:255'],
+            'Name'        => ['required', 'string', 'max:255'],
             'Description' => ['nullable', 'string'],
-            'Image' => ['required', 'string', 'max:255'],
+            'Image'       => ['required', 'string', 'max:255'],
         ]);
 
         $course = Course::create($validated);
@@ -67,14 +65,14 @@ class CourseController extends Controller
         }
 
         $validated = $request->validate([
-            'Name' => ['sometimes', 'required', 'string', 'max:255'],
+            'Name'        => ['sometimes', 'required', 'string', 'max:255'],
             'Description' => ['sometimes', 'nullable', 'string'],
-            'Image' => ['sometimes', 'required', 'string', 'max:255'],
+            'Image'       => ['sometimes', 'required', 'string', 'max:255'],
         ]);
 
         $course->update($validated);
 
-        return $course;
+        return response()->json($course);
     }
 
     public function remove(int $id)
@@ -95,6 +93,7 @@ class CourseController extends Controller
             return response()->json(['error' => 'Course not found'], 404);
         }
 
+        $course->students()->detach();
         $course->delete();
 
         return response()->json(null, 204);

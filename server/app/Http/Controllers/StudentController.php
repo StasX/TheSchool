@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
@@ -20,10 +20,12 @@ class StudentController extends Controller
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
-        return Student::all();
+        return response()->json(
+            Student::with('courses')->get()
+        );
     }
 
-    public function getById($id)
+    public function getById(int $id)
     {
         if (! Auth::check()) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -43,7 +45,7 @@ class StudentController extends Controller
             ], 404);
         }
 
-        return $student;
+        return response()->json($student);
     }
 
     public function add(Request $request)
@@ -59,10 +61,26 @@ class StudentController extends Controller
         }
 
         $validated = $request->validate([
-            'Email' => 'required|email|unique:students,Email',
-            'Name' => 'required|string|max:32',
-            'Phone' => 'required|string|max:54',
-            'Image' => 'required|string|max:32',
+            'Email' => [
+                'required',
+                'email',
+                'unique:students,Email',
+            ],
+            'Name'  => [
+                'required',
+                'string',
+                'max:32',
+            ],
+            'Phone' => [
+                'required',
+                'string',
+                'max:54',
+            ],
+            'Image' => [
+                'required',
+                'string',
+                'max:32',
+            ],
         ]);
 
         $student = Student::create($validated);
@@ -70,7 +88,7 @@ class StudentController extends Controller
         return response()->json($student, 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         if (! Auth::check()) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -91,13 +109,40 @@ class StudentController extends Controller
         }
 
         $validated = $request->validate([
-            'Email' => 'sometimes|required|email|unique:students,Email,' .
-                $id . ',Student_ID',
-            'Name' => 'sometimes|required|string|max:32',
-            'Phone' => 'sometimes|required|string|max:54',
-            'Image' => 'sometimes|required|string|max:32',
-            'courses' => 'sometimes|array',
-            'courses.*' => 'integer|exists:courses,Course_ID',
+            'Email'     => [
+                'sometimes',
+                'required',
+                'email',
+                Rule::unique('students', 'Email')
+                    ->ignore($id, 'Student_ID'),
+            ],
+            'Name'      => [
+                'sometimes',
+                'required',
+                'string',
+                'max:32',
+            ],
+            'Phone'     => [
+                'sometimes',
+                'required',
+                'string',
+                'max:54',
+            ],
+            'Image'     => [
+                'sometimes',
+                'required',
+                'string',
+                'max:32',
+            ],
+            'courses'   => [
+                'sometimes',
+                'array',
+            ],
+            'courses.*' => [
+                'integer',
+                'distinct',
+                'exists:courses,Course_ID',
+            ],
         ]);
 
         $student->update(
@@ -110,10 +155,12 @@ class StudentController extends Controller
             $student->courses()->sync($validated['courses']);
         }
 
-        return $student->load('courses');
+        return response()->json(
+            $student->load('courses')
+        );
     }
 
-    public function remove($id)
+    public function remove(int $id)
     {
         if (! Auth::check()) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -136,8 +183,6 @@ class StudentController extends Controller
         $student->courses()->detach();
         $student->delete();
 
-        return response()->json([
-            'message' => 'Student removed successfully',
-        ]);
+        return response()->json(null, 204);
     }
 }
