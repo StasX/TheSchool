@@ -43,8 +43,8 @@ CREATE TABLE `administrators` (
 --
 
 INSERT INTO `administrators` (`Administrator_ID`, `Email`, `Name`, `Role`, `Phone`, `Password`, `Image`) VALUES
-(16, 's.mestechkin@gmail.com', 'Stas Mestechkin', 'owner', '0546279900', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225', '../upload/91eb47d4694cb047.jpg'),
-(18, 'smith@mail.com', 'Mr Smith', 'sales', '0542999999', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225', '../upload/721cc3d567bbc1f6.jpg');
+(16, 'stas@mail.com', 'Stas Mestechkin', 'owner', '0546279900', '$2y$12$ArP9SWz2ccjvI00j4s91Zu5vJHH9JvRDOu5yuKqrPBzDes78rZxmG', '../upload/91eb47d4694cb047.jpg'),
+(18, 'smith@mail.com', 'Mr Smith', 'sales', '0542999999', '$2y$12$ArP9SWz2ccjvI00j4s91Zu5vJHH9JvRDOu5yuKqrPBzDes78rZxmG', '../upload/721cc3d567bbc1f6.jpg');
 
 -- --------------------------------------------------------
 
