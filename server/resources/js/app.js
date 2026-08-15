@@ -1,7 +1,7 @@
 import './bootstrap';
-import schoolTemplate from '../templates/school.html?raw';
-import administrationTemplate from '../templates/administration.html?raw';
-import notFoundTemplate from '../templates/404.html?raw';
+import schoolTemplate from '../templates/pages/school.html?raw';
+import administrationTemplate from '../templates/pages/administration.html?raw';
+import notFoundTemplate from '../templates/pages/404.html?raw';
 
 $(document).ready(function () {
     let user = null;
