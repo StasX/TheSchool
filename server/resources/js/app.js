@@ -21,18 +21,15 @@ $(document).ready(function () {
                 }
             }
         }
-
     });
     if (!location.hash) {
         $('#login').on('submit', function (e) {
             e.preventDefault();
-            console.log($(this).serialize());
             const data ={
                 Email: $('#user').val(),
                 Password: $('#password').val()
             };
             $.post('/api/login', data, function (data) {
-                console.log(data);
                 user = data.Administrator;
                 location.hash = '#!school';
             }).fail(function (xhr) {
