@@ -1,43 +1,26 @@
 import './bootstrap';
-import schoolTemplate from '../templates/pages/school.html?raw';
-import administrationTemplate from '../templates/pages/administration.html?raw';
-import notFoundTemplate from '../templates/pages/404.html?raw';
+import school from './school';
+import administration from './administration';
+import notFound from './administration';
+
 
 $(document).ready(function () {
     let user = null;
 
-    function render() {
+    function render(data) {
+        user=data;
         switch (location.hash) {
             case '#!school':
-                $('body').html(schoolTemplate);
-
-                console.log('User:', user);
-
-                if (user && (user.Role === 'owner' || user.Role === 'manager')) {
-                    $('#navbar').append(`
-                        <li class="nav-item">
-                            <a href="#!administration" class="nav-link">
-                                Administration
-                            </a>
-                        </li>
-                    `);
-                    $('#user-info').text(`${user.Name}, ${user.Role}`);
-                    $.get(user.Image).done(()=>{
-                        $('#user-image').attr('src', user.Image);
-                    }).fail(()=>{
-                        $('#user-image').attr('src', '/img/user.png');
-                    });
-                }
-
+                school(user);
                 break;
 
             case '#!administration':
-                $('body').html(administrationTemplate);
+                administration(user);
                 break;
 
             default:
                 if (location.hash) {
-                    $('body').html(notFoundTemplate);
+                    notFound();
                 }
                 break;
         }
@@ -56,7 +39,6 @@ $(document).ready(function () {
 
             $.post('/api/login', data)
                 .done(function (data) {
-                    console.log(data)
                     user = data.administrator;
                     location.hash = '#!school';
                 })
@@ -75,8 +57,7 @@ $(document).ready(function () {
     } else {
         $.get('/api/auth')
             .done(function (data) {
-                user = data.administrator;
-                render();
+                render(data);
             })
             .fail(function () {
                 location.hash = '';

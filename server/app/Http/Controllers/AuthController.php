@@ -1,39 +1,47 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Administrator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
-use App\Models\Administrator;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // Manual validation
-        if (!$request->filled('Email') ||  !filter_var($request->Email, FILTER_VALIDATE_EMAIL) || !$request->filled('Password')) {
-            return response()->json(['error' => 'Invalid username or password.'], 401);
+        if (
+            ! $request->filled('Email') ||
+            ! filter_var($request->Email, FILTER_VALIDATE_EMAIL) ||
+            ! $request->filled('Password')
+        ) {
+            return response()->json([
+                'error' => 'Invalid username or password.',
+            ], 401);
         }
 
         $user = Administrator::where('Email', $request->Email)->first();
 
-        if (!$user || !Hash::check($request->Password, $user->Password)) {
-            // Wrong credentials - return 401
-            return response()->json(['error' => 'Invalid username or password.'], 401);
+        if (! $user || ! Hash::check($request->Password, $user->Password)) {
+            return response()->json([
+                'error' => 'Invalid username or password.',
+            ], 401);
         }
 
-        // Successful login
+        Auth::login($user);
+
+        $request->session()->regenerate();
+
         return response()->json([
-            'message' => 'Login successful',
+            'message'       => 'Login successful',
             'administrator' => [
                 'Administrator_ID' => $user->Administrator_ID,
-                'Email' => $user->Email,
-                'Name' => $user->Name,
-                'Role' => $user->Role,
-                'Image' => $user->Image,
+                'Email'            => $user->Email,
+                'Name'             => $user->Name,
+                'Role'             => $user->Role,
+                'Image'            => $user->Image,
             ],
-        ], 200);
+        ]);
     }
 
     public function logout(Request $request)
@@ -50,7 +58,7 @@ class AuthController extends Controller
 
     public function auth()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json([
                 'error' => 'Unauthorized',
             ], 401);
@@ -60,11 +68,11 @@ class AuthController extends Controller
 
         return response()->json([
             'Administrator_ID' => $administrator->Administrator_ID,
-            'Email' => $administrator->Email,
-            'Name' => $administrator->Name,
-            'Role' => $administrator->Role,
-            'Phone' => $administrator->Phone,
-            'Image' => $administrator->Image,
+            'Email'            => $administrator->Email,
+            'Name'             => $administrator->Name,
+            'Role'             => $administrator->Role,
+            'Phone'            => $administrator->Phone,
+            'Image'            => $administrator->Image,
         ]);
     }
 }
