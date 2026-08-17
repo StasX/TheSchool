@@ -1,12 +1,19 @@
-.management .btn{
+.management .btn {
     display: block;
     margin: auto;
     width: 36px;
     height: 36px;
 }
-.management>.row:first-child{
+
+.management>.row:first-child {
     text-align: center;
 }
-.management .row{
-    margin-top:6px;
+
+.management .row {
+    margin-top: 6px;
+}
+
+#image-upload {
+    visibility: hidden;
+    width: 250;
 }
