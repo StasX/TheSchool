@@ -26,7 +26,7 @@ $(document).ready(function () {
         }
     }
 
-    $(window).on('hashchange', render);
+    $(window).on('hashchange', ()=>render(user));
 
     if (!location.hash) {
         $('#login').on('submit', function (e) {

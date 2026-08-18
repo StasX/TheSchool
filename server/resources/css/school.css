@@ -9,7 +9,8 @@
     text-align: center;
 }
 
-.management .row {
+.management .row,
+.view-row {
     margin-top: 6px;
 }
 
@@ -17,3 +18,6 @@
     visibility: hidden;
     width: 250;
 }
+ #save-student i {
+    margin-left:10px;
+ }
