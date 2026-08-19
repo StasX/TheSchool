@@ -15,7 +15,7 @@ export const studentHandlers = {
                 </div>
                 <div class="row view-row">
                     <div class="container col-sm-4">
-                        <img src="${data.Image}" height="250" width="250" alt="${data.Name}" />
+                        <img src="${data.Image}" width="250" alt="${data.Name}" />
                     </div>
                     <div class="col-sm-8">
                         <div class="container">
@@ -34,7 +34,7 @@ export const studentHandlers = {
             $.each(data.courses, (i, course) => {
                 coursesElement.append(`
                     <div class="row view-row">
-                        <div class="col-sm-4"><img alt="${course.Name}" src="${course.Image}" width="50" height="50" />
+                        <div class="col-sm-4"><img alt="${course.Name}" src="${course.Image}" width="60" />
                         </div>
                         <h3 class="col-sm-8 col-xs-8">${course.Name}</h3>
                     </div>
@@ -48,8 +48,14 @@ export const studentHandlers = {
     },
     add: () => { },
     edit: (student) => {
-        $("#main-container").html(template);
-        $("container-title").text("Edit Student");
+        const html = $(template);
+        $("#main-container").html(html);
+        $("#container-title").text("Edit Student");
+        $("#name").val(student.Name);
+        $("#phone").val(student.Phone);
+        $("#email").val(student.Email);
+        $("#image-upload").attr("src", student.Image);
+        $("#image-upload").css({ "visibility": "visible" });
     },
     remove: () => { }
 

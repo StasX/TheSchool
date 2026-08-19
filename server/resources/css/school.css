@@ -16,8 +16,22 @@
 
 #image-upload {
     visibility: hidden;
-    width: 250;
+    width: 180px;
 }
- #save-student i {
-    margin-left:10px;
- }
+
+#save-student i {
+    margin-left: 10px;
+}
+
+.management img {
+    width: 60px;
+}
+
+#user-image{
+    width:50px;
+    max-height: 50px;
+}
+
+#edit {
+    width: 100px;
+}

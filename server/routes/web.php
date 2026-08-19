@@ -11,12 +11,25 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/uploads/{filename}', function (string $filename) {
+Route::get('/upload/{filename}', function (string $filename) {
     $disk = Storage::disk('uploads');
+    $filePath = $disk->path($filename);
+    $notFoundPath = $disk->path('NotFound.png');
 
-    abort_unless($disk->exists($filename), 404);
+    $path = ($disk->exists($filename)) ?  $filePath : $notFoundPath;
+    return response()->file($path);
+});
 
-    return response()->file($disk->path($filename));
+Route::get('/upload/{filename}', function (string $filename) {
+    $disk = Storage::disk('uploads');
+    $filePath = $disk->path($filename);
+    $notFoundPath = $disk->path('NotFound.png');
+
+    if (!$disk->exists($filename)) {
+        return response()->file($notFoundPath);
+    }
+
+    return response()->file($filePath);
 });
 
 Route::prefix('api')->group(function () {

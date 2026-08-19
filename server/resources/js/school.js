@@ -16,11 +16,7 @@ export default function school(user) {
                         `);
     }
     $('#user-info').text(`${user.Name}, ${user.Role}`);
-    $.get(user.Image).done(() => {
-        $('#user-image').attr('src', user.Image);
-    }).fail(() => {
-        $('#user-image').attr('src', '/img/user.png');
-    });
+    $('#user-image').attr('src', user.Image);
     $.get('/api/student').done((data) => {
 
         $.each(data, (i, student) => {
@@ -36,7 +32,7 @@ export default function school(user) {
                 <img src="${student.Image}" alt="${student.Name}" />
                 </div>
             </div>`);
-            html.click(()=>studentHandlers.info(student.Student_ID));
+            html.click(() => studentHandlers.info(student.Student_ID));
             $("#students-container").append(html);
         });
     });
