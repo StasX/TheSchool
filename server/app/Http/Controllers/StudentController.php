@@ -166,11 +166,17 @@ class StudentController extends Controller
             $validated['Image'] = "/upload/$filename";
         }
 
+        $oldImage = $student->Image;
+
         $student->update(
             collect($validated)
                 ->except('courses')
                 ->toArray()
         );
+
+        if ($request->hasFile('Image') && $oldImage && Storage::disk('uploads')->exists(basename($oldImage))) {
+            Storage::disk('uploads')->delete(basename($oldImage));
+        }
 
         if (array_key_exists('courses', $validated)) {
             $student->courses()->sync($validated['courses']);
