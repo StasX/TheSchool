@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
@@ -24,6 +25,8 @@ class StudentController extends Controller
             Student::with('courses')->get()
         );
     }
+
+//------------------------------------------------------------------------
 
     public function getById(int $id)
     {
@@ -47,6 +50,8 @@ class StudentController extends Controller
 
         return response()->json($student);
     }
+
+//------------------------------------------------------------------------
 
     public function add(Request $request)
     {
@@ -87,6 +92,8 @@ class StudentController extends Controller
 
         return response()->json($student, 201);
     }
+
+//------------------------------------------------------------------------
 
     public function update(Request $request, int $id)
     {
@@ -130,9 +137,10 @@ class StudentController extends Controller
             ],
             'Image'     => [
                 'sometimes',
-                'required',
-                'string',
-                'max:32',
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
             ],
             'courses'   => [
                 'sometimes',
@@ -144,6 +152,19 @@ class StudentController extends Controller
                 'exists:courses,Course_ID',
             ],
         ]);
+        if ($request->hasFile('Image')) {
+            $file = $request->file('Image');
+
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+
+            Storage::disk('uploads')->putFileAs(
+                '',
+                $file,
+                $filename
+            );
+
+            $validated['Image'] = "/upload/$filename";
+        }
 
         $student->update(
             collect($validated)
@@ -154,11 +175,13 @@ class StudentController extends Controller
         if (array_key_exists('courses', $validated)) {
             $student->courses()->sync($validated['courses']);
         }
-
+        $student->refresh();
         return response()->json(
             $student->load('courses')
         );
     }
+
+//------------------------------------------------------------------------
 
     public function remove(int $id)
     {

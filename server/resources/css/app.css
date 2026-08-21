@@ -16,7 +16,12 @@ body>.container-fluid {
 .item-row .row {
     margin-top: 0px;
 }
-
+.item-row .row:first-child{
+    font-weight: bold;
+}
+.item-row .row:last-child{
+    color:#888888;
+}
 .item-row image {
     width: 24px;
     display: block;

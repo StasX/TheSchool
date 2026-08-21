@@ -15,11 +15,10 @@
 }
 
 #image-upload {
-    visibility: hidden;
     width: 180px;
 }
 
-#save-student i {
+#btn-row i {
     margin-left: 10px;
 }
 
@@ -34,4 +33,7 @@
 
 #edit {
     width: 100px;
+}
+#students-form{
+    margin-top: 10px;
 }

@@ -20,17 +20,6 @@ Route::get('/upload/{filename}', function (string $filename) {
     return response()->file($path);
 });
 
-Route::get('/upload/{filename}', function (string $filename) {
-    $disk = Storage::disk('uploads');
-    $filePath = $disk->path($filename);
-    $notFoundPath = $disk->path('NotFound.png');
-
-    if (!$disk->exists($filename)) {
-        return response()->file($notFoundPath);
-    }
-
-    return response()->file($filePath);
-});
 
 Route::prefix('api')->group(function () {
 
