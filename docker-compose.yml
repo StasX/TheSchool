@@ -6,12 +6,13 @@ services:
 
     ports:
       - "8090:80"
-
+    volumes:
+      - uploads:/var/www/html/uploads
     environment:
-      APP_NAME: TheSchool
-      APP_ENV: production
-      APP_DEBUG: "false"
-      APP_URL: http://localhost:8090
+      APP_NAME: ${APP_NAME}
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_URL: ${APP_URL}
       APP_KEY: ${APP_KEY}
 
       DB_CONNECTION: ${DB_CONNECTION}
@@ -20,8 +21,8 @@ services:
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_CHARSET: utf8mb4
-      DB_COLLATION: utf8mb4_unicode_ci
+      DB_CHARSET: ${DB_CHARSET}
+      DB_COLLATION: ${DB_COLLATION}
 
       CACHE_STORE: ${CACHE_STORE}
       REDIS_CLIENT: ${REDIS_CLIENT}
@@ -32,6 +33,7 @@ services:
       REDIS_CACHE_DB: ${REDIS_CACHE_DB}
 
       SESSION_DRIVER: ${SESSION_DRIVER}
+      SESSION_CONNECTION: ${SESSION_CONNECTION}
       SESSION_LIFETIME: ${SESSION_LIFETIME}
 
       LOG_CHANNEL: ${LOG_CHANNEL}
@@ -82,7 +84,7 @@ services:
 volumes:
   mariadb-data:
   redis-data:
-
+  uploads:
 
 networks:
   app-network:

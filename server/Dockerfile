@@ -49,9 +49,11 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN chown -R www-data:www-data \
         storage \
         bootstrap/cache \
+        uploads \
     && chmod -R 775 \
         storage \
-        bootstrap/cache
+        bootstrap/cache \
+        uploads
 
 RUN sed -ri \
     -e 's!/var/www/html!/var/www/html/public!g' \

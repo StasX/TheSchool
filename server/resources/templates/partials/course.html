@@ -1,0 +1,37 @@
+    <button class = 'btn btn-sm btn-red' id = 'delete'>Delete&nbsp;<b class = 'glyphicon glyphicon-remove'></b></button>
+    <div class = 'row'>
+                <b>Edit Course</b>
+            </div>
+            <div class = 'row'>
+                <hr class = 'col-sm-12 col-xs-12'>
+            </div>
+            <div class = 'row'>
+                <button class = 'btn btn-sm btn-green btn-sm' id = 'save'>
+                    Save&nbsp;
+                    <b class = 'glyphicon glyphicon-ok'></b>
+                </button>
+            </div>
+            <form id = 'courses-form'>
+                <div class = 'row'>
+                    <div class = 'input-group col-sm-6 col-xs-12 col-sm-offset-2'>
+                        <label for = 'name' class = 'input-group-addon labels'>Name</label>
+                        <input type = 'text' name = 'name' id = 'name' value = '' class = 'form-control' spellcheck = 'false' />
+                    </div>
+                </div>
+                <div class = 'row'>
+                    <div class = 'input-group col-sm-6 col-xs-12 col-sm-offset-2'>
+                        <label for = 'description' class = 'input-group-addon'>Description</label>
+                        <textarea name = 'description' id = 'description' class = 'form-control' spellcheck = 'false' rows = '5' maxlength = '500'></textarea>
+                    </div>
+                </div>
+                <div class = 'row'>
+                    <img src = '' width = '300' height = '300' id = 'image-upload' />
+                </div>
+                <div>
+                    <span class = 'btn btn-sm btn-file'>
+                        <span>Choise image</span>
+                        <input type = 'file' name = 'file' id = 'file' />
+                    </span>
+                </div>
+            </form>
+            <h2 class='row'>Total X students taking this course</h2>

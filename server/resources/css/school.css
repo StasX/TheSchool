@@ -1,0 +1,39 @@
+.management .btn {
+    display: block;
+    margin: auto;
+    width: 36px;
+    height: 36px;
+}
+
+.management>.row:first-child {
+    text-align: center;
+}
+
+.management .row,
+.view-row {
+    margin-top: 6px;
+}
+
+#image-upload {
+    width: 180px;
+}
+
+#btn-row i {
+    margin-left: 10px;
+}
+
+.management img {
+    width: 60px;
+}
+
+#user-image{
+    width:50px;
+    max-height: 50px;
+}
+
+#edit {
+    width: 100px;
+}
+#students-form{
+    margin-top: 10px;
+}

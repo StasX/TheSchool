@@ -1,0 +1,82 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#!school">
+            <img alt="Logo" src="img/logo.png" class="d-inline-block align-text-top" width="60" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul id="navbar" class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a href="/#!school" class="nav-link active">School</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center ms-auto">
+                <div class="ms-2">
+                    <div class="container">
+                        <div id="user-info" class="row"></div>
+                        <div class="row">
+                            <a href="/api/logout" id="logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+                <img alt="administrator image" id="user-image" class="rounded-circle ms-auto" />
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="container management">
+                            <div class="row">
+                                <div class="col-sm-8">Courses</div>
+                                <div class="col-sm-4">
+                                    <button class="btn btn-sm btn-light" id="add-course" aria-label="Add course">
+                                        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <hr class="col-sm-10 offset-sm-1">
+                            </div>
+                            <div class="row">
+                                <div class="container" id="courses-container">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="container management">
+                            <div class="row">
+                                <div class="col-sm-8">Students</div>
+                                <div class="col-sm-2">
+                                    <button class="btn btn-sm btn-light" id="add-student" aria-label="Add student">
+                                        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <hr class="col-sm-10 offset-sm-1">
+                            </div>
+                            <div class="row">
+                                <div class="container" id="students-container">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="container" id="main-container">
+            </div>
+        </div>
+    </div>
+</div>

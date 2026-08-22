@@ -9,11 +9,29 @@ class CourseController extends Controller
 {
     public function getAll()
     {
+        if (! Auth::check()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $admin = Auth::user();
+
+        if (! in_array($admin->Role, ['owner', 'manager', 'sales'], true)) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
         return Course::with('students')->get();
     }
 
     public function getById(int $id)
     {
+        if (! Auth::check()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $admin = Auth::user();
+
+        if (! in_array($admin->Role, ['owner', 'manager', 'sales'], true)) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
         $course = Course::with('students')->find($id);
 
         if (! $course) {

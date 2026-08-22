@@ -1,28 +1,67 @@
 import './bootstrap';
-import schoolTemplate from '../templates/school.html?raw';
-import administrationTemplate from '../templates/administration.html?raw';
-import notFoundTemplate from '../templates/404.html?raw';
+import school from './school';
+import administration from './administration';
+import notFound from './administration';
+
 
 $(document).ready(function () {
-    $(window).on('hashchange', function () {
+    let user = null;
+
+    function render(data) {
+        user=data;
         switch (location.hash) {
-            case '#!school': {
-                $('body').html(schoolTemplate);
+            case '#!school':
+                school(user);
                 break;
-            }
-            case '#!administration': {
-                $('body').html(administrationTemplate);
+
+            case '#!administration':
+                administration(user);
                 break;
-            }
-            default: {
+
+            default:
                 if (location.hash) {
-                    $('body').html(notFoundTemplate);
+                    notFound();
                 }
-            }
+                break;
         }
+    }
 
-    });
+    $(window).on('hashchange', ()=>render(user));
+
     if (!location.hash) {
+        $('#login').on('submit', function (e) {
+            e.preventDefault();
 
+            const data = {
+                Email: $('#user').val(),
+                Password: $('#password').val()
+            };
+
+            $.post('/api/login', data)
+                .done(function (data) {
+                    user = data.administrator;
+                    location.hash = '#!school';
+                })
+                .fail(function (xhr) {
+                    const error = xhr.status === 401
+                        ? 'Invalid username or password'
+                        : 'An error occurred. Please try again later.';
+
+                    $('#alerts').html(`
+                        <div class="alert alert-danger" role="alert">
+                            ${error}
+                        </div>
+                    `);
+                });
+        });
+    } else {
+        $.get('/api/auth')
+            .done(function (data) {
+                render(data);
+            })
+            .fail(function () {
+                location.hash = '';
+                location.reload();
+            });
     }
 });
