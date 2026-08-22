@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Slim\Psr7\Response;
 
 class StudentController extends Controller
 {
@@ -66,31 +67,46 @@ class StudentController extends Controller
         }
 
         $validated = $request->validate([
-            'Email' => [
+            'Email'     => [
                 'required',
                 'email',
                 'unique:students,Email',
             ],
-            'Name'  => [
+            'Name'      => [
                 'required',
                 'string',
                 'max:32',
             ],
-            'Phone' => [
+            'Phone'     => [
                 'required',
                 'string',
                 'max:54',
             ],
-            'Image' => [
+            'Image'     => [
                 'required',
-                'string',
-                'max:32',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
+            'courses'   => [
+                'sometimes',
+                'array',
+            ],
+            'courses.*' => [
+                'integer',
+                'distinct',
+                'exists:courses,Course_ID',
             ],
         ]);
-
+        $file = $request->file('Image');
+        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        Storage::disk('uploads')->putFileAs('', $file, $filename);
+        $validated['Image'] = "/upload/$filename";
+        $courses            = $validated['courses'] ?? [];
+        unset($validated['courses']);
         $student = Student::create($validated);
-
-        return response()->json($student, 201);
+        $student->courses()->sync($courses);
+        return response()->json($student->load('courses'), 201);
     }
 
 //------------------------------------------------------------------------

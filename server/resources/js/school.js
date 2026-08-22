@@ -1,6 +1,7 @@
 import template from '../templates/pages/school.html?raw';
 import { courseHandlers } from './courseHandlers';
-import {studentRender} from "./renders/student";
+import { studentRender } from "./renders/student";
+import { studentHandlers } from './handlers/student';
 
 
 export default function school(user) {
@@ -20,6 +21,7 @@ export default function school(user) {
     $.get('/api/student').done((data) => {
         studentRender(data);
     });
+    $("#add-student").on("click", studentHandlers.add);
     $.get('/api/course').done((data) => {
         $.each(data, (i, course) => {
             const html = $(`

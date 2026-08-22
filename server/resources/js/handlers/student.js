@@ -48,7 +48,48 @@ export const studentHandlers = {
         }
         ).fail((xhr) => { console.log(xhr) });
     },
-    add: () => { },
+    add: () => {
+        const html = $(template);
+        const titleContainer = html.find("#container-title");
+        const saveBtn = html.find("#save-student");
+        const form = html.filter("#students-form");
+        const fileInput = html.find("#image-file");
+        const imageElement = html.find("#image-upload");
+        const coursesContainer = form.find("#courses-container");
+        titleContainer.text("Add Student");
+        fileInput.on("change", function () { display(imageElement, this); });
+        form.on("submit", function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            if (fileInput[0].files.length) {
+                formData.set("Image", fileInput[0].files[0]);
+            }
+            $.ajax({
+                method: "POST",
+                url: `/api/student`,
+                data: formData,
+                processData: false,
+                contentType: false
+            }).done((data) => {
+                studentHandlers.info(data.Student_ID);
+                $.get('/api/student').done((students) => studentRender(students));
+            }).fail((xhr) => console.log(xhr));
+        });
+        saveBtn.on("click", () => form.trigger("submit"));
+        $.get("/api/course").done((data) => $.each(data, (id, course) => {
+            const $course = $(`
+                <div class="col">
+                    <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="courses[]" value="${course.Course_ID}" id="course-${course.Course_ID}">
+                    <label class="form-check-label" for="course-${course.Course_ID}">${course.Name}</label>
+                    </div>
+                </div>
+            `);
+            coursesContainer.append($course);
+        }));
+
+        $("#main-container").html(html);
+    },
     edit: (student) => {
         const html = $(template);
         const titleContainer = html.find("#container-title");
