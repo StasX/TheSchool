@@ -1,6 +1,7 @@
 import template from "../../templates/partials/student.html?raw";
 import { display } from "../utils/image";
 import { studentRender } from "../renders/student";
+import Swal from "sweetalert2";
 
 export const studentHandlers = {
     info: (id) => {
@@ -46,7 +47,7 @@ export const studentHandlers = {
             editBtn.on("click", () => studentHandlers.edit(data));
             $("#main-container").html(html);
         }
-        ).fail((xhr) => { console.log(xhr) });
+        ).fail((xhr) => { console.error(xhr) });
     },
     add: () => {
         const html = $(template);
@@ -73,7 +74,7 @@ export const studentHandlers = {
             }).done((data) => {
                 studentHandlers.info(data.Student_ID);
                 $.get('/api/student').done((students) => studentRender(students));
-            }).fail((xhr) => console.log(xhr));
+            }).fail((xhr) => console.error(xhr));
         });
         saveBtn.on("click", () => form.trigger("submit"));
         $.get("/api/course").done((data) => $.each(data, (id, course) => {
@@ -126,7 +127,7 @@ export const studentHandlers = {
             }).done((data) => {
                 studentHandlers.info(data.Student_ID);
                 $.get('/api/student').done((students) => studentRender(students));
-            }).fail((xhr) => console.log(xhr));
+            }).fail((xhr) => console.error(xhr));
         });
         removeBtn.on("click", () => studentHandlers.remove(student));
         saveBtn.on("click", () => form.trigger("submit"));
@@ -154,8 +155,54 @@ export const studentHandlers = {
         $("#main-container").html(html);
     },
     remove: (student) => {
-        console.log(student);
+        Swal.fire({
+            title: `Do you really want to delete student: ${student.Name}?`,
+            icon: "question",
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            buttonsStyling: false,
 
+            customClass: {
+                confirmButton: "btn btn-danger",
+                cancelButton: "btn btn-dark ms-2"
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Removed data cannot be restored!",
+                    text: "Do you want to continue?",
+                    icon: "warning",
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: "Continue",
+                    cancelButtonText: "Abort",
+                    buttonsStyling: false,
+
+                    customClass: {
+                        confirmButton: "btn btn-danger",
+                        cancelButton: "btn btn-dark ms-2"
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: "DELETE",
+                            url: `/api/student/${student.Student_ID}`
+                        }).done(() => {
+                            Swal.fire({
+                                title: "Student deleted successfully!",
+                                icon: "success",
+                            }).then(() => {
+                                $.get("/api/student").done((students) => studentRender(students));
+                                $("#main-container").html("");
+                            });
+                        }).fail((xhr) => {
+                            console.error(xhr);
+                        });
+                    }
+                });
+            }
+        });
     }
-
 }

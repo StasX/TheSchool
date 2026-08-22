@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use Slim\Psr7\Response;
 
 class StudentController extends Controller
 {
@@ -98,7 +97,7 @@ class StudentController extends Controller
                 'exists:courses,Course_ID',
             ],
         ]);
-        $file = $request->file('Image');
+        $file     = $request->file('Image');
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         Storage::disk('uploads')->putFileAs('', $file, $filename);
         $validated['Image'] = "/upload/$filename";
@@ -224,9 +223,13 @@ class StudentController extends Controller
                 'error' => 'Student not found',
             ], 404);
         }
-
+        $oldImage = $student->Image;
         $student->courses()->detach();
         $student->delete();
+
+        if ($oldImage && Storage::disk('uploads')->exists(basename($oldImage))) {
+            Storage::disk('uploads')->delete(basename($oldImage));
+        }
 
         return response()->json(null, 204);
     }
