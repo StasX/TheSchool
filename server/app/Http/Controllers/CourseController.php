@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CourseController extends Controller
 {
@@ -20,6 +21,8 @@ class CourseController extends Controller
 
         return Course::with('students')->get();
     }
+
+//------------------------------------------------------------------------
 
     public function getById(int $id)
     {
@@ -41,6 +44,8 @@ class CourseController extends Controller
         return $course;
     }
 
+//------------------------------------------------------------------------
+
     public function add(Request $request)
     {
         if (! Auth::check()) {
@@ -56,13 +61,23 @@ class CourseController extends Controller
         $validated = $request->validate([
             'Name'        => ['required', 'string', 'max:255'],
             'Description' => ['nullable', 'string'],
-            'Image'       => ['required', 'string', 'max:255'],
+            'Image'       => [
+                'required',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
         ]);
-
-        $course = Course::create($validated);
+        $file     = $request->file('Image');
+        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        Storage::disk('uploads')->putFileAs('', $file, $filename);
+        $validated['Image'] = "/upload/$filename";
+        $course             = Course::create($validated);
 
         return response()->json($course, 201);
     }
+
+//------------------------------------------------------------------------
 
     public function update(Request $request, int $id)
     {
@@ -92,6 +107,8 @@ class CourseController extends Controller
 
         return response()->json($course);
     }
+
+//------------------------------------------------------------------------
 
     public function remove(int $id)
     {
