@@ -51,13 +51,11 @@ export const studentHandlers = {
     },
     add: () => {
         const html = $(template);
-        const titleContainer = html.find("#container-title");
         const saveBtn = html.find("#save-student");
         const form = html.filter("#students-form");
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
         const coursesContainer = form.find("#courses-container");
-        titleContainer.text("Add Student");
         fileInput.on("change", function () { display(imageElement, this); });
         form.on("submit", function (e) {
             e.preventDefault();
