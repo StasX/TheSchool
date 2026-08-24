@@ -71,6 +71,7 @@ class AdministratorController extends Controller
                 'required',
                 'email',
                 'unique:administrators,Email',
+                'max:64',
             ],
             'Name'     => [
                 'required',
@@ -93,8 +94,9 @@ class AdministratorController extends Controller
             ],
             'Image'    => [
                 'required',
-                'string',
-                'max:32',
+                'image',
+                'mimes:jpg,jpeg,png,gif',
+                'max:2048',
             ],
         ]);
 
@@ -135,34 +137,31 @@ class AdministratorController extends Controller
 
         $validated = $request->validate([
             'Email'    => [
-                'sometimes',
                 'required',
                 'email',
                 Rule::unique('administrators', 'Email')
                     ->ignore($id, 'Administrator_ID'),
             ],
             'Name'     => [
-                'sometimes',
                 'required',
                 'string',
                 'max:32',
             ],
             'Role'     => [
                 'sometimes',
-                'required',
                 Rule::in(['manager', 'owner', 'sales']),
             ],
             'Phone'    => [
-                'sometimes',
                 'required',
                 'string',
                 'max:16',
             ],
             'Image'    => [
                 'sometimes',
-                'required',
-                'string',
-                'max:32',
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,gif',
+                'max:2048',
             ],
             'Password' => [
                 'sometimes',
