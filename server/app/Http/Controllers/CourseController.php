@@ -64,7 +64,7 @@ class CourseController extends Controller
             'Image'       => [
                 'required',
                 'image',
-                'mimes:jpg,jpeg,png,webp',
+                'mimes:jpg,jpeg,png,gif',
                 'max:2048',
             ],
         ]);
@@ -104,7 +104,7 @@ class CourseController extends Controller
                 'sometimes',
                 'nullable',
                 'image',
-                'mimes:jpg,jpeg,png,webp',
+                'mimes:jpg,jpeg,png,gif',
                 'max:2048',
             ],
         ]);

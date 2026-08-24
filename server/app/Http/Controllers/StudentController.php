@@ -84,7 +84,7 @@ class StudentController extends Controller
             'Image'     => [
                 'required',
                 'image',
-                'mimes:jpg,jpeg,png,webp',
+                'mimes:jpg,jpeg,png,gif',
                 'max:2048',
             ],
             'courses'   => [
@@ -137,15 +137,14 @@ class StudentController extends Controller
                 'email',
                 Rule::unique('students', 'Email')
                     ->ignore($id, 'Student_ID'),
+                'max:60',
             ],
             'Name'      => [
-                'sometimes',
                 'required',
                 'string',
                 'max:32',
             ],
             'Phone'     => [
-                'sometimes',
                 'required',
                 'string',
                 'max:54',
@@ -154,7 +153,7 @@ class StudentController extends Controller
                 'sometimes',
                 'nullable',
                 'image',
-                'mimes:jpg,jpeg,png,webp',
+                'mimes:jpg,jpeg,png,gif',
                 'max:2048',
             ],
             'courses'   => [
