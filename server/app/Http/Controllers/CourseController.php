@@ -54,13 +54,13 @@ class CourseController extends Controller
 
         $admin = Auth::user();
 
-        if (! in_array($admin->Role, ['owner', 'manager', 'sales'], true)) {
+        if (! in_array($admin->Role, ['owner', 'manager'], true)) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
         $validated = $request->validate([
             'Name'        => ['required', 'string', 'max:255'],
-            'Description' => ['nullable', 'string'],
+            'Description' => ['required', 'string'],
             'Image'       => [
                 'required',
                 'image',
@@ -87,7 +87,7 @@ class CourseController extends Controller
 
         $admin = Auth::user();
 
-        if (! in_array($admin->Role, ['owner', 'manager', 'sales'], true)) {
+        if (! in_array($admin->Role, ['owner', 'manager'], true)) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
@@ -98,10 +98,34 @@ class CourseController extends Controller
         }
 
         $validated = $request->validate([
-            'Name'        => ['sometimes', 'required', 'string', 'max:255'],
-            'Description' => ['sometimes', 'nullable', 'string'],
-            'Image'       => ['sometimes', 'required', 'string', 'max:255'],
+            'Name'        => ['required', 'string', 'max:255'],
+            'Description' => ['required', 'string', 'max:255'],
+            'Image'       => [
+                'sometimes',
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
         ]);
+        if ($request->hasFile('Image')) {
+            $file = $request->file('Image');
+
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+
+            Storage::disk('uploads')->putFileAs('', $file, $filename);
+
+            $oldImage = $course->Image;
+
+            $validated['Image'] = "/upload/$filename";
+
+            if (
+                $oldImage &&
+                Storage::disk('uploads')->exists(basename($oldImage))
+            ) {
+                Storage::disk('uploads')->delete(basename($oldImage));
+            }
+        }
 
         $course->update($validated);
 
