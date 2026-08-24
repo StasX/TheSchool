@@ -45,6 +45,7 @@ export const courseHandlers = {
         const nameInput = html.find("#name");
         const descriptionInput = html.find("#description");
         const saveBtn = html.find("#save-course");
+        const removeBtn = html.find("#delete-course");
         const form = html.filter("#courses-form");
         titleContainer.text("Edit Course");
         nameInput.val(course.Name);
@@ -54,6 +55,7 @@ export const courseHandlers = {
         total.text(course.students.length);
         imageElement.attr("src", course.Image);
         fileInput.on("change", function () { display(imageElement, this); });
+        removeBtn.on("click", () => courseHandlers.remove(course));
         form.on("submit", function (e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -76,6 +78,55 @@ export const courseHandlers = {
         $("#main-container").html(html);
 
     },
-    remove: () => { }
+    remove: (course) => {
+        Swal.fire({
+            title: `Do you really want to delete course: ${course.Name}?`,
+            icon: "question",
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            buttonsStyling: false,
 
+            customClass: {
+                confirmButton: "btn btn-danger",
+                cancelButton: "btn btn-dark ms-2"
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Removed data cannot be restored!",
+                    text: "Do you want to continue?",
+                    icon: "warning",
+                    showCloseButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: "Continue",
+                    cancelButtonText: "Abort",
+                    buttonsStyling: false,
+
+                    customClass: {
+                        confirmButton: "btn btn-danger",
+                        cancelButton: "btn btn-dark ms-2"
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: "DELETE",
+                            url: `/api/course/${course.Course_ID}`
+                        }).done(() => {
+                            Swal.fire({
+                                title: "Course deleted successfully!",
+                                icon: "success",
+                            }).then(() => {
+                                $.get("/api/course").done((courses) => courseRender(courses));
+                                $("#main-container").html("");
+                            });
+                        }).fail((xhr) => {
+                            console.error(xhr);
+                        });
+                    }
+                });
+            }
+        });
+    }
 }

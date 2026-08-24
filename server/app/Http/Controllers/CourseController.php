@@ -59,8 +59,8 @@ class CourseController extends Controller
         }
 
         $validated = $request->validate([
-            'Name'        => ['required', 'string', 'max:255'],
-            'Description' => ['required', 'string'],
+            'Name'        => ['required', 'string', 'max:32'],
+            'Description' => ['required', 'string', 'max:500'],
             'Image'       => [
                 'required',
                 'image',
@@ -98,8 +98,8 @@ class CourseController extends Controller
         }
 
         $validated = $request->validate([
-            'Name'        => ['required', 'string', 'max:255'],
-            'Description' => ['required', 'string', 'max:255'],
+            'Name'        => ['required', 'string', 'max:32'],
+            'Description' => ['required', 'string', 'max:500'],
             'Image'       => [
                 'sometimes',
                 'nullable',
@@ -142,7 +142,7 @@ class CourseController extends Controller
 
         $admin = Auth::user();
 
-        if (! in_array($admin->Role, ['owner', 'manager', 'sales'], true)) {
+        if (! in_array($admin->Role, ['owner', 'manager'], true)) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
@@ -151,9 +151,12 @@ class CourseController extends Controller
         if (! $course) {
             return response()->json(['error' => 'Course not found'], 404);
         }
-
+        $oldImage = $course->Image;
         $course->students()->detach();
         $course->delete();
+        if ($oldImage && Storage::disk('uploads')->exists(basename($oldImage))) {
+            Storage::disk('uploads')->delete(basename($oldImage));
+        }
 
         return response()->json(null, 204);
     }
