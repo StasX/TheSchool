@@ -26,7 +26,7 @@ Route::prefix('api')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 
     Route::middleware('auth')->group(function () {
-        Route::get('/logout', [AuthController::class, 'logout']);
+        Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/auth', [AuthController::class, 'auth']);
 
         Route::get('/administrator', [AdministratorController::class, 'getAll']);

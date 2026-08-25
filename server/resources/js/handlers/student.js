@@ -1,53 +1,14 @@
 import template from "../../templates/partials/student.html?raw";
 import { display } from "../utils/image";
-import { studentRender } from "../renders/student";
+import { studentInfoRender, studentRender } from "../renders/student";
 import Swal from "sweetalert2";
 
 export const studentHandlers = {
     info: (id) => {
         $.get(`/api/student/${id}`).done((data) => {
-            const html = $(`
-                <div class="row view-row">
-                    <div class="col d-flex align-items-center">
-                        <b>Student</b>
-                        <button class="btn btn-sm btn-dark ms-auto" id="edit">Edit</button>
-                    </div>
-                </div>
-                <div class="row view-row">
-                    <hr class="col">
-                </div>
-                <div class="row view-row">
-                    <div class="container col-sm-4">
-                        <img src="${data.Image}" width="250" alt="${data.Name}" />
-                    </div>
-                    <div class="col-sm-8">
-                        <div class="container">
-                            <h1 class="row">${data.Name}</h1>
-                            <h4 class="row">${data.Phone}</h4>
-                            <h4 class="row">${data.Email}</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="row view-row">
-                    <div class="container" id="member-of">
-                    </div>
-                </div>
-            `);
-            const coursesElement = html.find("#member-of");
-            $.each(data.courses, (i, course) => {
-                coursesElement.append(`
-                    <div class="row view-row">
-                        <div class="col-4"><img alt="${course.Name}" src="${course.Image}" width="60" />
-                        </div>
-                        <h3 class="col-8">${course.Name}</h3>
-                    </div>
-                `);
-            });
-            const editBtn = html.find("#edit");
-            editBtn.on("click", () => studentHandlers.edit(data));
-            $("#main-container").html(html);
+            studentInfoRender(data);
         }
-        ).fail((xhr) => { console.error(xhr) });
+        ).fail(xhr => console.error(xhr));
     },
     add: () => {
         const html = $(template);
@@ -72,7 +33,7 @@ export const studentHandlers = {
             }).done((data) => {
                 studentHandlers.info(data.Student_ID);
                 $.get('/api/student').done((students) => studentRender(students));
-            }).fail((xhr) => console.error(xhr));
+            }).fail(xhr => console.error(xhr));
         });
         saveBtn.on("click", () => form.trigger("submit"));
         $.get("/api/course").done((data) => $.each(data, (id, course) => {
@@ -125,7 +86,7 @@ export const studentHandlers = {
             }).done((data) => {
                 studentHandlers.info(data.Student_ID);
                 $.get('/api/student').done((students) => studentRender(students));
-            }).fail((xhr) => console.error(xhr));
+            }).fail(xhr => console.error(xhr));
         });
         removeBtn.on("click", () => studentHandlers.remove(student));
         saveBtn.on("click", () => form.trigger("submit"));
@@ -195,9 +156,7 @@ export const studentHandlers = {
                                 $.get("/api/student").done((students) => studentRender(students));
                                 $("#main-container").html("");
                             });
-                        }).fail((xhr) => {
-                            console.error(xhr);
-                        });
+                        }).fail(xhr => console.error(xhr));
                     }
                 });
             }

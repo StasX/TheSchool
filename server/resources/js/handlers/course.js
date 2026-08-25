@@ -3,19 +3,17 @@ import { courseRender, courseInfoRender } from "../renders/course";
 import { display } from "../utils/image";
 
 export const courseHandlers = {
-    info: (id) => {
-        $.get(`/api/course/${id}`).done((data) => {
+    info: id => {
+        $.get(`/api/course/${id}`).done(data => {
             courseInfoRender(data);
         });
     },
     add: () => {
         const html = $(template);
-        const total = html.find("#total");
-        const saveBtn = html.find("#save-course");
         const form = html.filter("#courses-form");
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
-        total.text(0);
+        html.find("#total").text(0);
         fileInput.on("change", function () { display(imageElement, this); });
         form.on("submit", function (e) {
             e.preventDefault();
@@ -29,56 +27,44 @@ export const courseHandlers = {
                 data: formData,
                 processData: false,
                 contentType: false
-            }).done((data) => {
+            }).done(data => {
                 courseHandlers.info(data.Course_ID);
-                $.get('/api/course').done((courses) => courseRender(courses));
-            }).fail((xhr) => console.error(xhr));
+                $.get('/api/course').done(courses => courseRender(courses));
+            }).fail(xhr => console.error(xhr));
         });
-        saveBtn.on("click", () => form.trigger("submit"));
+        html.find("#save-course").on("click", () => form.trigger("submit"));
         $("#main-container").html(html);
     },
-    edit: (course) => {
-        console.log(course)
+    edit: course => {
         const html = $(template);
-        const total = html.find("#total");
-        const titleContainer = html.find("#container-title");
-        const nameInput = html.find("#name");
-        const descriptionInput = html.find("#description");
-        const saveBtn = html.find("#save-course");
-        const removeBtn = html.find("#delete-course");
         const form = html.filter("#courses-form");
-        titleContainer.text("Edit Course");
-        nameInput.val(course.Name);
-        descriptionInput.val(course.Description);
-        const fileInput = html.find("#image-file");
+        html.find("#container-title").text("Edit Course");
+        html.find("#name").val(course.Name);
+        html.find("#description").val(course.Description);
         const imageElement = html.find("#image-upload");
-        total.text(course.students.length);
+        html.find("#total").text(course.students.length);
         imageElement.attr("src", course.Image);
-        fileInput.on("change", function () { display(imageElement, this); });
-        removeBtn.on("click", () => courseHandlers.remove(course));
+        html.find("#image-file").on("change", function () { display(imageElement, this); });
+        html.find("#delete-course").on("click", () => courseHandlers.remove(course));
         form.on("submit", function (e) {
             e.preventDefault();
             const formData = new FormData(this);
             formData.set("_method", "PUT");
-            // if (fileInput[0].files.length) {
-            //     formData.set("Image", fileInput[0].files[0]);
-            // }
             $.ajax({
                 method: "POST",
                 url: `/api/course/${course.Course_ID}`,
                 data: formData,
                 processData: false,
                 contentType: false
-            }).done((data) => {
+            }).done(data => {
                 courseHandlers.info(data.Course_ID);
-                $.get('/api/course').done((courses) => courseRender(courses));
-            }).fail((xhr) => console.error(xhr));
+                $.get('/api/course').done(courses => courseRender(courses));
+            }).fail(xhr => console.error(xhr));
         });
-        saveBtn.on("click", () => form.trigger("submit"));
+        html.find("#save-course").on("click", () => form.trigger("submit"));
         $("#main-container").html(html);
-
     },
-    remove: (course) => {
+    remove: course => {
         Swal.fire({
             title: `Do you really want to delete course: ${course.Name}?`,
             icon: "question",
@@ -92,7 +78,7 @@ export const courseHandlers = {
                 confirmButton: "btn btn-danger",
                 cancelButton: "btn btn-dark ms-2"
             }
-        }).then((result) => {
+        }).then(result => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: "Removed data cannot be restored!",
@@ -108,7 +94,7 @@ export const courseHandlers = {
                         confirmButton: "btn btn-danger",
                         cancelButton: "btn btn-dark ms-2"
                     }
-                }).then((result) => {
+                }).then(result => {
                     if (result.isConfirmed) {
                         $.ajax({
                             method: "DELETE",
@@ -118,12 +104,10 @@ export const courseHandlers = {
                                 title: "Course deleted successfully!",
                                 icon: "success",
                             }).then(() => {
-                                $.get("/api/course").done((courses) => courseRender(courses));
+                                $.get("/api/course").done(courses => courseRender(courses));
                                 $("#main-container").html("");
                             });
-                        }).fail((xhr) => {
-                            console.error(xhr);
-                        });
+                        }).fail(xhr => console.error(xhr));
                     }
                 });
             }

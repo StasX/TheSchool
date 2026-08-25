@@ -3,22 +3,11 @@ import { courseHandlers } from './handlers/course';
 import { studentRender } from "./renders/student";
 import { courseRender } from "./renders/course";
 import { studentHandlers } from './handlers/student';
-
+import { userRender } from './renders/user';
 
 export default function school(user) {
     $('body').html(template);
-
-    if (user && (user.Role === 'owner' || user.Role === 'manager')) {
-        $('#navbar').append(`
-                            <li class="nav-item">
-                                <a href="#!administration" class="nav-link">
-                                    Administration
-                                </a>
-                            </li>
-                        `);
-    }
-    $('#user-info').text(`${user.Name}, ${user.Role}`);
-    $('#user-image').attr('src', user.Image);
+    userRender(user);
     $.get('/api/student').done((data) => {
         studentRender(data);
     });
