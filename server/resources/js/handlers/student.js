@@ -1,4 +1,5 @@
 import template from "../../templates/partials/student.html?raw";
+import courseCheckboxTemplate from "../../templates/partials/courseCheckbox.html?raw";
 import { display } from "../utils/image";
 import { studentInfoRender, studentRender } from "../renders/student";
 import Swal from "sweetalert2";
@@ -37,14 +38,13 @@ export const studentHandlers = {
         });
         saveBtn.on("click", () => form.trigger("submit"));
         $.get("/api/course").done((data) => $.each(data, (id, course) => {
-            const $course = $(`
-                <div class="col">
-                    <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="courses[]" value="${course.Course_ID}" id="course-${course.Course_ID}">
-                    <label class="form-check-label" for="course-${course.Course_ID}">${course.Name}</label>
-                    </div>
-                </div>
-            `);
+            const $course = $(courseCheckboxTemplate);
+            const input = $course.find("input");
+            input.val(course.Course_ID);
+            input.attr("id",`course-${course.Course_ID}`);
+            const label = $course.find("label");
+            label.attr("for",`course-${course.Course_ID}`);
+            label.text(course.Name);
             coursesContainer.append($course);
         }));
 
@@ -85,7 +85,7 @@ export const studentHandlers = {
                 contentType: false
             }).done((data) => {
                 studentHandlers.info(data.Student_ID);
-                $.get('/api/student').done((students) => studentRender(students));
+                $.get('/api/student').done(students => studentRender(students));
             }).fail(xhr => console.error(xhr));
         });
         removeBtn.on("click", () => studentHandlers.remove(student));
@@ -96,16 +96,15 @@ export const studentHandlers = {
         phoneInput.val(student.Phone);
         emailInput.val(student.Email);
         imageElement.attr("src", student.Image);
-        const subscriptions = student.courses.map((obj) => obj.Course_ID);
-        $.get("/api/course").done((data) => $.each(data, (id, course) => {
-            const $course = $(`
-                <div class="col">
-                    <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="courses[]" value="${course.Course_ID}" id="course-${course.Course_ID}">
-                    <label class="form-check-label" for="course-${course.Course_ID}">${course.Name}</label>
-                    </div>
-                </div>
-            `);
+        const subscriptions = student.courses.map(obj => obj.Course_ID);
+        $.get("/api/course").done(data => $.each(data, (id, course) => {
+                        const $course = $(courseCheckboxTemplate);
+            const input = $course.find("input");
+            input.val(course.Course_ID);
+            input.attr("id",`course-${course.Course_ID}`);
+            const label = $course.find("label");
+            label.attr("for",`course-${course.Course_ID}`);
+            label.text(course.Name);
             if (subscriptions.includes(course.Course_ID)) {
                 $course.find(`#course-${course.Course_ID}`).prop("checked", true);
             }
@@ -113,7 +112,7 @@ export const studentHandlers = {
         }));
         $("#main-container").html(html);
     },
-    remove: (student) => {
+    remove: student => {
         Swal.fire({
             title: `Do you really want to delete student: ${student.Name}?`,
             icon: "question",
@@ -127,7 +126,7 @@ export const studentHandlers = {
                 confirmButton: "btn btn-danger",
                 cancelButton: "btn btn-dark ms-2"
             }
-        }).then((result) => {
+        }).then(result => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: "Removed data cannot be restored!",
@@ -153,7 +152,7 @@ export const studentHandlers = {
                                 title: "Student deleted successfully!",
                                 icon: "success",
                             }).then(() => {
-                                $.get("/api/student").done((students) => studentRender(students));
+                                $.get("/api/student").done(students => studentRender(students));
                                 $("#main-container").html("");
                             });
                         }).fail(xhr => console.error(xhr));

@@ -19,7 +19,7 @@ export function studentInfoRender(data) {
     const html = $(studentInfoTemplate);
     html.find("#student-img").attr({ "src": data.Image, "alt": data.Name });
     html.find("#student-name").text(data.Name);
-    html.find("student-phone").text(data.Phone);
+    html.find("#student-phone").text(data.Phone);
     html.find("#student-email").text(data.Email);
     const coursesElement = html.find("#member-of");
     $.each(data.courses, (i, course) => {
