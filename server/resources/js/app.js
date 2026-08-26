@@ -41,6 +41,7 @@ $(document).ready(function () {
                 .done(function (data) {
                     user = data.administrator;
                     location.hash = '#!school';
+                    location.reload();
                 })
                 .fail(function (xhr) {
                     const error = xhr.status === 401
