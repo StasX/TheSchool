@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -11,16 +10,6 @@ class StudentController extends Controller
 {
     public function getAll()
     {
-        if (! Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $admin = Auth::user();
-
-        if (! in_array($admin->Role, ['owner', 'manager', 'sales'], true)) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
         return response()->json(
             Student::with('courses')->get()
         );
@@ -30,16 +19,6 @@ class StudentController extends Controller
 
     public function getById(int $id)
     {
-        if (! Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $admin = Auth::user();
-
-        if (! in_array($admin->Role, ['owner', 'manager', 'sales'], true)) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
         $student = Student::with('courses')->find($id);
 
         if (! $student) {
@@ -55,16 +34,6 @@ class StudentController extends Controller
 
     public function add(Request $request)
     {
-        if (! Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $admin = Auth::user();
-
-        if (! in_array($admin->Role, ['owner', 'manager', 'sales'], true)) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
         $validated = $request->validate([
             'Email'     => [
                 'required',
@@ -112,16 +81,6 @@ class StudentController extends Controller
 
     public function update(Request $request, int $id)
     {
-        if (! Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $admin = Auth::user();
-
-        if (! in_array($admin->Role, ['owner', 'manager', 'sales'], true)) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
         $student = Student::find($id);
 
         if (! $student) {
@@ -205,16 +164,6 @@ class StudentController extends Controller
 
     public function remove(int $id)
     {
-        if (! Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $admin = Auth::user();
-
-        if (! in_array($admin->Role, ['owner', 'manager', 'sales'], true)) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
         $student = Student::find($id);
 
         if (! $student) {
