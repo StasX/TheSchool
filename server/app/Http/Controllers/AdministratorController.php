@@ -11,16 +11,6 @@ class AdministratorController extends Controller
 {
     public function getAll()
     {
-        if (! Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $admin = Auth::user();
-
-        if (! in_array($admin->Role, ['owner', 'manager'], true)) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
         return Administrator::query()
             ->select([
                 'Administrator_ID',
@@ -33,16 +23,6 @@ class AdministratorController extends Controller
 
     public function getById(int $id)
     {
-        if (! Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $admin = Auth::user();
-
-        if (! in_array($admin->Role, ['owner', 'manager'], true)) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
         $administrator = Administrator::find($id);
 
         if (! $administrator) {
@@ -56,21 +36,12 @@ class AdministratorController extends Controller
 
     public function add(Request $request)
     {
-        if (! Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $admin = Auth::user();
-
-        if (! in_array($admin->Role, ['owner', 'manager'], true)) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
         $validated = $request->validate([
             'Email'    => [
                 'required',
                 'email',
                 'unique:administrators,Email',
+                'max:64',
             ],
             'Name'     => [
                 'required',
@@ -93,34 +64,22 @@ class AdministratorController extends Controller
             ],
             'Image'    => [
                 'required',
-                'string',
-                'max:32',
+                'image',
+                'mimes:jpg,jpeg,png,gif',
+                'max:2048',
             ],
         ]);
-
         $validated['Password'] = Hash::make(
             $validated['Password']
         );
-
         $administrator = Administrator::create($validated);
-
         return response()->json($administrator, 201);
     }
 
     public function update(Request $request, int $id)
     {
-        if (! Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
         $admin = Auth::user();
-
-        if (! in_array($admin->Role, ['owner', 'manager'], true)) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
         $administrator = Administrator::find($id);
-
         if (! $administrator) {
             return response()->json([
                 'error' => 'Administrator not found',
@@ -135,34 +94,31 @@ class AdministratorController extends Controller
 
         $validated = $request->validate([
             'Email'    => [
-                'sometimes',
                 'required',
                 'email',
                 Rule::unique('administrators', 'Email')
                     ->ignore($id, 'Administrator_ID'),
             ],
             'Name'     => [
-                'sometimes',
                 'required',
                 'string',
                 'max:32',
             ],
             'Role'     => [
                 'sometimes',
-                'required',
                 Rule::in(['manager', 'owner', 'sales']),
             ],
             'Phone'    => [
-                'sometimes',
                 'required',
                 'string',
                 'max:16',
             ],
             'Image'    => [
                 'sometimes',
-                'required',
-                'string',
-                'max:32',
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,gif',
+                'max:2048',
             ],
             'Password' => [
                 'sometimes',

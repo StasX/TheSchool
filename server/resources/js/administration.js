@@ -1,4 +1,6 @@
 import template from '../templates/pages/administration.html?raw';
-export default function administration() {
+import { userRender } from './renders/user';
+export default function administration(user) {
     $('body').html(template);
+    userRender(user);
 }

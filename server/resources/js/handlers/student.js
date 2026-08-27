@@ -1,63 +1,23 @@
 import template from "../../templates/partials/student.html?raw";
+import courseCheckboxTemplate from "../../templates/partials/courseCheckbox.html?raw";
 import { display } from "../utils/image";
-import { studentRender } from "../renders/student";
+import { studentInfoRender, studentRender } from "../renders/student";
 import Swal from "sweetalert2";
 
 export const studentHandlers = {
     info: (id) => {
         $.get(`/api/student/${id}`).done((data) => {
-            const html = $(`
-                <div class="row view-row">
-                    <div class="col d-flex align-items-center">
-                        <b>Student</b>
-                        <button class="btn btn-sm btn-dark ms-auto" id="edit">Edit</button>
-                    </div>
-                </div>
-                <div class="row view-row">
-                    <hr class="col">
-                </div>
-                <div class="row view-row">
-                    <div class="container col-sm-4">
-                        <img src="${data.Image}" width="250" alt="${data.Name}" />
-                    </div>
-                    <div class="col-sm-8">
-                        <div class="container">
-                            <h1 class="row">${data.Name}</h1>
-                            <h4 class="row">${data.Phone}</h4>
-                            <h4 class="row">${data.Email}</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="row view-row">
-                    <div class="container" id="member-of">
-                    </div>
-                </div>
-            `);
-            const coursesElement = html.find("#member-of");
-            $.each(data.courses, (i, course) => {
-                coursesElement.append(`
-                    <div class="row view-row">
-                        <div class="col-4"><img alt="${course.Name}" src="${course.Image}" width="60" />
-                        </div>
-                        <h3 class="col-8">${course.Name}</h3>
-                    </div>
-                `);
-            });
-            const editBtn = html.find("#edit");
-            editBtn.on("click", () => studentHandlers.edit(data));
-            $("#main-container").html(html);
+            studentInfoRender(data);
         }
-        ).fail((xhr) => { console.error(xhr) });
+        ).fail(xhr => console.error(xhr));
     },
     add: () => {
         const html = $(template);
-        const titleContainer = html.find("#container-title");
         const saveBtn = html.find("#save-student");
         const form = html.filter("#students-form");
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
         const coursesContainer = form.find("#courses-container");
-        titleContainer.text("Add Student");
         fileInput.on("change", function () { display(imageElement, this); });
         form.on("submit", function (e) {
             e.preventDefault();
@@ -74,18 +34,17 @@ export const studentHandlers = {
             }).done((data) => {
                 studentHandlers.info(data.Student_ID);
                 $.get('/api/student').done((students) => studentRender(students));
-            }).fail((xhr) => console.error(xhr));
+            }).fail(xhr => console.error(xhr));
         });
         saveBtn.on("click", () => form.trigger("submit"));
         $.get("/api/course").done((data) => $.each(data, (id, course) => {
-            const $course = $(`
-                <div class="col">
-                    <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="courses[]" value="${course.Course_ID}" id="course-${course.Course_ID}">
-                    <label class="form-check-label" for="course-${course.Course_ID}">${course.Name}</label>
-                    </div>
-                </div>
-            `);
+            const $course = $(courseCheckboxTemplate);
+            const input = $course.find("input");
+            input.val(course.Course_ID);
+            input.attr("id",`course-${course.Course_ID}`);
+            const label = $course.find("label");
+            label.attr("for",`course-${course.Course_ID}`);
+            label.text(course.Name);
             coursesContainer.append($course);
         }));
 
@@ -126,8 +85,8 @@ export const studentHandlers = {
                 contentType: false
             }).done((data) => {
                 studentHandlers.info(data.Student_ID);
-                $.get('/api/student').done((students) => studentRender(students));
-            }).fail((xhr) => console.error(xhr));
+                $.get('/api/student').done(students => studentRender(students));
+            }).fail(xhr => console.error(xhr));
         });
         removeBtn.on("click", () => studentHandlers.remove(student));
         saveBtn.on("click", () => form.trigger("submit"));
@@ -137,16 +96,15 @@ export const studentHandlers = {
         phoneInput.val(student.Phone);
         emailInput.val(student.Email);
         imageElement.attr("src", student.Image);
-        const subscriptions = student.courses.map((obj) => obj.Course_ID);
-        $.get("/api/course").done((data) => $.each(data, (id, course) => {
-            const $course = $(`
-                <div class="col">
-                    <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="courses[]" value="${course.Course_ID}" id="course-${course.Course_ID}">
-                    <label class="form-check-label" for="course-${course.Course_ID}">${course.Name}</label>
-                    </div>
-                </div>
-            `);
+        const subscriptions = student.courses.map(obj => obj.Course_ID);
+        $.get("/api/course").done(data => $.each(data, (id, course) => {
+                        const $course = $(courseCheckboxTemplate);
+            const input = $course.find("input");
+            input.val(course.Course_ID);
+            input.attr("id",`course-${course.Course_ID}`);
+            const label = $course.find("label");
+            label.attr("for",`course-${course.Course_ID}`);
+            label.text(course.Name);
             if (subscriptions.includes(course.Course_ID)) {
                 $course.find(`#course-${course.Course_ID}`).prop("checked", true);
             }
@@ -154,7 +112,7 @@ export const studentHandlers = {
         }));
         $("#main-container").html(html);
     },
-    remove: (student) => {
+    remove: student => {
         Swal.fire({
             title: `Do you really want to delete student: ${student.Name}?`,
             icon: "question",
@@ -168,7 +126,7 @@ export const studentHandlers = {
                 confirmButton: "btn btn-danger",
                 cancelButton: "btn btn-dark ms-2"
             }
-        }).then((result) => {
+        }).then(result => {
             if (result.isConfirmed) {
                 Swal.fire({
                     title: "Removed data cannot be restored!",
@@ -194,12 +152,10 @@ export const studentHandlers = {
                                 title: "Student deleted successfully!",
                                 icon: "success",
                             }).then(() => {
-                                $.get("/api/student").done((students) => studentRender(students));
+                                $.get("/api/student").done(students => studentRender(students));
                                 $("#main-container").html("");
                             });
-                        }).fail((xhr) => {
-                            console.error(xhr);
-                        });
+                        }).fail(xhr => console.error(xhr));
                     }
                 });
             }

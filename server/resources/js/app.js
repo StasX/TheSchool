@@ -1,7 +1,7 @@
 import './bootstrap';
 import school from './school';
 import administration from './administration';
-import notFound from './administration';
+import notFound from './notFound';
 
 
 $(document).ready(function () {
@@ -20,7 +20,7 @@ $(document).ready(function () {
 
             default:
                 if (location.hash) {
-                    notFound();
+                    notFound(user);
                 }
                 break;
         }
@@ -41,6 +41,7 @@ $(document).ready(function () {
                 .done(function (data) {
                     user = data.administrator;
                     location.hash = '#!school';
+                    location.reload();
                 })
                 .fail(function (xhr) {
                     const error = xhr.status === 401

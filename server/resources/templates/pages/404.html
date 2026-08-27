@@ -1,21 +1,33 @@
-<nav class='navbar navbar-default'>
-    <div class='container-fluid'>
-        <div class='navbar-header'>
-            <img alt='Logo' src='img/logo.png' class=' img-rounded logo' height='50' width='67'>
-        </div>
-        <div class='collapse navbar-collapse'>
-            <ul class='nav navbar-nav'>
-                <li><a href='/#!school' id='school'>School</a></li>
-                <li class='active'><a href='/#!administration' id='administration'>Administration</a></li>
+<nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#!school">
+            <img alt="Logo" src="img/logo.png" class="d-inline-block align-text-top" width="60" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul id="navbar" class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a href="/#!school" class="nav-link active">School</a>
+                </li>
             </ul>
-            <div class='container col-md-3 col-sm-4 col-xs-6' style='float:right;'>
-                <div class='row'><img alt='manager image' src='' width='50' height='50' style='border-radius: 50%; float:right;' />
-                    <div class='container col-lg-6 col-md-8 col-sm-9 col-xs-9 nav-user-info-container'
-                        style='float:left'>
-                        <div class='row'></div>
-                        <div class='row'><a href='/logout' id='logout'>Logout</a></div>
+            <div class="d-flex align-items-center ms-auto">
+                <div class="ms-2">
+                    <div class="container">
+                        <div class="row">
+                            <div id="user-info" class="col">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <b id="logout">Logout</b>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <img alt="administrator image" id="user-image" class="rounded-circle ms-auto" />
             </div>
         </div>
     </div>
@@ -25,7 +37,7 @@
         <div class="col-md-12">
             <h1>404 - Page Not Found</h1>
             <p>The page you are looking for does not exist.</p>
-            <a href="/#!school" class="btn btn-primary">Go to School <i class="fa-solid fa-graduation-cap"></i></a>
+            <a href="/#!school" class="btn btn-dark">Go to School <i class="fa-solid fa-graduation-cap"></i></a>
         </div>
     </div>
 </div>
