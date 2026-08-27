@@ -1,5 +1,6 @@
 export function userRender(user) {
-    if (user && (user.Role === 'owner' || user.Role === 'manager')) {
+    const navItems=$("#navbar").find(".nav-item");
+    if (user && (user.Role == 'owner' || user.Role == 'manager') && navItems.length == 1) {
         $('#navbar').append(`
                             <li class="nav-item">
                                 <a href="#!administration" class="nav-link">
