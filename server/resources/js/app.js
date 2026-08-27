@@ -4,11 +4,11 @@ import administration from './administration';
 import notFound from './notFound';
 
 
-$(document).ready(function () {
+$(function () {
     let user = null;
 
     function render(data) {
-        user=data;
+        user = data;
         switch (location.hash) {
             case '#!school':
                 school(user);
@@ -26,7 +26,7 @@ $(document).ready(function () {
         }
     }
 
-    $(window).on('hashchange', ()=>render(user));
+    $(window).on('hashchange', () => render(user));
 
     if (!location.hash) {
         $('#login').on('submit', function (e) {
@@ -40,8 +40,7 @@ $(document).ready(function () {
             $.post('/api/login', data)
                 .done(function (data) {
                     user = data.administrator;
-                    location.hash = '#!school';
-                    location.reload();
+                    location.replace('/#!school');
                 })
                 .fail(function (xhr) {
                     const error = xhr.status === 401
