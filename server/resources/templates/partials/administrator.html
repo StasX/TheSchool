@@ -1,55 +1,66 @@
-    <button class = 'btn btn-sm btn-red' id = 'delete'>
-                                        Delete&nbsp;<b class = 'glyphicon glyphicon-remove'></b>
-                                  </button>
-    <div class = 'row'>
-                <b>Edit Administrator</b>
+<div class="row">
+    <div class="col">
+        <b id="container-title">Add Administrator</b>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <hr>
+    </div>
+</div>
+<div id="btn-row" class="row">
+    <div class="col">
+        <button class="btn btn-sm btn-dark" id="save-administrator">
+            Save<i class="fa-solid fa-check"></i>
+        </button>
+    </div>
+</div>
+<form id="administrators-form" class="container">
+    <div class="row">
+        <div class="col-4">
+            <img alt="uploaded image" id="image-upload" />
+        </div>
+        <div class="col-8">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <label for="name" class="input-group-text">Name</label>
+                            <input type="text" id="name" name="Name" class="form-control" spellcheck="false" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <label for="phone" class="input-group-text">Phone</label>
+                            <input type="tel" id="phone" name="Phone" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <label for="email" class="input-group-text">Email</label>
+                            <input type="email" id="email" name="Email" class="form-control" spellcheck="false" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <select id="role" name="Role" class="form-select" aria-label="Default select example">
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <label for="image-file" class="input-group-text">Image</label>
+                            <input type="file" id="image-file" name="Image" class="form-control">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class = 'row'>
-                <hr class = 'col-sm-12 col-xs-12'>
-            </div>
-            <div class = 'row'>
-                <button class = 'btn btn-sm btn-green' id = 'save'>
-                    Save&nbsp;
-                    <b class = 'glyphicon glyphicon-ok'></b>
-                </button>
-            </div>
-            <form id = 'students-form'>
-                <div class = 'row'>
-                    <div class = 'input-group col-sm-8 col-xs-8 col-sm-offset-2 col-xs-offset-2'>
-                        <label for = 'name' class = 'input-group-addon'>Name&nbsp;</label>
-                        <input type = 'text' name = 'name' id = 'name' value = '' class = 'form-control' spellcheck = 'false' />
-                    </div>
-                </div>
-                <div class = 'row'>
-                    <div class = 'input-group col-sm-8 col-xs-8 col-sm-offset-2 col-xs-offset-2'>
-                        <label for = 'phone' class = 'input-group-addon'>Phone</label>
-                        <input type = 'tel' name = 'phone' id = 'phone' value = '$admin->phone' class = 'form-control' />
-                    </div>
-                </div>
-                <div class = 'row'>
-                    <div class = 'input-group col-sm-8 col-xs-8 col-sm-offset-2 col-xs-offset-2'>
-                        <label for = 'email' class = 'input-group-addon'>Email&nbsp;</label>
-                        <input type = 'email' name = 'email' id = 'email' value = '$admin->email' class = 'form-control' spellcheck = 'false' />
-                    </div>
-                </div>
-                <div class = 'row'>
-                    <div class = 'input-group col-sm-8 col-xs-8 col-sm-offset-2 col-xs-offset-2'>
-                        <label for = 'role' class = 'input-group-addon'>Role&nbsp;</label>
-                        <input type = 'text' name = 'role' id = 'role' value = '$admin->role' class = 'form-control' spellcheck = 'false' />
-                    </div>
-                </div>
-                <div class = 'row'>
-                    <div class = 'input-group col-sm-8 col-xs-8 col-sm-offset-2 col-xs-offset-2'>
-                        <label for = 'password' class = 'input-group-addon'>Password</label>
-                        <input type = 'password' name = 'password' id = 'password' value='$admin->password' class = 'form-control' spellcheck = 'false' />
-                    </div>
-                </div>
-                <div class = 'row'>
-                    <img src = '$admin->image' width = '250' height = '250' id = 'image-upload' />
-                </div>
-                <div class = 'row'>
-                    <span class = 'btn btn-sm btn-file'>
-                        <span>Choise image</span>
-                    <input type = 'file' name = 'file' id = 'file'></span>
-                </div>
-            </form>
+        </div>
+    </div>
+</form>
