@@ -40,7 +40,12 @@ $(function () {
             $.post('/api/login', data)
                 .done(function (data) {
                     user = data.administrator;
-                    location.replace('/#!school');
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': data.token
+                        }
+                    });
+                    location.hash = '#!school';
                 })
                 .fail(function (xhr) {
                     const error = xhr.status === 401
