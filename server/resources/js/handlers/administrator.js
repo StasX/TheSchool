@@ -10,6 +10,14 @@ export const administratorHandlers = {
         const form = html.filter("#administrator-form");
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
+                const roleInput = html.find("#role");
+        const roles = ['manager', 'sales'];
+        $.each(roles, (i, role) => {
+            const option = $('<option></option>');
+            option.val(role);
+            option.text(role);
+            roleInput.append(option);
+        });
         fileInput.on("change", function () { display(imageElement, this); });
         form.on("submit", function (e) {
             e.preventDefault();
@@ -41,7 +49,7 @@ export const administratorHandlers = {
         const imageElement = html.find("#image-upload");
         const buttons = html.filter("#btn-row");
         const saveBtn = buttons.find("#save-administrator");
-        const form = html.filter("#administrator-form");
+        const form = html.filter("#administrators-form");
         titleContainer.text("Edit Administrator");
         const btnContainer = $('<div class="col d-flex align-items-center"></div>');
         const removeBtn = $(`
@@ -86,10 +94,9 @@ export const administratorHandlers = {
                 $.get('/api/administrator').done(administrators => administratorRender(administrators));
             }).fail(xhr => console.error(xhr));
         });
-        if (administrator.Role != 'owner') {
-        removeBtn.on("click", () => administratorHandlers.remove(administrator));
         saveBtn.on("click", () => form.trigger("submit"));
-
+        if (administrator.Role != 'owner') {
+            removeBtn.on("click", () => administratorHandlers.remove(administrator));
             btnContainer.append(removeBtn);
         }
         buttons.append(btnContainer);

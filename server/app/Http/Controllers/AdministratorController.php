@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class AdministratorController extends Controller
 {
@@ -16,7 +17,9 @@ class AdministratorController extends Controller
                 'Administrator_ID',
                 'Email',
                 'Name',
+                'Phone',
                 'Role',
+                'Image',
             ])
             ->get();
     }
@@ -72,6 +75,10 @@ class AdministratorController extends Controller
         $validated['Password'] = Hash::make(
             $validated['Password']
         );
+                $file     = $request->file('Image');
+        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        Storage::disk('uploads')->putFileAs('', $file, $filename);
+        $validated['Image'] = "/upload/$filename";
         $administrator = Administrator::create($validated);
         return response()->json($administrator, 201);
     }
