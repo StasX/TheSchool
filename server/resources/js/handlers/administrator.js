@@ -1,13 +1,13 @@
 import template from "../../templates/partials/administrator.html?raw";
 import { display } from "../utils/image";
-import { administratorInfoRender, administratorRender } from "../renders/administrator";
+import { administratorRender } from "../renders/administrator";
 import Swal from "sweetalert2";
 
 export const administratorHandlers = {
     add: () => {
         const html = $(template);
         const saveBtn = html.find("#save-administrator");
-        const form = html.filter("#administrator-form");
+        const form = html.filter("#administrators-form");
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
                 const roleInput = html.find("#role");
@@ -32,7 +32,7 @@ export const administratorHandlers = {
                 processData: false,
                 contentType: false
             }).done((data) => {
-                administratorHandlers.info(data.Administrator_ID);
+                administratorHandlers.edit(data);
                 $.get('/api/administrator').done(administrator => administratorRender(administrator));
             }).fail(xhr => console.error(xhr));
         });

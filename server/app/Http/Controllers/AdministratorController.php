@@ -24,6 +24,8 @@ class AdministratorController extends Controller
             ->get();
     }
 
+//------------------------------------------------------------------------
+
     public function getById(int $id)
     {
         $administrator = Administrator::query()
@@ -45,6 +47,8 @@ class AdministratorController extends Controller
 
         return response()->json($administrator);
     }
+
+//------------------------------------------------------------------------
 
     public function add(Request $request)
     {
@@ -91,6 +95,8 @@ class AdministratorController extends Controller
         $administrator      = Administrator::create($validated);
         return response()->json($administrator, 201);
     }
+
+//------------------------------------------------------------------------
 
     public function update(Request $request, int $id)
     {
@@ -163,18 +169,30 @@ class AdministratorController extends Controller
         }
 
         if ($request->hasFile('Image')) {
-            $file     = $request->file('Image');
+            $file = $request->file('Image');
+
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
 
             Storage::disk('uploads')->putFileAs('', $file, $filename);
 
+            $oldImage = $administrator->Image;
+
             $validated['Image'] = "/upload/$filename";
+
+            if (
+                $oldImage &&
+                Storage::disk('uploads')->exists(basename($oldImage))
+            ) {
+                Storage::disk('uploads')->delete(basename($oldImage));
+            }
         }
 
         $administrator->update($validated);
 
         return response()->json($administrator);
     }
+
+//------------------------------------------------------------------------
 
     public function remove(int $id)
     {
@@ -193,8 +211,12 @@ class AdministratorController extends Controller
             ], 403);
         }
 
+        $oldImage = $administrator->Image;
         $administrator->delete();
 
+        if ($oldImage && Storage::disk('uploads')->exists(basename($oldImage))) {
+            Storage::disk('uploads')->delete(basename($oldImage));
+        }
         return response()->json(null, 204);
     }
 }
