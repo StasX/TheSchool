@@ -18,12 +18,12 @@ class StudentTest extends TestCase
 
     protected function setUp(): void
     {
-    parent::setUp();
+        parent::setUp();
 
-    Storage::fake('uploads');
+        Storage::fake('uploads');
 
-    $this->owner = $this->getOwner();
-    $this->actingAs($this->owner);
+        $this->owner = $this->getOwner();
+        $this->actingAs($this->owner);
     }
 
     private function getOwner(): Administrator
@@ -213,6 +213,9 @@ class StudentTest extends TestCase
 
         $response = $this
             ->putJson("/api/student/{$student->Student_ID}", [
+                'Name'    => $student->Name,
+                'Phone'   => $student->Phone,
+                'Email'   => $student->Email,
                 'courses' => $newCourses->pluck('Course_ID')->all(),
             ]);
 
