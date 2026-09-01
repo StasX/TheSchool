@@ -33,7 +33,6 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         return response()->json([
-            'message'       => 'Login successful',
             'administrator' => [
                 'Administrator_ID' => $user->Administrator_ID,
                 'Email'            => $user->Email,
@@ -41,6 +40,7 @@ class AuthController extends Controller
                 'Role'             => $user->Role,
                 'Image'            => $user->Image,
             ],
+            'token'         => csrf_token(),
         ]);
     }
 

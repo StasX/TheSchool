@@ -5,6 +5,7 @@ use App\Models\Administrator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class AdministratorController extends Controller
@@ -16,14 +17,27 @@ class AdministratorController extends Controller
                 'Administrator_ID',
                 'Email',
                 'Name',
+                'Phone',
                 'Role',
+                'Image',
             ])
             ->get();
     }
 
+//------------------------------------------------------------------------
+
     public function getById(int $id)
     {
-        $administrator = Administrator::find($id);
+        $administrator = Administrator::query()
+            ->select([
+                'Administrator_ID',
+                'Email',
+                'Name',
+                'Phone',
+                'Role',
+                'Image',
+            ])
+            ->find($id);
 
         if (! $administrator) {
             return response()->json([
@@ -33,6 +47,8 @@ class AdministratorController extends Controller
 
         return response()->json($administrator);
     }
+
+//------------------------------------------------------------------------
 
     public function add(Request $request)
     {
@@ -72,13 +88,19 @@ class AdministratorController extends Controller
         $validated['Password'] = Hash::make(
             $validated['Password']
         );
-        $administrator = Administrator::create($validated);
+        $file     = $request->file('Image');
+        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        Storage::disk('uploads')->putFileAs('', $file, $filename);
+        $validated['Image'] = "/upload/$filename";
+        $administrator      = Administrator::create($validated);
         return response()->json($administrator, 201);
     }
 
+//------------------------------------------------------------------------
+
     public function update(Request $request, int $id)
     {
-        $admin = Auth::user();
+        $admin         = Auth::user();
         $administrator = Administrator::find($id);
         if (! $administrator) {
             return response()->json([
@@ -96,6 +118,7 @@ class AdministratorController extends Controller
             'Email'    => [
                 'required',
                 'email',
+                'max:64',
                 Rule::unique('administrators', 'Email')
                     ->ignore($id, 'Administrator_ID'),
             ],
@@ -122,7 +145,7 @@ class AdministratorController extends Controller
             ],
             'Password' => [
                 'sometimes',
-                'required',
+                'nullable',
                 'string',
                 'min:8',
             ],
@@ -145,22 +168,34 @@ class AdministratorController extends Controller
             );
         }
 
+        if ($request->hasFile('Image')) {
+            $file = $request->file('Image');
+
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+
+            Storage::disk('uploads')->putFileAs('', $file, $filename);
+
+            $oldImage = $administrator->Image;
+
+            $validated['Image'] = "/upload/$filename";
+
+            if (
+                $oldImage &&
+                Storage::disk('uploads')->exists(basename($oldImage))
+            ) {
+                Storage::disk('uploads')->delete(basename($oldImage));
+            }
+        }
+
         $administrator->update($validated);
 
         return response()->json($administrator);
     }
 
+//------------------------------------------------------------------------
+
     public function remove(int $id)
     {
-        if (! Auth::check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $admin = Auth::user();
-
-        if (! in_array($admin->Role, ['owner', 'manager'], true)) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
 
         $administrator = Administrator::find($id);
 
@@ -176,8 +211,12 @@ class AdministratorController extends Controller
             ], 403);
         }
 
+        $oldImage = $administrator->Image;
         $administrator->delete();
 
+        if ($oldImage && Storage::disk('uploads')->exists(basename($oldImage))) {
+            Storage::disk('uploads')->delete(basename($oldImage));
+        }
         return response()->json(null, 204);
     }
 }

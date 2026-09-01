@@ -27,3 +27,7 @@ body>.container-fluid {
     display: block;
     margin: 1px auto;
 }
+
+.form-select{
+    margin-bottom:16px;
+}
