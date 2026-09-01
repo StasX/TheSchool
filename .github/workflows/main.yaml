@@ -20,10 +20,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Run Checkov
+      - name: Run Checkov on server dockerfile
         uses: bridgecrewio/checkov-action@master
         with:
-          file: Dockerfile
+          file: server/Dockerfile
           framework: dockerfile
           quiet: true
           output_format: junitxml
