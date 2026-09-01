@@ -122,11 +122,11 @@ class AdministratorTest extends TestCase
             Hash::check('secret123', $administrator->Password)
         );
 
-    $this->assertTrue(
-        Storage::disk('uploads')->exists(
-            basename($administrator->Image)
-        )
-);
+        $this->assertTrue(
+            Storage::disk('uploads')->exists(
+                basename($administrator->Image)
+            )
+        );
 
     }
 
@@ -142,6 +142,7 @@ class AdministratorTest extends TestCase
         ]);
 
         $this->actingAs($owner)
+            ->withHeader('Accept', 'application/json')
             ->post('/api/administrator', [
                 'Email'    => 'manager@example.com',
                 'Name'     => 'Another Manager',
@@ -162,6 +163,7 @@ class AdministratorTest extends TestCase
         ]);
 
         $this->actingAs($owner)
+            ->withHeader('Accept', 'application/json')
             ->post('/api/administrator', [
                 'Email'    => 'another-owner@example.com',
                 'Name'     => 'Another Owner',
