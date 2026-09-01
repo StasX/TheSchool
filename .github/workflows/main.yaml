@@ -31,7 +31,7 @@ jobs:
 
       - name: Upload Checkov report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: checkov-results
           path: checkov-results.xml
@@ -81,7 +81,7 @@ jobs:
 
       - name: Upload PHPUnit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: phpunit-results
           path: server/storage/logs/phpunit.xml
@@ -170,7 +170,7 @@ jobs:
 
       - name: Upload Docker logs
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docker-logs
           path: docker.log
@@ -178,7 +178,7 @@ jobs:
 
       - name: Upload Cypress screenshots
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cypress-screenshots
           path: cypress/screenshots
@@ -186,7 +186,7 @@ jobs:
 
       - name: Upload Cypress videos
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cypress-videos
           path: cypress/videos
