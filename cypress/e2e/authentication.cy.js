@@ -1,5 +1,4 @@
 describe('Authentication', () => {
-
     beforeEach(() => {
         cy.visit('/');
     });
@@ -18,7 +17,7 @@ describe('Authentication', () => {
         cy.get('#login')
             .find('button[type="submit"]')
             .should('be.visible')
-            .and('contain', 'Login');
+            .and('contain.text', 'Login');
     });
 
     it('rejects invalid credentials', () => {
@@ -29,9 +28,19 @@ describe('Authentication', () => {
 
         cy.get('#alerts')
             .should('be.visible')
-            .and('contain', 'Invalid username or password');
+            .and('contain.text', 'Invalid username or password');
 
         cy.location('hash').should('eq', '');
     });
 
+    it('logs in with valid credentials', () => {
+        cy.get('#user').type(Cypress.env('OWNER_EMAIL'));
+        cy.get('#password').type(Cypress.env('OWNER_PASSWORD'));
+
+        cy.get('#login').submit();
+
+        cy.location('hash').should('eq', '#!school');
+
+        cy.get('#login').should('not.exist');
+    });
 });
