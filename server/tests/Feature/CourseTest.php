@@ -6,31 +6,40 @@ use App\Models\Course;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class CourseTest extends TestCase
 {
     use RefreshDatabase;
 
-    private Administrator $administrator;
+    private Administrator $owner;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        Storage::fake('uploads');
-
-        $this->administrator = Administrator::factory()->create([
-            'Role' => 'owner',
-        ]);
+        $this->owner = $this->getOwner();
+        $this->actingAs($this->owner);
     }
 
+    private function getOwner(): Administrator
+    {
+        return Administrator::where('Role', 'owner')->first() ?? Administrator::create([
+            'Email'    => 'owner@example.com',
+            'Name'     => 'Test Owner',
+            'Role'     => 'owner',
+            'Phone'    => '0500000000',
+            'Password' => Hash::make('password123'),
+            'Image'    => '/upload/test.jpg',
+        ]);
+    }
     public function test_authenticated_administrator_can_get_all_courses(): void
     {
         Course::factory()->count(3)->create();
 
         $response = $this
-            ->actingAs($this->administrator)
+            ->actingAs($this->owner)
             ->getJson('/api/course');
 
         $response
@@ -43,7 +52,7 @@ class CourseTest extends TestCase
         $course = Course::factory()->create();
 
         $response = $this
-            ->actingAs($this->administrator)
+            ->actingAs($this->owner)
             ->getJson("/api/course/{$course->Course_ID}");
 
         $response
@@ -56,7 +65,7 @@ class CourseTest extends TestCase
     public function test_get_non_existing_course_returns_404(): void
     {
         $response = $this
-            ->actingAs($this->administrator)
+            ->actingAs($this->owner)
             ->getJson('/api/course/999999');
 
         $response->assertNotFound();
@@ -67,7 +76,7 @@ class CourseTest extends TestCase
         $image = UploadedFile::fake()->image('course.jpg');
 
         $response = $this
-            ->actingAs($this->administrator)
+            ->actingAs($this->owner)
             ->post('/api/course', [
                 'Name'        => 'PHP Course',
                 'Description' => 'Laravel backend course',
@@ -95,7 +104,7 @@ class CourseTest extends TestCase
     public function test_name_is_required_when_creating_course(): void
     {
         $response = $this
-            ->actingAs($this->administrator)
+            ->actingAs($this->owner)
             ->post('/api/course', [
                 'Description' => 'Test description',
                 'Image'       => UploadedFile::fake()->image('course.jpg'),
@@ -115,7 +124,7 @@ class CourseTest extends TestCase
         );
 
         $response = $this
-            ->actingAs($this->administrator)
+            ->actingAs($this->owner)
             ->post('/api/course', [
                 'Name'        => 'PHP Course',
                 'Description' => 'Test description',
@@ -132,7 +141,7 @@ class CourseTest extends TestCase
         $course = Course::factory()->create();
 
         $response = $this
-            ->actingAs($this->administrator)
+            ->actingAs($this->owner)
             ->putJson("/api/course/{$course->Course_ID}", [
                 'Name'        => 'Updated Course',
                 'Description' => 'Updated description',
@@ -161,7 +170,7 @@ class CourseTest extends TestCase
         $newImage = UploadedFile::fake()->image('new.jpg');
 
         $response = $this
-            ->actingAs($this->administrator)
+            ->actingAs($this->owner)
             ->post("/api/course/{$course->Course_ID}", [
                 '_method' => 'PUT',
                 'Image'   => $newImage,
@@ -183,7 +192,7 @@ class CourseTest extends TestCase
         $course = Course::factory()->create();
 
         $response = $this
-            ->actingAs($this->administrator)
+            ->actingAs($this->owner)
             ->deleteJson("/api/course/{$course->Course_ID}");
 
         $response->assertSuccessful();
