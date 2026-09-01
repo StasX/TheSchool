@@ -1,0 +1,25 @@
+{
+  "name": "theschool",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/StasX/TheSchool#readme",
+  "bugs": {
+    "url": "https://github.com/StasX/TheSchool/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StasX/TheSchool.git"
+  },
+  "license": "MIT",
+  "author": "StasX <s.mestechkin@gmail.com>",
+  "type": "commonjs",
+  "main": "cypress.config.js",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
+  },
+  "devDependencies": {
+    "cypress": "^15.21.1",
+    "dotenv": "^17.4.2"
+  }
+}
