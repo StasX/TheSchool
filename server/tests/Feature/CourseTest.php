@@ -183,8 +183,10 @@ class CourseTest extends TestCase
         $response = $this->post(
             "/api/course/{$course->Course_ID}",
             [
-                '_method' => 'PUT',
-                'Image'   => $newImage,
+                '_method'     => 'PUT',
+                'Name'        => $course->Name,
+                'Description' => $course->Description,
+                'Image'       => $newImage,
             ]
         );
 
