@@ -37,7 +37,7 @@ describe('Administrators', () => {
             .type('CypressPassword123!');
 
         cy.get('#image-file')
-            .selectFile('cypress/fixtures/administrator.jpg');
+            .selectFile('cypress/fixtures/administrator.png');
 
         cy.get('#save-administrator')
             .click();

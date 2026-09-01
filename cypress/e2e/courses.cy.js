@@ -24,7 +24,7 @@ describe('Courses', () => {
             .type('Course created by Cypress E2E test');
 
         cy.get('#image-file')
-            .selectFile('cypress/fixtures/course.jpg');
+            .selectFile('cypress/fixtures/course.png');
 
         cy.get('#save-course').click();
 

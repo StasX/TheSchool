@@ -16,6 +16,9 @@ describe('Students', () => {
         cy.get('#phone').type('0501234567');
         cy.get('#email').type(email);
 
+        cy.get('#image-file')
+            .selectFile('cypress/fixtures/student.png');
+
         cy.get('#save-student').click();
 
         cy.get('#student-name')
