@@ -84,6 +84,9 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      - name: Prepare PHPStan report directory
+        run: mkdir -p storage/phpstan
+
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse --no-progress --error-format=json > storage/phpstan/phpstan.json
       
