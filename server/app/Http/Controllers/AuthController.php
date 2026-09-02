@@ -20,10 +20,19 @@ class AuthController extends Controller
                 'error' => 'Invalid username or password.',
             ], 401);
         }
+        /**
+         * @var array{
+         *     Email: string,
+         *     Password: string
+         * } $validated
+         */
+        $validated = $request->validate([
+            'Email'    => ['required', 'email'],
+            'Password' => ['required', 'string'],
+        ]);
+        $user = Administrator::where('Email', $validated['Email'])->first();
 
-        $user = Administrator::where('Email', $request->Email)->first();
-
-        if (! $user || ! Hash::check($request->Password, $user->Password)) {
+        if (! $user || ! Hash::check($validated['Password'], $user->Password)) {
             return response()->json([
                 'error' => 'Invalid username or password.',
             ], 401);
