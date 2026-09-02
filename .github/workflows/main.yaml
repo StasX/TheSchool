@@ -88,8 +88,17 @@ jobs:
         run: mkdir -p storage/phpstan
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse --no-progress --error-format=json > storage/phpstan/phpstan.json
-      
+        run: |
+          set +e
+          vendor/bin/phpstan analyse \
+          --no-progress \
+          --error-format=json \
+          > storage/phpstan/phpstan.json
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+          vendor/bin/phpstan analyse --no-progress
+          fi
+          exit $EXIT_CODE
       - name: Upload PHPStan report
         if: always()
         uses: actions/upload-artifact@v7
