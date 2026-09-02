@@ -162,10 +162,12 @@ class AdministratorController extends Controller
             ], 403);
         }
 
-        if (isset($validated['Password'])) {
+        if (! empty($validated['Password'])) {
             $validated['Password'] = Hash::make(
                 $validated['Password']
             );
+        } else {
+            unset($validated['Password']);
         }
 
         if ($request->hasFile('Image')) {
@@ -185,6 +187,8 @@ class AdministratorController extends Controller
             ) {
                 Storage::disk('uploads')->delete(basename($oldImage));
             }
+        } else {
+            unset($validated['Image']);
         }
 
         $administrator->update($validated);
