@@ -10,4 +10,4 @@ COPY theschool.sql /docker-entrypoint-initdb.d/init.sql
 HEALTHCHECK --interval=10s --timeout=5s --retries=5 --start-period=20s \
     CMD mariadb-admin ping -h localhost || exit 1
 
-EXPOSE 3306
+USER mysql
