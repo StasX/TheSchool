@@ -1,6 +1,7 @@
 import template from '../templates/pages/administration.html?raw';
 
 import { administratorRender } from './renders/administrator';
+import { administratorHandlers } from './handlers/administrator';
 import { userRender } from './renders/user';
 
 export default function administration(user) {
@@ -17,4 +18,5 @@ export default function administration(user) {
         .fail((xhr) => {
             console.error(xhr);
         });
+        $("#add-administrator").on("click", administratorHandlers.add);
 }
