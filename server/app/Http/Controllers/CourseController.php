@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,7 +15,7 @@ class CourseController extends Controller
 
 //------------------------------------------------------------------------
 
-    public function getById(int $id)
+    public function getById(int $id): JsonResponse
     {
         $course = Course::with('students')->find($id);
 
@@ -22,12 +23,12 @@ class CourseController extends Controller
             return response()->json(['error' => 'Course not found'], 404);
         }
 
-        return $course;
+        return response()->json($course);
     }
 
 //------------------------------------------------------------------------
 
-    public function add(Request $request)
+    public function add(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'Name'        => ['required', 'string', 'max:32'],
@@ -50,7 +51,7 @@ class CourseController extends Controller
 
 //------------------------------------------------------------------------
 
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): JsonResponse
     {
         $course = Course::find($id);
 
@@ -95,7 +96,7 @@ class CourseController extends Controller
 
 //------------------------------------------------------------------------
 
-    public function remove(int $id)
+    public function remove(int $id): JsonResponse
     {
         $course = Course::find($id);
 

@@ -2,13 +2,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
-    public function getAll()
+    public function getAll(): JsonResponse
     {
         return response()->json(
             Student::with('courses')->get()
@@ -17,7 +18,7 @@ class StudentController extends Controller
 
 //------------------------------------------------------------------------
 
-    public function getById(int $id)
+    public function getById(int $id): JsonResponse
     {
         $student = Student::with('courses')->find($id);
 
@@ -32,7 +33,7 @@ class StudentController extends Controller
 
 //------------------------------------------------------------------------
 
-    public function add(Request $request)
+    public function add(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'Email'     => [
@@ -79,7 +80,7 @@ class StudentController extends Controller
 
 //------------------------------------------------------------------------
 
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): JsonResponse
     {
         $student = Student::find($id);
 
@@ -162,7 +163,7 @@ class StudentController extends Controller
 
 //------------------------------------------------------------------------
 
-    public function remove(int $id)
+    public function remove(int $id): JsonResponse
     {
         $student = Student::find($id);
 

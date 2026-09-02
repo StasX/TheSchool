@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Administrator;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -10,23 +11,23 @@ use Illuminate\Validation\Rule;
 
 class AdministratorController extends Controller
 {
-    public function getAll()
+    public function getAll(): JsonResponse
     {
-        return Administrator::query()
-            ->select([
-                'Administrator_ID',
-                'Email',
-                'Name',
-                'Phone',
-                'Role',
-                'Image',
-            ])
-            ->get();
+        return response()->json(Administrator::query()
+                ->select([
+                    'Administrator_ID',
+                    'Email',
+                    'Name',
+                    'Phone',
+                    'Role',
+                    'Image',
+                ])
+                ->get());
     }
 
 //------------------------------------------------------------------------
 
-    public function getById(int $id)
+    public function getById(int $id): JsonResponse
     {
         $administrator = Administrator::query()
             ->select([
@@ -50,7 +51,7 @@ class AdministratorController extends Controller
 
 //------------------------------------------------------------------------
 
-    public function add(Request $request)
+    public function add(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'Email'    => [
@@ -98,7 +99,7 @@ class AdministratorController extends Controller
 
 //------------------------------------------------------------------------
 
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): JsonResponse
     {
         $admin         = Auth::user();
         $administrator = Administrator::find($id);
@@ -198,7 +199,7 @@ class AdministratorController extends Controller
 
 //------------------------------------------------------------------------
 
-    public function remove(int $id)
+    public function remove(int $id): JsonResponse
     {
 
         $administrator = Administrator::find($id);
