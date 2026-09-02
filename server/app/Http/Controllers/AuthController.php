@@ -76,6 +76,12 @@ class AuthController extends Controller
 
         $administrator = Auth::user();
 
+        if (! $administrator instanceof Administrator) {
+            return response()->json([
+                'error' => 'Unauthorized',
+            ], 401);
+        }
+
         return response()->json([
             'Administrator_ID' => $administrator->Administrator_ID,
             'Email'            => $administrator->Email,
