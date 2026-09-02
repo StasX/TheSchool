@@ -191,7 +191,7 @@ class AdministratorController extends Controller
             ], 403);
         }
 
-        if (! empty($data['Password'])) {
+        if (! empty($validated['Password'])) {
             $data['Password'] = Hash::make($validated['Password']);
         } else {
             unset($data['Password']);
