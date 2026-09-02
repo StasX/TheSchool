@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Storage;
 
 class CourseController extends Controller
 {
-    public function getAll()
+    public function getAll() : JsonResponse
     {
-        return Course::with('students')->get();
+        return response()->json(Course::with('students')->get());
     }
 
 //------------------------------------------------------------------------
