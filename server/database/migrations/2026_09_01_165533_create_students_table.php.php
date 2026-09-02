@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('students')) {
+            return;
+        }
         Schema::create('students', function (Blueprint $table) {
             $table->increments('Student_ID');
             $table->string('Email', 64)->unique();
@@ -19,6 +22,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('students');
     }
 };

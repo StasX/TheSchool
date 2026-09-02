@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('administrators')) {
+            return;
+        }
         Schema::create('administrators', function (Blueprint $table) {
             $table->increments('Administrator_ID');
             $table->string('Email', 64)->unique();
@@ -27,6 +30,5 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('administrators');
     }
 };

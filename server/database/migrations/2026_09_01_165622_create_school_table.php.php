@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('school')) {
+            return;
+        }
         Schema::create('school', function (Blueprint $table) {
             $table->unsignedInteger('Course_ID');
             $table->unsignedInteger('Student_ID');
@@ -31,6 +34,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('school');
     }
 };
