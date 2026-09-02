@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Administrator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -53,6 +54,16 @@ class AdministratorController extends Controller
 
     public function add(Request $request): JsonResponse
     {
+        /**
+         * @var array{
+         *     Email: string,
+         *     Name: string,
+         *     Role: 'manager'|'sales',
+         *     Phone: string,
+         *     Password: string,
+         *     Image: UploadedFile
+         * } $validated
+         */
         $validated = $request->validate([
             'Email'    => [
                 'required',
@@ -86,14 +97,19 @@ class AdministratorController extends Controller
                 'max:2048',
             ],
         ]);
-        $validated['Password'] = Hash::make(
-            $validated['Password']
-        );
-        $file     = $request->file('Image');
+        $file = $request->file('Image');
+        if (! $file instanceof UploadedFile) {
+            return response()->json([
+                'error' => 'Invalid image',
+            ], 422);
+        }
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         Storage::disk('uploads')->putFileAs('', $file, $filename);
-        $validated['Image'] = "/upload/$filename";
-        $administrator      = Administrator::create($validated);
+        /** @var array<string, mixed> $data */
+        $data             = $validated;
+        $data['Password'] = Hash::make($validated['Password']);
+        $data['Image']    = "/upload/$filename";
+        $administrator    = Administrator::create($data);
         return response()->json($administrator, 201);
     }
 
@@ -101,6 +117,7 @@ class AdministratorController extends Controller
 
     public function update(Request $request, int $id): JsonResponse
     {
+        /** @var Administrator $admin */
         $admin         = Auth::user();
         $administrator = Administrator::find($id);
         if (! $administrator) {
@@ -114,7 +131,16 @@ class AdministratorController extends Controller
                 'error' => 'Only an owner can modify an owner',
             ], 403);
         }
-
+        /**
+         * @var array{
+         *     Email: string,
+         *     Name: string,
+         *     Role?: 'manager'|'owner'|'sales',
+         *     Phone: string,
+         *     Password?: string|null,
+         *     Image?: UploadedFile|null
+         * } $validated
+         */
         $validated = $request->validate([
             'Email'    => [
                 'required',
@@ -151,28 +177,33 @@ class AdministratorController extends Controller
                 'min:8',
             ],
         ]);
+        /** @var array<string, mixed> $data */
+        $data = $validated;
 
         if ($administrator->Role === 'owner') {
-            unset($validated['Role']);
+            unset($data['Role']);
         } elseif (
-            isset($validated['Role']) &&
-            $validated['Role'] === 'owner'
+            isset($data['Role']) &&
+            $data['Role'] === 'owner'
         ) {
             return response()->json([
                 'error' => 'Owner role cannot be assigned',
             ], 403);
         }
 
-        if (! empty($validated['Password'])) {
-            $validated['Password'] = Hash::make(
-                $validated['Password']
-            );
+        if (! empty($data['Password'])) {
+            $data['Password'] = Hash::make($validated['Password']);
         } else {
-            unset($validated['Password']);
+            unset($data['Password']);
         }
 
         if ($request->hasFile('Image')) {
             $file = $request->file('Image');
+            if (! $file instanceof UploadedFile) {
+                return response()->json([
+                    'error' => 'Invalid image',
+                ], 422);
+            }
 
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
 
@@ -180,7 +211,7 @@ class AdministratorController extends Controller
 
             $oldImage = $administrator->Image;
 
-            $validated['Image'] = "/upload/$filename";
+            $data['Image'] = "/upload/$filename";
 
             if (
                 $oldImage &&
@@ -189,10 +220,10 @@ class AdministratorController extends Controller
                 Storage::disk('uploads')->delete(basename($oldImage));
             }
         } else {
-            unset($validated['Image']);
+            unset($data['Image']);
         }
 
-        $administrator->update($validated);
+        $administrator->update($data);
 
         return response()->json($administrator);
     }
