@@ -13,28 +13,41 @@ on:
 
 jobs:
   checkov:
-    name: Checkov Docker Scan
+    name: Checkov - ${{ matrix.name }}
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: server
+            file: server/Dockerfile
+
+          - name: redis
+            file: redis/Dockerfile
+
+          - name: sql
+            file: sql/Dockerfile
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Run Checkov on server dockerfile
+      - name: Run Checkov
         uses: bridgecrewio/checkov-action@master
         with:
-          file: server/Dockerfile
+          file: ${{ matrix.file }}
           framework: dockerfile
           quiet: true
           output_format: junitxml
-          output_file_path: checkov-results.xml,
+          output_file_path: checkov-${{ matrix.name }}.xml,
 
       - name: Upload Checkov report
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: checkov-results
-          path: checkov-results.xml
+          name: checkov-${{ matrix.name }}-results
+          path: checkov-${{ matrix.name }}.xml
           if-no-files-found: warn
 
   phpunit:
@@ -128,6 +141,7 @@ jobs:
         with:
           node-version: '24'
           cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install Cypress dependencies
         run: npm ci
