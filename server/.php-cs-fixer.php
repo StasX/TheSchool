@@ -32,7 +32,7 @@ return (new PhpCsFixer\Config())
 
         // Class / Functions
         'single_trait_insert_per_statement' => true,
-        'single_line_empty_body' => true,
+        'single_line_empty_body' => false,
         'return_type_declaration' => true,
         'method_argument_space' => [
             'on_multiline' => 'ensure_fully_multiline',
