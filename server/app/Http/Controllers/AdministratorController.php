@@ -27,7 +27,7 @@ class AdministratorController extends Controller
                 ->get());
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function getById(int $id): JsonResponse
     {
@@ -51,7 +51,7 @@ class AdministratorController extends Controller
         return response()->json($administrator);
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function add(Request $request): JsonResponse
     {
@@ -66,22 +66,22 @@ class AdministratorController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'Email'    => [
+            'Email' => [
                 'required',
                 'email',
                 'unique:administrators,Email',
                 'max:64',
             ],
-            'Name'     => [
+            'Name' => [
                 'required',
                 'string',
                 'max:32',
             ],
-            'Role'     => [
+            'Role' => [
                 'required',
                 Rule::in(['manager', 'sales']),
             ],
-            'Phone'    => [
+            'Phone' => [
                 'required',
                 'string',
                 'max:16',
@@ -91,7 +91,7 @@ class AdministratorController extends Controller
                 'string',
                 'min:8',
             ],
-            'Image'    => [
+            'Image' => [
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
@@ -107,19 +107,19 @@ class AdministratorController extends Controller
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         Storage::disk('uploads')->putFileAs('', $file, $filename);
         /** @var array<string, mixed> $data */
-        $data             = $validated;
+        $data = $validated;
         $data['Password'] = Hash::make($validated['Password']);
-        $data['Image']    = "/upload/$filename";
-        $administrator    = Administrator::create($data);
+        $data['Image'] = "/upload/$filename";
+        $administrator = Administrator::create($data);
         return response()->json($administrator, 201);
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function update(Request $request, int $id): JsonResponse
     {
         /** @var Administrator $admin */
-        $admin         = Auth::user();
+        $admin = Auth::user();
         $administrator = Administrator::find($id);
         if (! $administrator) {
             return response()->json([
@@ -143,28 +143,28 @@ class AdministratorController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'Email'    => [
+            'Email' => [
                 'required',
                 'email',
                 'max:64',
                 Rule::unique('administrators', 'Email')
                     ->ignore($id, 'Administrator_ID'),
             ],
-            'Name'     => [
+            'Name' => [
                 'required',
                 'string',
                 'max:32',
             ],
-            'Role'     => [
+            'Role' => [
                 'sometimes',
                 Rule::in(['manager', 'owner', 'sales']),
             ],
-            'Phone'    => [
+            'Phone' => [
                 'required',
                 'string',
                 'max:16',
             ],
-            'Image'    => [
+            'Image' => [
                 'sometimes',
                 'nullable',
                 'image',
@@ -229,7 +229,7 @@ class AdministratorController extends Controller
         return response()->json($administrator);
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function remove(int $id): JsonResponse
     {

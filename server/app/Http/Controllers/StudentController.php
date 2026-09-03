@@ -18,7 +18,7 @@ class StudentController extends Controller
         );
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function getById(int $id): JsonResponse
     {
@@ -33,7 +33,7 @@ class StudentController extends Controller
         return response()->json($student);
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function add(Request $request): JsonResponse
     {
@@ -47,28 +47,28 @@ class StudentController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'Email'     => [
+            'Email' => [
                 'required',
                 'email',
                 'unique:students,Email',
             ],
-            'Name'      => [
+            'Name' => [
                 'required',
                 'string',
                 'max:32',
             ],
-            'Phone'     => [
+            'Phone' => [
                 'required',
                 'string',
                 'max:54',
             ],
-            'Image'     => [
+            'Image' => [
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
                 'max:2048',
             ],
-            'courses'   => [
+            'courses' => [
                 'sometimes',
                 'array',
             ],
@@ -89,14 +89,14 @@ class StudentController extends Controller
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         Storage::disk('uploads')->putFileAs('', $file, $filename);
         $data['Image'] = "/upload/$filename";
-        $courses       = $validated['courses'] ?? [];
+        $courses = $validated['courses'] ?? [];
         unset($data['courses']);
         $student = Student::create($data);
         $student->courses()->sync($courses);
         return response()->json($student->load('courses'), 201);
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function update(Request $request, int $id): JsonResponse
     {
@@ -117,31 +117,31 @@ class StudentController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'Email'     => [
+            'Email' => [
                 'required',
                 'email',
                 Rule::unique('students', 'Email')
                     ->ignore($id, 'Student_ID'),
                 'max:60',
             ],
-            'Name'      => [
+            'Name' => [
                 'required',
                 'string',
                 'max:32',
             ],
-            'Phone'     => [
+            'Phone' => [
                 'required',
                 'string',
                 'max:54',
             ],
-            'Image'     => [
+            'Image' => [
                 'sometimes',
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
                 'max:2048',
             ],
-            'courses'   => [
+            'courses' => [
                 'sometimes',
                 'array',
             ],
@@ -202,7 +202,7 @@ class StudentController extends Controller
         );
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function remove(int $id): JsonResponse
     {

@@ -15,7 +15,7 @@ class CourseController extends Controller
         return response()->json(Course::with('students')->get());
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function getById(int $id): JsonResponse
     {
@@ -28,7 +28,7 @@ class CourseController extends Controller
         return response()->json($course);
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function add(Request $request): JsonResponse
     {
@@ -40,9 +40,9 @@ class CourseController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'Name'        => ['required', 'string', 'max:32'],
+            'Name' => ['required', 'string', 'max:32'],
             'Description' => ['required', 'string', 'max:500'],
-            'Image'       => [
+            'Image' => [
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
@@ -58,14 +58,14 @@ class CourseController extends Controller
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         Storage::disk('uploads')->putFileAs('', $file, $filename);
         /** @var array<string, mixed> $data */
-        $data          = $validated;
+        $data = $validated;
         $data['Image'] = "/upload/$filename";
-        $course        = Course::create($data);
+        $course = Course::create($data);
 
         return response()->json($course, 201);
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function update(Request $request, int $id): JsonResponse
     {
@@ -82,9 +82,9 @@ class CourseController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'Name'        => ['required', 'string', 'max:32'],
+            'Name' => ['required', 'string', 'max:32'],
             'Description' => ['required', 'string', 'max:500'],
-            'Image'       => [
+            'Image' => [
                 'sometimes',
                 'nullable',
                 'image',
@@ -124,7 +124,7 @@ class CourseController extends Controller
         return response()->json($course);
     }
 
-//------------------------------------------------------------------------
+    //------------------------------------------------------------------------
 
     public function remove(int $id): JsonResponse
     {

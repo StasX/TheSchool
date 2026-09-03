@@ -15,11 +15,11 @@ class RoleAuthorizationTest extends TestCase
     {
         return Administrator::create([
             'Email' => "{$role}@example.com",
-            'Name'     => ucfirst($role),
-            'Role'     => $role,
-            'Phone'    => '0500000000',
+            'Name' => ucfirst($role),
+            'Role' => $role,
+            'Phone' => '0500000000',
             'Password' => Hash::make('password123'),
-            'Image'    => '/upload/test.jpg',
+            'Image' => '/upload/test.jpg',
         ]);
     }
 

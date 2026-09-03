@@ -29,21 +29,21 @@ class CourseTest extends TestCase
     private function getOwner(): Administrator
     {
         return Administrator::where('Role', 'owner')->first() ?? Administrator::create([
-            'Email'    => 'owner@example.com',
-            'Name'     => 'Test Owner',
-            'Role'     => 'owner',
-            'Phone'    => '0500000000',
+            'Email' => 'owner@example.com',
+            'Name' => 'Test Owner',
+            'Role' => 'owner',
+            'Phone' => '0500000000',
             'Password' => Hash::make('password123'),
-            'Image'    => '/upload/test.jpg',
+            'Image' => '/upload/test.jpg',
         ]);
     }
 
     private function createCourse(array $attributes = []): Course
     {
         return Course::create(array_merge([
-            'Name'        => 'Test Course',
+            'Name' => 'Test Course',
             'Description' => 'Test description',
-            'Image'       => '/upload/test.jpg',
+            'Image' => '/upload/test.jpg',
         ], $attributes));
     }
 
@@ -89,15 +89,15 @@ class CourseTest extends TestCase
 
         $response = $this
             ->post('/api/course', [
-                'Name'        => 'PHP Course',
+                'Name' => 'PHP Course',
                 'Description' => 'Laravel backend course',
-                'Image'       => $image,
+                'Image' => $image,
             ]);
 
         $response->assertSuccessful();
 
         $this->assertDatabaseHas('courses', [
-            'Name'        => 'PHP Course',
+            'Name' => 'PHP Course',
             'Description' => 'Laravel backend course',
         ]);
 
@@ -118,7 +118,7 @@ class CourseTest extends TestCase
             ->withHeader('Accept', 'application/json')
             ->post('/api/course', [
                 'Description' => 'Test description',
-                'Image'       => UploadedFile::fake()->image('course.jpg'),
+                'Image' => UploadedFile::fake()->image('course.jpg'),
             ]);
 
         $response
@@ -137,9 +137,9 @@ class CourseTest extends TestCase
         $response = $this
             ->withHeader('Accept', 'application/json')
             ->post('/api/course', [
-                'Name'        => 'PHP Course',
+                'Name' => 'PHP Course',
                 'Description' => 'Test description',
-                'Image'       => $file,
+                'Image' => $file,
             ]);
 
         $response
@@ -154,7 +154,7 @@ class CourseTest extends TestCase
         $response = $this->putJson(
             "/api/course/{$course->Course_ID}",
             [
-                'Name'        => 'Updated Course',
+                'Name' => 'Updated Course',
                 'Description' => 'Updated description',
             ]
         );
@@ -162,8 +162,8 @@ class CourseTest extends TestCase
         $response->assertSuccessful();
 
         $this->assertDatabaseHas('courses', [
-            'Course_ID'   => $course->Course_ID,
-            'Name'        => 'Updated Course',
+            'Course_ID' => $course->Course_ID,
+            'Name' => 'Updated Course',
             'Description' => 'Updated description',
         ]);
     }
@@ -184,10 +184,10 @@ class CourseTest extends TestCase
         $response = $this->post(
             "/api/course/{$course->Course_ID}",
             [
-                '_method'     => 'PUT',
-                'Name'        => $course->Name,
+                '_method' => 'PUT',
+                'Name' => $course->Name,
                 'Description' => $course->Description,
-                'Image'       => $newImage,
+                'Image' => $newImage,
             ]
         );
 

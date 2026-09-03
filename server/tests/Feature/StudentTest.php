@@ -30,12 +30,12 @@ class StudentTest extends TestCase
     private function getOwner(): Administrator
     {
         return Administrator::where('Role', 'owner')->first() ?? Administrator::create([
-            'Email'    => 'owner@example.com',
-            'Name'     => 'Test Owner',
-            'Role'     => 'owner',
-            'Phone'    => '0500000000',
+            'Email' => 'owner@example.com',
+            'Name' => 'Test Owner',
+            'Role' => 'owner',
+            'Phone' => '0500000000',
             'Password' => Hash::make('password123'),
-            'Image'    => '/upload/test.jpg',
+            'Image' => '/upload/test.jpg',
         ]);
     }
 
@@ -43,7 +43,7 @@ class StudentTest extends TestCase
     {
         return Student::create(array_merge([
             'Email' => uniqid() . '@example.com',
-            'Name'  => 'Test Student',
+            'Name' => 'Test Student',
             'Phone' => '0501234567',
             'Image' => '/upload/test.jpg',
         ], $attributes));
@@ -52,9 +52,9 @@ class StudentTest extends TestCase
     private function createCourse(array $attributes = []): Course
     {
         return Course::create(array_merge([
-            'Name'        => 'Test Course',
+            'Name' => 'Test Course',
             'Description' => 'Test description',
-            'Image'       => '/upload/test.jpg',
+            'Image' => '/upload/test.jpg',
         ], $attributes));
     }
 
@@ -101,7 +101,7 @@ class StudentTest extends TestCase
         $response = $this
             ->post('/api/student', [
                 'Email' => 'student@example.com',
-                'Name'  => 'Test Student',
+                'Name' => 'Test Student',
                 'Phone' => '0501234567',
                 'Image' => $image,
             ]);
@@ -110,7 +110,7 @@ class StudentTest extends TestCase
 
         $this->assertDatabaseHas('students', [
             'Email' => 'student@example.com',
-            'Name'  => 'Test Student',
+            'Name' => 'Test Student',
             'Phone' => '0501234567',
         ]);
 
@@ -134,10 +134,10 @@ class StudentTest extends TestCase
 
         $response = $this
             ->post('/api/student', [
-                'Email'   => 'student@example.com',
-                'Name'    => 'Test Student',
-                'Phone'   => '0501234567',
-                'Image'   => UploadedFile::fake()->image('student.jpg'),
+                'Email' => 'student@example.com',
+                'Name' => 'Test Student',
+                'Phone' => '0501234567',
+                'Image' => UploadedFile::fake()->image('student.jpg'),
                 'courses' => $courses->pluck('Course_ID')->all(),
             ]);
 
@@ -163,7 +163,7 @@ class StudentTest extends TestCase
             ->withHeader('Accept', 'application/json')
             ->post('/api/student', [
                 'Email' => 'student@example.com',
-                'Name'  => 'Another Student',
+                'Name' => 'Another Student',
                 'Phone' => '0501234567',
                 'Image' => UploadedFile::fake()->image('student.jpg'),
             ]);
@@ -180,7 +180,7 @@ class StudentTest extends TestCase
         $response = $this
             ->putJson("/api/student/{$student->Student_ID}", [
                 'Email' => 'updated@example.com',
-                'Name'  => 'Updated Student',
+                'Name' => 'Updated Student',
                 'Phone' => '0509999999',
             ]);
 
@@ -188,9 +188,9 @@ class StudentTest extends TestCase
 
         $this->assertDatabaseHas('students', [
             'Student_ID' => $student->Student_ID,
-            'Email'      => 'updated@example.com',
-            'Name'       => 'Updated Student',
-            'Phone'      => '0509999999',
+            'Email' => 'updated@example.com',
+            'Name' => 'Updated Student',
+            'Phone' => '0509999999',
         ]);
     }
 
@@ -214,9 +214,9 @@ class StudentTest extends TestCase
 
         $response = $this
             ->putJson("/api/student/{$student->Student_ID}", [
-                'Name'    => $student->Name,
-                'Phone'   => $student->Phone,
-                'Email'   => $student->Email,
+                'Name' => $student->Name,
+                'Phone' => $student->Phone,
+                'Email' => $student->Email,
                 'courses' => $newCourses->pluck('Course_ID')->all(),
             ]);
 

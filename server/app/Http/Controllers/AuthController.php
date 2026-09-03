@@ -28,7 +28,7 @@ class AuthController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'Email'    => ['required', 'email'],
+            'Email' => ['required', 'email'],
             'Password' => ['required', 'string'],
         ]);
         $user = Administrator::where('Email', $validated['Email'])->first();
@@ -46,12 +46,12 @@ class AuthController extends Controller
         return response()->json([
             'administrator' => [
                 'Administrator_ID' => $user->Administrator_ID,
-                'Email'            => $user->Email,
-                'Name'             => $user->Name,
-                'Role'             => $user->Role,
-                'Image'            => $user->Image,
+                'Email' => $user->Email,
+                'Name' => $user->Name,
+                'Role' => $user->Role,
+                'Image' => $user->Image,
             ],
-            'token'         => csrf_token(),
+            'token' => csrf_token(),
         ]);
     }
 
@@ -85,11 +85,11 @@ class AuthController extends Controller
 
         return response()->json([
             'Administrator_ID' => $administrator->Administrator_ID,
-            'Email'            => $administrator->Email,
-            'Name'             => $administrator->Name,
-            'Role'             => $administrator->Role,
-            'Phone'            => $administrator->Phone,
-            'Image'            => $administrator->Image,
+            'Email' => $administrator->Email,
+            'Name' => $administrator->Name,
+            'Role' => $administrator->Role,
+            'Phone' => $administrator->Phone,
+            'Image' => $administrator->Image,
         ]);
     }
 }
