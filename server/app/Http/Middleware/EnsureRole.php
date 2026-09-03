@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Http\Middleware;
 
+use App\Models\Administrator;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +18,15 @@ class EnsureRole
         Closure $next,
         string ...$roles
     ): Response {
-        if (! in_array($request->user()->Role, $roles, true)) {
+        $administrator = $request->user();
+
+        if (! $administrator instanceof Administrator) {
+            return response()->json([
+                'error' => 'Unauthorized',
+            ], 401);
+        }
+
+        if (! in_array($administrator->Role, $roles, true)) {
             return response()->json([
                 'error' => 'Forbidden',
             ], 403);
