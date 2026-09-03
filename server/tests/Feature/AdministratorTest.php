@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use App\Models\Administrator;
@@ -127,7 +128,6 @@ class AdministratorTest extends TestCase
                 basename($administrator->Image)
             )
         );
-
     }
 
     public function test_administrator_email_must_be_unique(): void
