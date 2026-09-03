@@ -256,8 +256,31 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      - name: Prepare PHP-CS-Fixer report directory
+        run: mkdir -p storage/php-cs-fixer
+
       - name: Run PHP-CS-Fixer
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+        run: |
+          set +e
+
+          vendor/bin/php-cs-fixer fix \
+            --dry-run \
+            --diff \
+            > storage/php-cs-fixer/php-cs-fixer.txt 2>&1
+
+          EXIT_CODE=$?
+
+          cat storage/php-cs-fixer/php-cs-fixer.txt
+
+          exit $EXIT_CODE
+
+      - name: Upload PHP-CS-Fixer report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: php-cs-fixer-results
+          path: server/storage/php-cs-fixer/php-cs-fixer.txt
+          if-no-files-found: warn
 
   phpunit:
     name: PHPUnit
