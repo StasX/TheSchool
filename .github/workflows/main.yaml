@@ -40,7 +40,7 @@ jobs:
           framework: dockerfile
           quiet: true
           output_format: junitxml
-          output_file_path: checkov-${{ matrix.name }}.xml,
+          output_file_path: checkov-${{ matrix.name }}.xml
 
       - name: Upload Checkov report
         if: always()
@@ -61,7 +61,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: "3.13"
 
       - name: Install Semgrep
         run: pip install semgrep
@@ -121,7 +121,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.5'
+          php-version: "8.5"
           extensions: mbstring, pdo_sqlite, sqlite3, fileinfo
           coverage: none
 
@@ -147,12 +147,12 @@ jobs:
         run: |
           set +e
           vendor/bin/phpstan analyse \
-          --no-progress \
-          --error-format=json \
-          > storage/phpstan/phpstan.json
+            --no-progress \
+            --error-format=json \
+            > storage/phpstan/phpstan.json
           EXIT_CODE=$?
           if [ $EXIT_CODE -ne 0 ]; then
-          vendor/bin/phpstan analyse --no-progress
+            vendor/bin/phpstan analyse --no-progress
           fi
           exit $EXIT_CODE
       - name: Upload PHPStan report
@@ -161,6 +161,66 @@ jobs:
         with:
           name: phpstan-results
           path: server/storage/phpstan/phpstan.json
+          if-no-files-found: warn
+
+  phpcs:
+    name: PHPCS
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('server/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare PHPCS report directory
+        run: mkdir -p storage/phpcs
+
+      - name: Run PHPCS
+        run: |
+          set +e
+
+          vendor/bin/phpcs \
+            --report=json \
+            --report-file=storage/phpcs/phpcs.json
+
+          EXIT_CODE=$?
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            vendor/bin/phpcs
+          fi
+
+          exit $EXIT_CODE
+
+      - name: Upload PHPCS report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phpcs-results
+          path: server/storage/phpcs/phpcs.json
           if-no-files-found: warn
 
   phpunit:
@@ -178,7 +238,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.5'
+          php-version: "8.5"
           extensions: mbstring, pdo_sqlite, sqlite3, fileinfo
           coverage: none
 
@@ -228,7 +288,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
           cache-dependency-path: server/package-lock.json
 
@@ -245,6 +305,7 @@ jobs:
       - checkov
       - phpunit
       - phpstan
+      - phpcs
       - frontend
       - semgrep
     steps:
@@ -254,7 +315,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
           cache-dependency-path: package-lock.json
 
