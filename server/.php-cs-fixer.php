@@ -9,11 +9,7 @@ $finder = PhpCsFixer\Finder::create()
         __DIR__ . '/tests',
     ])
     ->exclude([
-        'bootstrap/cache',
-        'storage',
-        'vendor',
-        'public/css',
-        'public/js',
+        'cache',
     ]);
 
 return (new PhpCsFixer\Config())
