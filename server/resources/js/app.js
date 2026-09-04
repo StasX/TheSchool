@@ -48,7 +48,7 @@ $(function () {
                     location.hash = '#!school';
                 })
                 .fail(function (xhr) {
-                    const error = xhr.status === 401
+                    const error = xhr.status === 422
                         ? 'Invalid username or password'
                         : 'An error occurred. Please try again later.';
 

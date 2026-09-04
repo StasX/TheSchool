@@ -28,21 +28,21 @@ class AuthController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'Email' => ['email'],
-            'Password' => ['string'],
+            'Email' => ['required', 'email'],
+            'Password' => ['required', 'string'],
         ]);
         $users = Administrator::where('Email', $validated['Email'])->get();
         if ($users->count() !== 1) {
             return response()->json([
                 'error' => 'Invalid username or password.',
-            ], 401);
+            ], 422);
         }
         $user = $users->first();
 
         if (! $user || ! Hash::check($validated['Password'], $user->Password)) {
             return response()->json([
                 'error' => 'Invalid username or password.',
-            ], 401);
+            ], 422);
         }
 
         Auth::login($user);
