@@ -154,42 +154,39 @@ class AuthenticationTest extends TestCase
 
     public function test_login_rejects_missing_email(): void
     {
-        $response = $this->postJson('/api/login', [
+        $this->postJson('/api/login', [
             'Password' => 'password123',
-        ]);
-
-        $response
-            ->assertStatus(401)
+        ])
+            ->assertUnauthorized()
             ->assertJson([
                 'error' => 'Invalid username or password.',
             ]);
+        $this->assertGuest();
     }
 
     public function test_login_rejects_invalid_email(): void
     {
-        $response = $this->postJson('/api/login', [
-            'Email'    => 'not-an-email',
+        $this->postJson('/api/login', [
+            'Email' => 'not-an-email',
             'Password' => 'password123',
-        ])->assertUnauthorized();
-
-        $response
-            ->assertStatus(401)
+        ])
+            ->assertUnauthorized()
             ->assertJson([
                 'error' => 'Invalid username or password.',
             ]);
+        $this->assertGuest();
     }
 
     public function test_login_rejects_missing_password(): void
     {
-        $response = $this->postJson('/api/login', [
+        $this->postJson('/api/login', [
             'Email' => 'owner@example.com',
-        ]);
-
-        $response
-            ->assertStatus(401)
+        ])
+            ->assertUnauthorized()
             ->assertJson([
                 'error' => 'Invalid username or password.',
             ]);
+        $this->assertGuest();
     }
 
     public function test_login_regenerates_session(): void
@@ -211,7 +208,12 @@ class AuthenticationTest extends TestCase
         $this->postJson('/api/login', [
             'Email' => ['owner@example.com'],
             'Password' => 'password123',
-        ])->assertUnauthorized();
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+        $this->assertGuest();
     }
 
     public function test_login_rejects_empty_password(): void
@@ -219,7 +221,12 @@ class AuthenticationTest extends TestCase
         $this->postJson('/api/login', [
             'Email' => 'owner@example.com',
             'Password' => '',
-        ])->assertUnauthorized();
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+        $this->assertGuest();
     }
 
     public function test_login_rejects_non_string_password(): void
@@ -227,6 +234,11 @@ class AuthenticationTest extends TestCase
         $this->postJson('/api/login', [
             'Email' => 'owner@example.com',
             'Password' => ['password123'],
-        ])->assertUnauthorized();
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+        $this->assertGuest();
     }
 }
