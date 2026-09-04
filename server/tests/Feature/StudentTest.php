@@ -69,7 +69,17 @@ class StudentTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonCount(3);
+            ->assertJsonCount(3)
+            ->assertJsonStructure([
+                '*' => [
+                    'Student_ID',
+                    'Email',
+                    'Name',
+                    'Phone',
+                    'Image',
+                    'courses',
+                ],
+            ]);
     }
 
     public function test_authenticated_administrator_can_get_student_by_id(): void
@@ -232,7 +242,14 @@ class StudentTest extends TestCase
 
     public function test_authenticated_administrator_can_delete_student(): void
     {
-        $student = $this->createStudent();
+        Storage::disk('uploads')->put(
+            'student.jpg',
+            'student image'
+        );
+
+        $student = $this->createStudent([
+            'Image' => '/upload/student.jpg',
+        ]);
 
         $response = $this
             ->deleteJson("/api/student/{$student->Student_ID}");
@@ -242,5 +259,46 @@ class StudentTest extends TestCase
         $this->assertDatabaseMissing('students', [
             'Student_ID' => $student->Student_ID,
         ]);
+
+        $this->assertFalse(
+            Storage::disk('uploads')->exists('student.jpg')
+        );
+    }
+
+    public function test_student_image_can_be_updated(): void
+    {
+        Storage::disk('uploads')->put(
+            'old.jpg',
+            'old image'
+        );
+
+        $student = $this->createStudent([
+            'Image' => '/upload/old.jpg',
+        ]);
+
+        $response = $this->post(
+            "/api/student/{$student->Student_ID}",
+            [
+                '_method' => 'PUT',
+                'Email' => $student->Email,
+                'Name' => $student->Name,
+                'Phone' => $student->Phone,
+                'Image' => UploadedFile::fake()->image('new.jpg'),
+            ]
+        );
+
+        $response->assertSuccessful();
+
+        $student->refresh();
+
+        $this->assertTrue(
+            Storage::disk('uploads')->exists(
+                basename($student->Image)
+            )
+        );
+
+        $this->assertFalse(
+            Storage::disk('uploads')->exists('old.jpg')
+        );
     }
 }
