@@ -48,6 +48,16 @@ class AdministratorTest extends TestCase
             ->getJson('/api/administrator')
             ->assertOk()
             ->assertJsonCount(2)
+            ->assertJsonStructure([
+                '*' => [
+                    'Administrator_ID',
+                    'Email',
+                    'Name',
+                    'Phone',
+                    'Role',
+                    'Image',
+                ],
+            ])
             ->assertJsonMissingPath('0.Password');
     }
 
