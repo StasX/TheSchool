@@ -15,10 +15,10 @@ class AuthController extends Controller
         $email = $request->input('Email');
         $password = $request->input('Password');
         if (
-            ! is_string($email) ||
-            ! filter_var($email, FILTER_VALIDATE_EMAIL) ||
-            ! is_string($password) ||
-            $password === ''
+            ! (is_string($email) &&
+            filter_var($email, FILTER_VALIDATE_EMAIL) &&
+            is_string($password) &&
+            $password !== '')
         ) {
             return response()->json([
                 'error' => 'Invalid username or password.',
