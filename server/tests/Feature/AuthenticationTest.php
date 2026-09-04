@@ -170,7 +170,7 @@ class AuthenticationTest extends TestCase
         $response = $this->postJson('/api/login', [
             'Email'    => 'not-an-email',
             'Password' => 'password123',
-        ])->assertUnauthorized();;
+        ])->assertUnauthorized();
 
         $response
             ->assertStatus(401)
