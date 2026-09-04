@@ -28,10 +28,16 @@ class AuthController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'Email' => ['required', 'email'],
-            'Password' => ['required', 'string'],
+            'Email' => ['email'],
+            'Password' => ['string'],
         ]);
-        $user = Administrator::where('Email', $validated['Email'])->first();
+        $users = Administrator::where('Email', $validated['Email'])->get();
+        if ($users->count() !== 1) {
+            return response()->json([
+                'error' => 'Invalid username or password.',
+            ], 401);
+        }
+        $user = $users->first();
 
         if (! $user || ! Hash::check($validated['Password'], $user->Password)) {
             return response()->json([
@@ -46,12 +52,12 @@ class AuthController extends Controller
         return response()->json([
             'administrator' => [
                 'Administrator_ID' => $user->Administrator_ID,
-                'Email' => $user->Email,
-                'Name' => $user->Name,
-                'Role' => $user->Role,
-                'Image' => $user->Image,
+                'Email'            => $user->Email,
+                'Name'             => $user->Name,
+                'Role'             => $user->Role,
+                'Image'            => $user->Image,
             ],
-            'token' => csrf_token(),
+            'token'         => csrf_token(),
         ]);
     }
 
@@ -85,11 +91,11 @@ class AuthController extends Controller
 
         return response()->json([
             'Administrator_ID' => $administrator->Administrator_ID,
-            'Email' => $administrator->Email,
-            'Name' => $administrator->Name,
-            'Role' => $administrator->Role,
-            'Phone' => $administrator->Phone,
-            'Image' => $administrator->Image,
+            'Email'            => $administrator->Email,
+            'Name'             => $administrator->Name,
+            'Role'             => $administrator->Role,
+            'Phone'            => $administrator->Phone,
+            'Image'            => $administrator->Image,
         ]);
     }
 }
