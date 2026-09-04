@@ -88,10 +88,10 @@ class CourseTest extends TestCase
     public function test_get_non_existing_course_returns_404(): void
     {
         $this->getJson('/api/course/999999')
-        ->assertNotFound()
-        ->assertJson([
-            'error' => 'Course not found',
-        ]);
+            ->assertNotFound()
+            ->assertJson([
+                'error' => 'Course not found',
+            ]);
     }
 
     public function test_authenticated_administrator_can_create_course(): void
