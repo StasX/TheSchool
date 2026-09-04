@@ -94,7 +94,6 @@ class CourseController extends Controller
         ]);
         /** @var array<string, mixed> $data */
         $data = $validated;
-
         $oldImage = $course->Image;
         $imageChanged = $request->hasFile('Image');
 
