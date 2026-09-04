@@ -114,8 +114,6 @@ class CourseController extends Controller
                 Storage::disk('uploads')->exists(basename($oldImage))
             ) {
                 Storage::disk('uploads')->delete(basename($oldImage));
-            } else {
-                unset($data['Image']);
             }
         }
 
