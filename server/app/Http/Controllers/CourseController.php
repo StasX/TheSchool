@@ -94,31 +94,39 @@ class CourseController extends Controller
         ]);
         /** @var array<string, mixed> $data */
         $data = $validated;
+
+        $oldImage = $course->Image;
         $imageChanged = $request->hasFile('Image');
+
         if ($imageChanged) {
             $file = $request->file('Image');
+
             if (! $file instanceof UploadedFile) {
                 return response()->json([
                     'error' => 'Invalid image',
                 ], 422);
             }
+
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
 
-            Storage::disk('uploads')->putFileAs('', $file, $filename);
-
-            $oldImage = $course->Image;
+            Storage::disk('uploads')->putFileAs(
+                '',
+                $file,
+                $filename
+            );
 
             $data['Image'] = "/upload/$filename";
-
-            if (
-                $oldImage &&
-                Storage::disk('uploads')->exists(basename($oldImage))
-            ) {
-                Storage::disk('uploads')->delete(basename($oldImage));
-            }
         }
 
         $course->update($data);
+
+        if (
+            $imageChanged &&
+            $oldImage &&
+            Storage::disk('uploads')->exists(basename($oldImage))
+        ) {
+            Storage::disk('uploads')->delete(basename($oldImage));
+        }
 
         return response()->json($course);
     }
