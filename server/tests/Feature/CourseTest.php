@@ -284,4 +284,25 @@ class CourseTest extends TestCase
             ['Description'],
         ];
     }
+
+        public function test_update_non_existing_course_returns_404(): void
+    {
+        $this->putJson('/api/course/999999', [
+            'Name' => 'Updated Course',
+            'Description' => 'Updated description',
+        ])
+            ->assertNotFound()
+            ->assertJson([
+                'error' => 'Course not found',
+            ]);
+    }
+
+    public function test_delete_non_existing_course_returns_404(): void
+    {
+        $this->deleteJson('/api/course/999999')
+            ->assertNotFound()
+            ->assertJson([
+                'error' => 'Course not found',
+            ]);
+    }
 }
