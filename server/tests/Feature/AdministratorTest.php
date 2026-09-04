@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class AdministratorTest extends TestCase
 {
@@ -368,5 +369,45 @@ class AdministratorTest extends TestCase
         $this->assertFalse(
             Storage::disk('uploads')->exists('manager.jpg')
         );
+    }
+
+    #[DataProvider('requiredAdministratorFieldsProvider')]
+    public function test_required_fields_are_validated_when_creating_administrator(
+        string $field
+    ): void {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $data = [
+            'Email' => 'manager@example.com',
+            'Name' => 'Manager',
+            'Role' => 'manager',
+            'Phone' => '0501234567',
+            'Password' => 'password123',
+            'Image' => UploadedFile::fake()->image('manager.jpg'),
+        ];
+
+        unset($data[$field]);
+
+        $this->actingAs($owner)
+            ->post('/api/administrator', $data, [
+                'Accept' => 'application/json',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors($field);
+    }
+
+    public static function requiredAdministratorFieldsProvider(): array
+    {
+        return [
+            ['Email'],
+            ['Name'],
+            ['Role'],
+            ['Phone'],
+            ['Password'],
+            ['Image'],
+        ];
     }
 }
