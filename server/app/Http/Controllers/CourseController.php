@@ -94,7 +94,8 @@ class CourseController extends Controller
         ]);
         /** @var array<string, mixed> $data */
         $data = $validated;
-        if ($request->hasFile('Image')) {
+        $imageChanged = $request->hasFile('Image');
+        if ($imageChanged) {
             $file = $request->file('Image');
             if (! $file instanceof UploadedFile) {
                 return response()->json([
