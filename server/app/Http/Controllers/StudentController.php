@@ -159,8 +159,8 @@ class StudentController extends Controller
         unset($data['courses']);
 
         $oldImage = $student->Image;
-
-        if ($request->hasFile('Image')) {
+        $imageChanged = $request->hasFile('Image');
+        if ($imageChanged) {
             $file = $request->file('Image');
 
             if (! $file instanceof UploadedFile) {
@@ -185,7 +185,7 @@ class StudentController extends Controller
         $student->update($data);
 
         if (
-            $request->hasFile('Image') &&
+            $imageChanged &&
             $oldImage &&
             Storage::disk('uploads')->exists(basename($oldImage))
         ) {
