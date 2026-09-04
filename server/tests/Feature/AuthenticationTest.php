@@ -1,5 +1,4 @@
 <?php
-
 namespace Tests\Feature;
 
 use App\Models\Administrator;
@@ -151,5 +150,44 @@ class AuthenticationTest extends TestCase
 
         $this->getJson('/api/administrator')
             ->assertUnauthorized();
+    }
+    public function test_login_rejects_missing_email(): void
+    {
+        $response = $this->postJson('/api/login', [
+            'Password' => 'password123',
+        ]);
+
+        $response
+            ->assertStatus(401)
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+    }
+
+    public function test_login_rejects_invalid_email(): void
+    {
+        $response = $this->postJson('/api/login', [
+            'Email'    => 'not-an-email',
+            'Password' => 'password123',
+        ]);
+
+        $response
+            ->assertStatus(401)
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+    }
+
+    public function test_login_rejects_missing_password(): void
+    {
+        $response = $this->postJson('/api/login', [
+            'Email' => 'owner@example.com',
+        ]);
+
+        $response
+            ->assertStatus(401)
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
     }
 }
