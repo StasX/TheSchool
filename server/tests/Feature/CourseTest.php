@@ -8,8 +8,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\TestCase;
 
 class CourseTest extends TestCase
 {
@@ -87,10 +87,11 @@ class CourseTest extends TestCase
 
     public function test_get_non_existing_course_returns_404(): void
     {
-        $response = $this
-            ->getJson('/api/course/999999');
-
-        $response->assertNotFound();
+        $this->getJson('/api/course/999999')
+        ->assertNotFound()
+        ->assertJson([
+            'error' => 'Course not found',
+        ]);
     }
 
     public function test_authenticated_administrator_can_create_course(): void
@@ -104,7 +105,7 @@ class CourseTest extends TestCase
                 'Image' => $image,
             ]);
 
-        $response->assertSuccessful();
+        $response->assertCreated();
 
         $this->assertDatabaseHas('courses', [
             'Name' => 'PHP Course',
@@ -120,20 +121,6 @@ class CourseTest extends TestCase
                 basename($course->Image)
             )
         );
-    }
-
-    public function test_name_is_required_when_creating_course(): void
-    {
-        $response = $this
-            ->withHeader('Accept', 'application/json')
-            ->post('/api/course', [
-                'Description' => 'Test description',
-                'Image' => UploadedFile::fake()->image('course.jpg'),
-            ]);
-
-        $response
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors('Name');
     }
 
     public function test_image_must_be_valid_image(): void
@@ -231,7 +218,7 @@ class CourseTest extends TestCase
             "/api/course/{$course->Course_ID}"
         );
 
-        $response->assertSuccessful();
+        $response->assertNoContent();
 
         $this->assertDatabaseMissing('courses', [
             'Course_ID' => $course->Course_ID,
@@ -266,6 +253,35 @@ class CourseTest extends TestCase
             ['Name'],
             ['Description'],
             ['Image'],
+        ];
+    }
+
+    #[DataProvider('requiredCourseUpdateFieldsProvider')]
+    public function test_required_fields_are_validated_when_updating_course(
+        string $field
+    ): void {
+        $course = $this->createCourse();
+
+        $data = [
+            'Name' => 'Updated Course',
+            'Description' => 'Updated description',
+        ];
+
+        unset($data[$field]);
+
+        $this->putJson(
+            "/api/course/{$course->Course_ID}",
+            $data
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors($field);
+    }
+
+    public static function requiredCourseUpdateFieldsProvider(): array
+    {
+        return [
+            ['Name'],
+            ['Description'],
         ];
     }
 }
