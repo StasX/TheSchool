@@ -285,7 +285,7 @@ class CourseTest extends TestCase
         ];
     }
 
-        public function test_update_non_existing_course_returns_404(): void
+    public function test_update_non_existing_course_returns_404(): void
     {
         $this->putJson('/api/course/999999', [
             'Name' => 'Updated Course',
@@ -304,5 +304,61 @@ class CourseTest extends TestCase
             ->assertJson([
                 'error' => 'Course not found',
             ]);
+    }
+
+    public function test_course_image_can_be_updated_when_old_image_is_missing(): void
+    {
+        $course = $this->createCourse([
+            'Image' => '/upload/missing.jpg',
+        ]);
+
+        $this->assertFalse(
+            Storage::disk('uploads')->exists('missing.jpg')
+        );
+
+        $this->post(
+            "/api/course/{$course->Course_ID}",
+            [
+                '_method' => 'PUT',
+                'Name' => $course->Name,
+                'Description' => $course->Description,
+                'Image' => UploadedFile::fake()->image('new.jpg'),
+            ]
+        )->assertSuccessful();
+
+        $course->refresh();
+
+        $this->assertNotSame('/upload/missing.jpg', $course->Image);
+
+        $this->assertTrue(
+            Storage::disk('uploads')->exists(
+                basename($course->Image)
+            )
+        );
+    }
+
+    public function test_course_image_is_preserved_when_not_updating_image(): void
+    {
+        $course = $this->createCourse([
+            'Image' => '/upload/course.jpg',
+        ]);
+
+        Storage::disk('uploads')->put('course.jpg', 'old image');
+
+        $this->putJson(
+            "/api/course/{$course->Course_ID}",
+            [
+                'Name' => 'Updated Course',
+                'Description' => 'Updated description',
+            ]
+        )->assertSuccessful();
+
+        $course->refresh();
+
+        $this->assertSame('/upload/course.jpg', $course->Image);
+
+        $this->assertTrue(
+            Storage::disk('uploads')->exists('course.jpg')
+        );
     }
 }
