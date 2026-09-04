@@ -170,7 +170,7 @@ class AuthenticationTest extends TestCase
         $response = $this->postJson('/api/login', [
             'Email'    => 'not-an-email',
             'Password' => 'password123',
-        ]);
+        ])->assertUnauthorized();;
 
         $response
             ->assertStatus(401)
@@ -204,5 +204,29 @@ class AuthenticationTest extends TestCase
         ])->assertOk();
 
         $this->assertNotSame($oldSessionId, session()->getId());
+    }
+
+    public function test_login_rejects_non_string_email(): void
+    {
+        $this->postJson('/api/login', [
+            'Email' => ['owner@example.com'],
+            'Password' => 'password123',
+        ])->assertUnauthorized();
+    }
+
+    public function test_login_rejects_empty_password(): void
+    {
+        $this->postJson('/api/login', [
+            'Email' => 'owner@example.com',
+            'Password' => '',
+        ])->assertUnauthorized();
+    }
+
+    public function test_login_rejects_non_string_password(): void
+    {
+        $this->postJson('/api/login', [
+            'Email' => 'owner@example.com',
+            'Password' => ['password123'],
+        ])->assertUnauthorized();
     }
 }
