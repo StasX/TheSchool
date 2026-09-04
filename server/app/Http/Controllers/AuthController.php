@@ -13,36 +13,27 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         if (
-            ! $request->filled('Email') ||
+            ! is_string($request->Email) ||
             ! filter_var($request->Email, FILTER_VALIDATE_EMAIL) ||
-            ! $request->filled('Password')
+            ! is_string($request->Password) ||
+            $request->Password === ''
         ) {
             return response()->json([
                 'error' => 'Invalid username or password.',
             ], 401);
         }
-        /**
-         * @var array{
-         *     Email: string,
-         *     Password: string
-         * } $validated
-         */
-        $validated = $request->validate([
-            'Email' => ['required', 'email'],
-            'Password' => ['required', 'string'],
-        ]);
-        $users = Administrator::where('Email', $validated['Email'])->get();
+        $users = Administrator::where('Email', $request->Email)->get();
         if ($users->count() !== 1) {
             return response()->json([
                 'error' => 'Invalid username or password.',
-            ], 422);
+            ], 401);
         }
         $user = $users->first();
 
-        if (! $user || ! Hash::check($validated['Password'], $user->Password)) {
+        if (! $user || ! Hash::check($request->Password, $user->Password)) {
             return response()->json([
                 'error' => 'Invalid username or password.',
-            ], 422);
+            ], 401);
         }
 
         Auth::login($user);
