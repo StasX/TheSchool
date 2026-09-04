@@ -151,6 +151,7 @@ class AuthenticationTest extends TestCase
         $this->getJson('/api/administrator')
             ->assertUnauthorized();
     }
+
     public function test_login_rejects_missing_email(): void
     {
         $response = $this->postJson('/api/login', [
@@ -189,5 +190,19 @@ class AuthenticationTest extends TestCase
             ->assertJson([
                 'error' => 'Invalid username or password.',
             ]);
+    }
+
+    public function test_login_regenerates_session(): void
+    {
+        $this->createAdministrator();
+
+        $oldSessionId = session()->getId();
+
+        $this->postJson('/api/login', [
+            'Email' => 'owner@example.com',
+            'Password' => 'password123',
+        ])->assertOk();
+
+        $this->assertNotSame($oldSessionId, session()->getId());
     }
 }
