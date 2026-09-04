@@ -57,7 +57,16 @@ class CourseTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonCount(3);
+            ->assertJsonCount(3)
+            ->assertJsonStructure([
+                '*' => [
+                    'Course_ID',
+                    'Name',
+                    'Description',
+                    'Image',
+                    'students',
+                ],
+            ]);
     }
 
     public function test_authenticated_administrator_can_get_course_by_id(): void
