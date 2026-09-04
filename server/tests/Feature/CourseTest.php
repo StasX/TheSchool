@@ -171,11 +171,11 @@ class CourseTest extends TestCase
     public function test_course_image_can_be_updated(): void
     {
         $course = $this->createCourse([
-            'Image' => '/upload/old.jpg',
+            'Image' => '/upload/course.jpg',
         ]);
 
         Storage::disk('uploads')->put(
-            'old.jpg',
+            'course.jpg',
             'old image'
         );
 
@@ -200,11 +200,22 @@ class CourseTest extends TestCase
                 basename($course->Image)
             )
         );
+
+        $this->assertFalse(
+            Storage::disk('uploads')->exists('course.jpg')
+        );
     }
 
     public function test_authenticated_administrator_can_delete_course(): void
     {
-        $course = $this->createCourse();
+        Storage::disk('uploads')->put(
+            'course.jpg',
+            'course image'
+        );
+
+        $course = $this->createCourse([
+            'Image' => '/upload/course.jpg',
+        ]);
 
         $response = $this->deleteJson(
             "/api/course/{$course->Course_ID}"
@@ -215,5 +226,9 @@ class CourseTest extends TestCase
         $this->assertDatabaseMissing('courses', [
             'Course_ID' => $course->Course_ID,
         ]);
+
+        $this->assertFalse(
+            Storage::disk('uploads')->exists('course.jpg')
+        );
     }
 }
