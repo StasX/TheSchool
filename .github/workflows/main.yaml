@@ -332,6 +332,62 @@ jobs:
           path: server/storage/logs/phpunit.xml
           if-no-files-found: warn
 
+  infection:
+    name: Infection
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, pdo_sqlite, sqlite3, fileinfo
+          coverage: pcov
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('server/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          mkdir -p storage/infection
+
+      - name: Run Infection
+        run: |
+          vendor/bin/infection \
+            --threads=4 \
+            --no-progress
+
+      - name: Upload Infection report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: infection-results
+          path: |
+            server/storage/infection/infection.log
+            server/storage/infection/infection.json
+          if-no-files-found: warn
+
   frontend:
     name: Frontend Build
     runs-on: ubuntu-latest
