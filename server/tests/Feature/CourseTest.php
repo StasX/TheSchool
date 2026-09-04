@@ -9,6 +9,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class CourseTest extends TestCase
 {
@@ -239,5 +240,32 @@ class CourseTest extends TestCase
         $this->assertFalse(
             Storage::disk('uploads')->exists('course.jpg')
         );
+    }
+
+    #[DataProvider('requiredCourseFieldsProvider')]
+    public function test_required_fields_are_validated_when_creating_course(
+        string $field
+    ): void {
+        $data = [
+            'Name' => 'PHP Course',
+            'Description' => 'Laravel backend course',
+            'Image' => UploadedFile::fake()->image('course.jpg'),
+        ];
+
+        unset($data[$field]);
+
+        $this->withHeader('Accept', 'application/json')
+            ->post('/api/course', $data)
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors($field);
+    }
+
+    public static function requiredCourseFieldsProvider(): array
+    {
+        return [
+            ['Name'],
+            ['Description'],
+            ['Image'],
+        ];
     }
 }
