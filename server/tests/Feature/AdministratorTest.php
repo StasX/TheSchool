@@ -356,7 +356,7 @@ class AdministratorTest extends TestCase
         ]);
 
         $this->assertFalse(
-            Storage::disk('uploads')->exists('old.jpg')
+            Storage::disk('uploads')->exists('manager.jpg')
         );
     }
 }
