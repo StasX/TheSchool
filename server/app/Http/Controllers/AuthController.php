@@ -12,17 +12,19 @@ class AuthController extends Controller
 {
     public function login(Request $request): JsonResponse
     {
+        $email = $request->input('Email');
+        $password = $request->input('Password');
         if (
-            ! is_string($request->Email) ||
-            ! filter_var($request->Email, FILTER_VALIDATE_EMAIL) ||
-            ! is_string($request->Password) ||
-            $request->Password === ''
+            ! is_string($email) ||
+            ! filter_var($email, FILTER_VALIDATE_EMAIL) ||
+            ! is_string($password) ||
+            $password === ''
         ) {
             return response()->json([
                 'error' => 'Invalid username or password.',
             ], 401);
         }
-        $users = Administrator::where('Email', $request->Email)->get();
+        $users = Administrator::where('Email', $email)->get();
         if ($users->count() !== 1) {
             return response()->json([
                 'error' => 'Invalid username or password.',
@@ -30,7 +32,7 @@ class AuthController extends Controller
         }
         $user = $users->first();
 
-        if (! $user || ! Hash::check($request->Password, $user->Password)) {
+        if (! $user || ! Hash::check($password, $user->Password)) {
             return response()->json([
                 'error' => 'Invalid username or password.',
             ], 401);
@@ -43,12 +45,12 @@ class AuthController extends Controller
         return response()->json([
             'administrator' => [
                 'Administrator_ID' => $user->Administrator_ID,
-                'Email'            => $user->Email,
-                'Name'             => $user->Name,
-                'Role'             => $user->Role,
-                'Image'            => $user->Image,
+                'Email' => $user->Email,
+                'Name' => $user->Name,
+                'Role' => $user->Role,
+                'Image' => $user->Image,
             ],
-            'token'         => csrf_token(),
+            'token' => csrf_token(),
         ]);
     }
 
@@ -82,11 +84,11 @@ class AuthController extends Controller
 
         return response()->json([
             'Administrator_ID' => $administrator->Administrator_ID,
-            'Email'            => $administrator->Email,
-            'Name'             => $administrator->Name,
-            'Role'             => $administrator->Role,
-            'Phone'            => $administrator->Phone,
-            'Image'            => $administrator->Image,
+            'Email' => $administrator->Email,
+            'Name' => $administrator->Name,
+            'Role' => $administrator->Role,
+            'Phone' => $administrator->Phone,
+            'Image' => $administrator->Image,
         ]);
     }
 }
