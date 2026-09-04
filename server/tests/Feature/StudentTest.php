@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class StudentTest extends TestCase
@@ -101,7 +102,11 @@ class StudentTest extends TestCase
         $response = $this
             ->getJson('/api/student/999999');
 
-        $response->assertNotFound();
+        $response
+            ->assertNotFound()
+            ->assertJson([
+                'error' => 'Student not found',
+            ]);
     }
 
     public function test_authenticated_administrator_can_create_student(): void
@@ -116,7 +121,7 @@ class StudentTest extends TestCase
                 'Image' => $image,
             ]);
 
-        $response->assertSuccessful();
+        $response->assertCreated();
 
         $this->assertDatabaseHas('students', [
             'Email' => 'student@example.com',
@@ -151,7 +156,7 @@ class StudentTest extends TestCase
                 'courses' => $courses->pluck('Course_ID')->all(),
             ]);
 
-        $response->assertSuccessful();
+        $response->assertCreated();
 
         $student = Student::where('Email', 'student@example.com')->firstOrFail();
 
@@ -254,7 +259,7 @@ class StudentTest extends TestCase
         $response = $this
             ->deleteJson("/api/student/{$student->Student_ID}");
 
-        $response->assertSuccessful();
+        $response->assertNoContent();
 
         $this->assertDatabaseMissing('students', [
             'Student_ID' => $student->Student_ID,
@@ -300,5 +305,65 @@ class StudentTest extends TestCase
         $this->assertFalse(
             Storage::disk('uploads')->exists('old.jpg')
         );
+    }
+
+    #[DataProvider('requiredStudentFieldsProvider')]
+    public function test_required_fields_are_validated_when_creating_student(
+        string $field
+    ): void {
+        $data = [
+            'Email' => 'student@example.com',
+            'Name' => 'Test Student',
+            'Phone' => '0501234567',
+            'Image' => UploadedFile::fake()->image('student.jpg'),
+        ];
+
+        unset($data[$field]);
+
+        $this->withHeader('Accept', 'application/json')
+            ->post('/api/student', $data)
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors($field);
+}
+
+    public static function requiredStudentFieldsProvider(): array
+    {
+        return [
+            ['Email'],
+            ['Name'],
+            ['Phone'],
+            ['Image'],
+        ];
+    }
+
+    #[DataProvider('requiredStudentUpdateFieldsProvider')]
+    public function test_required_fields_are_validated_when_updating_student(
+        string $field
+    ): void {
+        $student = $this->createStudent();
+
+        $data = [
+            'Email' => $student->Email,
+            'Name' => $student->Name,
+            'Phone' => $student->Phone,
+        ];
+
+        unset($data[$field]);
+
+        $this->putJson(
+            "/api/student/{$student->Student_ID}",
+            $data
+        )
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors($field);
+    }
+
+    public static function requiredStudentUpdateFieldsProvider(): array
+    {
+        return [
+            ['Email'],
+            ['Name'],
+            ['Phone'],
+        ];
     }
 }
