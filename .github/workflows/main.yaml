@@ -424,6 +424,7 @@ jobs:
       - php-cs-fixer
       - frontend
       - semgrep
+      - infection
     steps:
       - name: Checkout
         uses: actions/checkout@v7
