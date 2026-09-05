@@ -410,4 +410,147 @@ class AdministratorTest extends TestCase
             ['Image'],
         ];
     }
+
+    public function test_updating_administrator_without_image_preserves_image(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        Storage::disk('uploads')->put('manager.jpg', 'old image');
+
+        $manager = $this->createAdministrator([
+            'Email' => 'manager@example.com',
+            'Image' => '/upload/manager.jpg',
+        ]);
+
+        $this->actingAs($owner)
+            ->putJson(
+                "/api/administrator/{$manager->Administrator_ID}",
+                [
+                    'Email' => 'updated@example.com',
+                    'Name' => 'Updated Manager',
+                    'Phone' => '0503333333',
+                    'Role' => 'manager',
+                ]
+            )
+            ->assertOk();
+
+        $manager->refresh();
+
+        $this->assertSame('/upload/manager.jpg', $manager->Image);
+
+        $this->assertTrue(
+            Storage::disk('uploads')->exists('manager.jpg')
+        );
+    }
+
+    public function test_administrator_image_can_be_updated_when_old_image_is_missing(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $manager = $this->createAdministrator([
+            'Email' => 'manager@example.com',
+            'Image' => '/upload/missing.jpg',
+        ]);
+
+        $this->assertFalse(
+            Storage::disk('uploads')->exists('missing.jpg')
+        );
+
+        $this->actingAs($owner)
+            ->post(
+                "/api/administrator/{$manager->Administrator_ID}",
+                [
+                    '_method' => 'PUT',
+                    'Email' => $manager->Email,
+                    'Name' => $manager->Name,
+                    'Phone' => $manager->Phone,
+                    'Role' => $manager->Role,
+                    'Image' => UploadedFile::fake()->image('new.jpg'),
+                ]
+            )
+            ->assertOk();
+
+        $manager->refresh();
+
+        $this->assertNotSame('/upload/missing.jpg', $manager->Image);
+
+        $this->assertTrue(
+            Storage::disk('uploads')->exists(
+                basename($manager->Image)
+            )
+        );
+    }
+
+    public function test_updating_missing_administrator_returns_not_found(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $this->actingAs($owner)
+            ->putJson('/api/administrator/999999', [
+                'Email' => 'manager@example.com',
+                'Name' => 'Manager',
+                'Phone' => '0501234567',
+                'Role' => 'manager',
+            ])
+            ->assertNotFound()
+            ->assertJson([
+                'error' => 'Administrator not found',
+            ]);
+    }
+
+    public function test_deleting_missing_administrator_returns_not_found(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $this->actingAs($owner)
+            ->deleteJson('/api/administrator/999999')
+            ->assertNotFound()
+            ->assertJson([
+                'error' => 'Administrator not found',
+            ]);
+    }
+
+    public function test_owner_role_cannot_be_assigned_when_updating_administrator(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $manager = $this->createAdministrator([
+            'Email' => 'manager@example.com',
+            'Role' => 'manager',
+        ]);
+
+        $this->actingAs($owner)
+            ->putJson(
+                "/api/administrator/{$manager->Administrator_ID}",
+                [
+                    'Email' => $manager->Email,
+                    'Name' => $manager->Name,
+                    'Phone' => $manager->Phone,
+                    'Role' => 'owner',
+                ]
+            )
+            ->assertForbidden()
+            ->assertJson([
+                'error' => 'Owner role cannot be assigned',
+            ]);
+
+        $manager->refresh();
+
+        $this->assertSame('manager', $manager->Role);
+    }
 }
