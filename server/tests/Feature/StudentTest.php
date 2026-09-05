@@ -324,7 +324,7 @@ class StudentTest extends TestCase
             ->post('/api/student', $data)
             ->assertUnprocessable()
             ->assertJsonValidationErrors($field);
-}
+    }
 
     public static function requiredStudentFieldsProvider(): array
     {
