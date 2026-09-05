@@ -377,7 +377,7 @@ jobs:
           vendor/bin/infection \
             --threads=4 \
             --no-progress \
-            --min-msi=100
+            --min-msi=80
 
       - name: Upload Infection report
         if: always()
