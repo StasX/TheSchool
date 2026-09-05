@@ -366,4 +366,120 @@ class StudentTest extends TestCase
             ['Phone'],
         ];
     }
+
+    public function test_updating_student_without_courses_preserves_existing_courses(): void
+    {
+        $student = $this->createStudent();
+
+        $courses = collect([
+            $this->createCourse(['Name' => 'Course A']),
+            $this->createCourse(['Name' => 'Course B']),
+        ]);
+
+        $student->courses()->attach(
+            $courses->pluck('Course_ID')->all()
+        );
+
+        $this->putJson(
+            "/api/student/{$student->Student_ID}",
+            [
+                'Email' => $student->Email,
+                'Name' => 'Updated Student',
+                'Phone' => $student->Phone,
+            ]
+        )->assertOk();
+
+        $student->refresh();
+
+        $this->assertEqualsCanonicalizing(
+            $courses->pluck('Course_ID')->all(),
+            $student->courses->pluck('Course_ID')->all()
+        );
+    }
+
+    public function test_updating_student_with_empty_courses_removes_all_courses(): void
+    {
+        $student = $this->createStudent();
+
+        $courses = collect([
+            $this->createCourse(['Name' => 'Course A']),
+            $this->createCourse(['Name' => 'Course B']),
+        ]);
+
+        $student->courses()->attach(
+            $courses->pluck('Course_ID')->all()
+        );
+
+        $this->putJson(
+            "/api/student/{$student->Student_ID}",
+            [
+                'Email' => $student->Email,
+                'Name' => $student->Name,
+                'Phone' => $student->Phone,
+                'courses' => [],
+            ]
+        )->assertOk();
+
+        $student->refresh();
+
+        $this->assertCount(0, $student->courses);
+    }
+
+    public function test_updating_student_without_image_preserves_image(): void
+    {
+        Storage::disk('uploads')->put('student.jpg', 'student image');
+
+        $student = $this->createStudent([
+            'Image' => '/upload/student.jpg',
+        ]);
+
+        $this->putJson(
+            "/api/student/{$student->Student_ID}",
+            [
+                'Email' => $student->Email,
+                'Name' => 'Updated Student',
+                'Phone' => $student->Phone,
+            ]
+        )->assertOk();
+
+        $student->refresh();
+
+        $this->assertSame('/upload/student.jpg', $student->Image);
+
+        $this->assertTrue(
+            Storage::disk('uploads')->exists('student.jpg')
+        );
+    }
+
+    public function test_student_image_can_be_updated_when_old_image_is_missing(): void
+    {
+        $student = $this->createStudent([
+            'Image' => '/upload/missing.jpg',
+        ]);
+
+        $this->assertFalse(
+            Storage::disk('uploads')->exists('missing.jpg')
+        );
+
+        $this->post(
+            "/api/student/{$student->Student_ID}",
+            [
+                '_method' => 'PUT',
+                'Email' => $student->Email,
+                'Name' => $student->Name,
+                'Phone' => $student->Phone,
+                'Image' => UploadedFile::fake()->image('new.jpg'),
+            ]
+        )->assertOk();
+
+        $student->refresh();
+
+        $this->assertNotSame('/upload/missing.jpg', $student->Image);
+
+        $this->assertTrue(
+            Storage::disk('uploads')->exists(
+                basename($student->Image)
+            )
+        );
+    }
 }
