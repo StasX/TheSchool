@@ -8,16 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('administrators')) {
+        if (Schema::hasTable('students')) {
             return;
         }
-        Schema::create('administrators', function (Blueprint $table) {
-            $table->increments('Administrator_ID');
+        Schema::create('students', function (Blueprint $table) {
+            $table->increments('Student_ID');
             $table->string('Email', 64)->unique();
             $table->string('Name', 32);
-            $table->string('Role', 12);
-            $table->string('Phone', 16);
-            $table->string('Password');
+            $table->string('Phone', 54);
             $table->string('Image', 255);
         });
     }

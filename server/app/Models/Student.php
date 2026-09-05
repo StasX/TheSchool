@@ -20,6 +20,9 @@ class Student extends Model
         'Image',
     ];
 
+    /**
+     * @return BelongsToMany<Course, $this>
+     */
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(

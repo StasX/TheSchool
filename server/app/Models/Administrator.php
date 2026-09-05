@@ -8,7 +8,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Administrator extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens;
+    use Notifiable;
 
     protected $table = 'administrators';
 

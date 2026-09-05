@@ -152,4 +152,94 @@ class AuthenticationTest extends TestCase
         $this->getJson('/api/administrator')
             ->assertUnauthorized();
     }
+
+    public function test_login_rejects_missing_email(): void
+    {
+        $this->postJson('/api/login', [
+            'Password' => 'password123',
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+        $this->assertGuest();
+    }
+
+    public function test_login_rejects_invalid_email(): void
+    {
+        $this->postJson('/api/login', [
+            'Email' => 'not-an-email',
+            'Password' => 'password123',
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+        $this->assertGuest();
+    }
+
+    public function test_login_rejects_missing_password(): void
+    {
+        $this->postJson('/api/login', [
+            'Email' => 'owner@example.com',
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+        $this->assertGuest();
+    }
+
+    public function test_login_regenerates_session(): void
+    {
+        $this->createAdministrator();
+
+        $oldSessionId = session()->getId();
+
+        $this->postJson('/api/login', [
+            'Email' => 'owner@example.com',
+            'Password' => 'password123',
+        ])->assertOk();
+
+        $this->assertNotSame($oldSessionId, session()->getId());
+    }
+
+    public function test_login_rejects_non_string_email(): void
+    {
+        $this->postJson('/api/login', [
+            'Email' => ['owner@example.com'],
+            'Password' => 'password123',
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+        $this->assertGuest();
+    }
+
+    public function test_login_rejects_empty_password(): void
+    {
+        $this->postJson('/api/login', [
+            'Email' => 'owner@example.com',
+            'Password' => '',
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+        $this->assertGuest();
+    }
+
+    public function test_login_rejects_non_string_password(): void
+    {
+        $this->postJson('/api/login', [
+            'Email' => 'owner@example.com',
+            'Password' => ['password123'],
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+        $this->assertGuest();
+    }
 }

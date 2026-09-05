@@ -43,8 +43,9 @@ CREATE TABLE `administrators` (
 --
 
 INSERT INTO `administrators` (`Administrator_ID`, `Email`, `Name`, `Role`, `Phone`, `Password`, `Image`) VALUES
-(16, 'stas@mail.com', 'Stas Mestechkin', 'owner', '0546279900', '$2y$12$ArP9SWz2ccjvI00j4s91Zu5vJHH9JvRDOu5yuKqrPBzDes78rZxmG', '../upload/91eb47d4694cb047.jpg'),
-(18, 'smith@mail.com', 'Mr Smith', 'sales', '0542999999', '$2y$12$ArP9SWz2ccjvI00j4s91Zu5vJHH9JvRDOu5yuKqrPBzDes78rZxmG', '../upload/721cc3d567bbc1f6.jpg');
+(16, 'joe@mail.com', 'Joe Doe', 'owner', '0546000001', '$2y$12$ArP9SWz2ccjvI00j4s91Zu5vJHH9JvRDOu5yuKqrPBzDes78rZxmG', '/upload/91eb47d4694cb047.jpg'),
+(17, 'john@mail.com', 'John Black', 'manager', '0546000002', '$2y$12$ArP9SWz2ccjvI00j4s91Zu5vJHH9JvRDOu5yuKqrPBzDes78rZxmG', '/upload/91eb47d4694cb048.jpg'),
+(18, 'smith@mail.com', 'Mr Smith', 'sales', '0542999999', '$2y$12$ArP9SWz2ccjvI00j4s91Zu5vJHH9JvRDOu5yuKqrPBzDes78rZxmG', '/upload/721cc3d567bbc1f6.jpg');
 
 -- --------------------------------------------------------
 
@@ -64,10 +65,10 @@ CREATE TABLE `courses` (
 --
 
 INSERT INTO `courses` (`Course_ID`, `Name`, `Description`, `Image`) VALUES
-(19, 'Course A', 'Course A', '../upload/2bf7bc9bcd04e4a5.png'),
-(20, 'Course B', 'Course B', '../upload/36c53dbafbb0d7f7.png'),
-(21, 'Course C', 'Course C', '../upload/37f668bb3b379f27.png'),
-(22, 'Course D', 'Course D', '../upload/75458c37547059ce.png');
+(19, 'Course A', 'Course A', '/upload/2bf7bc9bcd04e4a5.png'),
+(20, 'Course B', 'Course B', '/upload/36c53dbafbb0d7f7.png'),
+(21, 'Course C', 'Course C', '/upload/37f668bb3b379f27.png'),
+(22, 'Course D', 'Course D', '/upload/75458c37547059ce.png');
 
 -- --------------------------------------------------------
 
@@ -99,9 +100,9 @@ INSERT INTO `school` (`ID`, `Student_ID`, `Course_ID`) VALUES
 
 CREATE TABLE `students` (
   `Student_ID` int(16) NOT NULL,
-  `Email` varchar(60) COLLATE utf8_bin NOT NULL,
+  `Email` varchar(64) COLLATE utf8_bin NOT NULL,
   `Name` varchar(32) COLLATE utf8_bin NOT NULL,
-  `Phone` varchar(54) COLLATE utf8_bin NOT NULL,
+  `Phone` varchar(16) COLLATE utf8_bin NOT NULL,
   `Image` varchar(32) COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -110,7 +111,7 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`Student_ID`, `Email`, `Name`, `Phone`, `Image`) VALUES
-(28, 'yossi@mail.com', 'Yossi Cohen', '054-9999999', '../upload/3f6d762afeb9f79d.png');
+(28, 'yossi@mail.com', 'Yossi Cohen', '054-9999999', '/upload/3f6d762afeb9f79d.png');
 
 --
 -- Indexes for dumped tables

@@ -9,7 +9,8 @@ describe('Courses', () => {
     });
 
     it('creates, edits and deletes a course', () => {
-        const courseName = `Cypress Course ${Date.now()}`;
+        const suffix = Date.now().toString().slice(-6);
+        const courseName = `Cypress Course ${suffix}`;
         const updatedCourseName = `${courseName} Updated`;
 
         // Create

@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use App\Models\Administrator;
@@ -14,11 +15,11 @@ class RoleAuthorizationTest extends TestCase
     {
         return Administrator::create([
             'Email' => "{$role}@example.com",
-            'Name'     => ucfirst($role),
-            'Role'     => $role,
-            'Phone'    => '0500000000',
+            'Name' => ucfirst($role),
+            'Role' => $role,
+            'Phone' => '0500000000',
             'Password' => Hash::make('password123'),
-            'Image'    => '/upload/test.jpg',
+            'Image' => '/upload/test.jpg',
         ]);
     }
 
@@ -79,7 +80,7 @@ class RoleAuthorizationTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_unknown_role_cannot_access_protected_resources(): void
+    public function test_unknown_role_cannot_access_students(): void
     {
         $administrator = $this->createAdministrator('unknown');
 
@@ -89,5 +90,23 @@ class RoleAuthorizationTest extends TestCase
             ->assertJson([
                 'error' => 'Forbidden',
             ]);
+    }
+
+    public function test_sales_can_access_students(): void
+    {
+        $sales = $this->createAdministrator('sales');
+
+        $this->actingAs($sales)
+            ->getJson('/api/student')
+            ->assertOk();
+    }
+
+    public function test_sales_can_view_courses(): void
+    {
+        $sales = $this->createAdministrator('sales');
+
+        $this->actingAs($sales)
+            ->getJson('/api/course')
+            ->assertOk();
     }
 }

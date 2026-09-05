@@ -90,7 +90,7 @@ export const administratorHandlers = {
                 processData: false,
                 contentType: false
             }).done((data) => {
-                administratorHandlers.info(data.Administrator_ID);
+                administratorHandlers.edit(data);
                 $.get('/api/administrator').done(administrators => administratorRender(administrators));
             }).fail(xhr => console.error(xhr));
         });

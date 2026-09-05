@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use App\Models\Administrator;
@@ -6,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class AdministratorTest extends TestCase
@@ -23,12 +25,12 @@ class AdministratorTest extends TestCase
         array $attributes = []
     ): Administrator {
         return Administrator::create(array_merge([
-            'Email'    => 'administrator@example.com',
-            'Name'     => 'Test Administrator',
-            'Role'     => 'manager',
-            'Phone'    => '0500000000',
+            'Email' => 'administrator@example.com',
+            'Name' => 'Test Administrator',
+            'Role' => 'manager',
+            'Phone' => '0500000000',
             'Password' => Hash::make('password123'),
-            'Image'    => '/upload/test.jpg',
+            'Image' => '/upload/test.jpg',
         ], $attributes));
     }
 
@@ -36,7 +38,7 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         $this->createAdministrator([
@@ -47,6 +49,16 @@ class AdministratorTest extends TestCase
             ->getJson('/api/administrator')
             ->assertOk()
             ->assertJsonCount(2)
+            ->assertJsonStructure([
+                '*' => [
+                    'Administrator_ID',
+                    'Email',
+                    'Name',
+                    'Phone',
+                    'Role',
+                    'Image',
+                ],
+            ])
             ->assertJsonMissingPath('0.Password');
     }
 
@@ -54,7 +66,7 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         $manager = $this->createAdministrator([
@@ -68,9 +80,9 @@ class AdministratorTest extends TestCase
             ->assertOk()
             ->assertJson([
                 'Administrator_ID' => $manager->Administrator_ID,
-                'Email'            => 'manager@example.com',
-                'Name'             => 'Test Administrator',
-                'Role'             => 'manager',
+                'Email' => 'manager@example.com',
+                'Name' => 'Test Administrator',
+                'Role' => 'manager',
             ])
             ->assertJsonMissingPath('Password');
     }
@@ -79,7 +91,7 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         $this->actingAs($owner)
@@ -94,17 +106,17 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         $response = $this->actingAs($owner)
             ->post('/api/administrator', [
-                'Email'    => 'sales@example.com',
-                'Name'     => 'Sales Administrator',
-                'Role'     => 'sales',
-                'Phone'    => '0501111111',
+                'Email' => 'sales@example.com',
+                'Name' => 'Sales Administrator',
+                'Role' => 'sales',
+                'Phone' => '0501111111',
                 'Password' => 'secret123',
-                'Image'    => UploadedFile::fake()->image('sales.jpg'),
+                'Image' => UploadedFile::fake()->image('sales.jpg'),
             ]);
 
         $response
@@ -122,19 +134,18 @@ class AdministratorTest extends TestCase
             Hash::check('secret123', $administrator->Password)
         );
 
-    $this->assertTrue(
-        Storage::disk('uploads')->exists(
-            basename($administrator->Image)
-        )
-);
-
+        $this->assertTrue(
+            Storage::disk('uploads')->exists(
+                basename($administrator->Image)
+            )
+        );
     }
 
     public function test_administrator_email_must_be_unique(): void
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         $this->createAdministrator([
@@ -142,13 +153,14 @@ class AdministratorTest extends TestCase
         ]);
 
         $this->actingAs($owner)
+            ->withHeader('Accept', 'application/json')
             ->post('/api/administrator', [
-                'Email'    => 'manager@example.com',
-                'Name'     => 'Another Manager',
-                'Role'     => 'manager',
-                'Phone'    => '0502222222',
+                'Email' => 'manager@example.com',
+                'Name' => 'Another Manager',
+                'Role' => 'manager',
+                'Phone' => '0502222222',
                 'Password' => 'secret123',
-                'Image'    => UploadedFile::fake()->image('manager.jpg'),
+                'Image' => UploadedFile::fake()->image('manager.jpg'),
             ])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('Email');
@@ -158,17 +170,18 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         $this->actingAs($owner)
+            ->withHeader('Accept', 'application/json')
             ->post('/api/administrator', [
-                'Email'    => 'another-owner@example.com',
-                'Name'     => 'Another Owner',
-                'Role'     => 'owner',
-                'Phone'    => '0502222222',
+                'Email' => 'another-owner@example.com',
+                'Name' => 'Another Owner',
+                'Role' => 'owner',
+                'Phone' => '0502222222',
                 'Password' => 'secret123',
-                'Image'    => UploadedFile::fake()->image('owner.jpg'),
+                'Image' => UploadedFile::fake()->image('owner.jpg'),
             ])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('Role');
@@ -178,7 +191,7 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         $manager = $this->createAdministrator([
@@ -192,9 +205,9 @@ class AdministratorTest extends TestCase
                 "/api/administrator/{$manager->Administrator_ID}",
                 [
                     'Email' => 'updated@example.com',
-                    'Name'  => 'Updated Manager',
+                    'Name' => 'Updated Manager',
                     'Phone' => '0503333333',
-                    'Role'  => 'manager',
+                    'Role' => 'manager',
                 ]
             )
             ->assertOk()
@@ -209,7 +222,7 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         $manager = $this->createAdministrator([
@@ -220,10 +233,10 @@ class AdministratorTest extends TestCase
             ->putJson(
                 "/api/administrator/{$manager->Administrator_ID}",
                 [
-                    'Email'    => $manager->Email,
-                    'Name'     => $manager->Name,
-                    'Phone'    => $manager->Phone,
-                    'Role'     => $manager->Role,
+                    'Email' => $manager->Email,
+                    'Name' => $manager->Name,
+                    'Phone' => $manager->Phone,
+                    'Role' => $manager->Role,
                     'Password' => 'new-password',
                 ]
             )
@@ -240,7 +253,7 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         Storage::disk('uploads')->put('old.jpg', 'old image');
@@ -255,11 +268,11 @@ class AdministratorTest extends TestCase
                 "/api/administrator/{$manager->Administrator_ID}",
                 [
                     '_method' => 'PUT',
-                    'Email'   => $manager->Email,
-                    'Name'    => $manager->Name,
-                    'Phone'   => $manager->Phone,
-                    'Role'    => $manager->Role,
-                    'Image'   => UploadedFile::fake()->image('new.jpg'),
+                    'Email' => $manager->Email,
+                    'Name' => $manager->Name,
+                    'Phone' => $manager->Phone,
+                    'Role' => $manager->Role,
+                    'Image' => UploadedFile::fake()->image('new.jpg'),
                 ]
             );
 
@@ -282,7 +295,7 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         $manager = $this->createAdministrator([
@@ -294,9 +307,9 @@ class AdministratorTest extends TestCase
                 "/api/administrator/{$owner->Administrator_ID}",
                 [
                     'Email' => $owner->Email,
-                    'Name'  => 'Modified Owner',
+                    'Name' => 'Modified Owner',
                     'Phone' => $owner->Phone,
-                    'Role'  => 'owner',
+                    'Role' => 'owner',
                 ]
             )
             ->assertForbidden()
@@ -309,7 +322,7 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         $this->actingAs($owner)
@@ -330,7 +343,7 @@ class AdministratorTest extends TestCase
     {
         $owner = $this->createAdministrator([
             'Email' => 'owner@example.com',
-            'Role'  => 'owner',
+            'Role' => 'owner',
         ]);
 
         Storage::disk('uploads')->put(
@@ -354,7 +367,190 @@ class AdministratorTest extends TestCase
         ]);
 
         $this->assertFalse(
-            Storage::disk('uploads')->exists('old.jpg')
+            Storage::disk('uploads')->exists('manager.jpg')
         );
+    }
+
+    #[DataProvider('requiredAdministratorFieldsProvider')]
+    public function test_required_fields_are_validated_when_creating_administrator(
+        string $field
+    ): void {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $data = [
+            'Email' => 'manager@example.com',
+            'Name' => 'Manager',
+            'Role' => 'manager',
+            'Phone' => '0501234567',
+            'Password' => 'password123',
+            'Image' => UploadedFile::fake()->image('manager.jpg'),
+        ];
+
+        unset($data[$field]);
+
+        $this->actingAs($owner)
+            ->post('/api/administrator', $data, [
+                'Accept' => 'application/json',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors($field);
+    }
+
+    public static function requiredAdministratorFieldsProvider(): array
+    {
+        return [
+            ['Email'],
+            ['Name'],
+            ['Role'],
+            ['Phone'],
+            ['Password'],
+            ['Image'],
+        ];
+    }
+
+    public function test_updating_administrator_without_image_preserves_image(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        Storage::disk('uploads')->put('manager.jpg', 'old image');
+
+        $manager = $this->createAdministrator([
+            'Email' => 'manager@example.com',
+            'Image' => '/upload/manager.jpg',
+        ]);
+
+        $this->actingAs($owner)
+            ->putJson(
+                "/api/administrator/{$manager->Administrator_ID}",
+                [
+                    'Email' => 'updated@example.com',
+                    'Name' => 'Updated Manager',
+                    'Phone' => '0503333333',
+                    'Role' => 'manager',
+                ]
+            )
+            ->assertOk();
+
+        $manager->refresh();
+
+        $this->assertSame('/upload/manager.jpg', $manager->Image);
+
+        $this->assertTrue(
+            Storage::disk('uploads')->exists('manager.jpg')
+        );
+    }
+
+    public function test_administrator_image_can_be_updated_when_old_image_is_missing(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $manager = $this->createAdministrator([
+            'Email' => 'manager@example.com',
+            'Image' => '/upload/missing.jpg',
+        ]);
+
+        $this->assertFalse(
+            Storage::disk('uploads')->exists('missing.jpg')
+        );
+
+        $this->actingAs($owner)
+            ->post(
+                "/api/administrator/{$manager->Administrator_ID}",
+                [
+                    '_method' => 'PUT',
+                    'Email' => $manager->Email,
+                    'Name' => $manager->Name,
+                    'Phone' => $manager->Phone,
+                    'Role' => $manager->Role,
+                    'Image' => UploadedFile::fake()->image('new.jpg'),
+                ]
+            )
+            ->assertOk();
+
+        $manager->refresh();
+
+        $this->assertNotSame('/upload/missing.jpg', $manager->Image);
+
+        $this->assertTrue(
+            Storage::disk('uploads')->exists(
+                basename($manager->Image)
+            )
+        );
+    }
+
+    public function test_updating_missing_administrator_returns_not_found(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $this->actingAs($owner)
+            ->putJson('/api/administrator/999999', [
+                'Email' => 'manager@example.com',
+                'Name' => 'Manager',
+                'Phone' => '0501234567',
+                'Role' => 'manager',
+            ])
+            ->assertNotFound()
+            ->assertJson([
+                'error' => 'Administrator not found',
+            ]);
+    }
+
+    public function test_deleting_missing_administrator_returns_not_found(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $this->actingAs($owner)
+            ->deleteJson('/api/administrator/999999')
+            ->assertNotFound()
+            ->assertJson([
+                'error' => 'Administrator not found',
+            ]);
+    }
+
+    public function test_owner_role_cannot_be_assigned_when_updating_administrator(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $manager = $this->createAdministrator([
+            'Email' => 'manager@example.com',
+            'Role' => 'manager',
+        ]);
+
+        $this->actingAs($owner)
+            ->putJson(
+                "/api/administrator/{$manager->Administrator_ID}",
+                [
+                    'Email' => $manager->Email,
+                    'Name' => $manager->Name,
+                    'Phone' => $manager->Phone,
+                    'Role' => 'owner',
+                ]
+            )
+            ->assertForbidden()
+            ->assertJson([
+                'error' => 'Owner role cannot be assigned',
+            ]);
+
+        $manager->refresh();
+
+        $this->assertSame('manager', $manager->Role);
     }
 }

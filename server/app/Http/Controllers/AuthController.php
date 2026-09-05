@@ -1,28 +1,38 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Administrator;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
+        $email = $request->input('Email');
+        $password = $request->input('Password');
         if (
-            ! $request->filled('Email') ||
-            ! filter_var($request->Email, FILTER_VALIDATE_EMAIL) ||
-            ! $request->filled('Password')
+            ! (is_string($email) &&
+            filter_var($email, FILTER_VALIDATE_EMAIL) &&
+            is_string($password) &&
+            $password !== '')
         ) {
             return response()->json([
                 'error' => 'Invalid username or password.',
             ], 401);
         }
+        $users = Administrator::where('Email', $email)->get();
+        if ($users->count() !== 1) {
+            return response()->json([
+                'error' => 'Invalid username or password.',
+            ], 401);
+        }
+        $user = $users->first();
 
-        $user = Administrator::where('Email', $request->Email)->first();
-
-        if (! $user || ! Hash::check($request->Password, $user->Password)) {
+        if (! $user || ! Hash::check($password, $user->Password)) {
             return response()->json([
                 'error' => 'Invalid username or password.',
             ], 401);
@@ -35,16 +45,16 @@ class AuthController extends Controller
         return response()->json([
             'administrator' => [
                 'Administrator_ID' => $user->Administrator_ID,
-                'Email'            => $user->Email,
-                'Name'             => $user->Name,
-                'Role'             => $user->Role,
-                'Image'            => $user->Image,
+                'Email' => $user->Email,
+                'Name' => $user->Name,
+                'Role' => $user->Role,
+                'Image' => $user->Image,
             ],
-            'token'         => csrf_token(),
+            'token' => csrf_token(),
         ]);
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
         Auth::logout();
 
@@ -56,7 +66,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function auth()
+    public function auth(): JsonResponse
     {
         if (! Auth::check()) {
             return response()->json([
@@ -66,13 +76,19 @@ class AuthController extends Controller
 
         $administrator = Auth::user();
 
+        if (! $administrator instanceof Administrator) {
+            return response()->json([
+                'error' => 'Unauthorized',
+            ], 401);
+        }
+
         return response()->json([
             'Administrator_ID' => $administrator->Administrator_ID,
-            'Email'            => $administrator->Email,
-            'Name'             => $administrator->Name,
-            'Role'             => $administrator->Role,
-            'Phone'            => $administrator->Phone,
-            'Image'            => $administrator->Image,
+            'Email' => $administrator->Email,
+            'Name' => $administrator->Name,
+            'Role' => $administrator->Role,
+            'Phone' => $administrator->Phone,
+            'Image' => $administrator->Image,
         ]);
     }
 }
