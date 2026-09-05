@@ -198,8 +198,11 @@ class AdministratorController extends Controller
             unset($data['Password']);
         }
 
-        if ($request->hasFile('Image')) {
+        $oldImage = $administrator->Image;
+        $imageChanged = $request->hasFile('Image');
+        if ($imageChanged) {
             $file = $request->file('Image');
+
             if (! $file instanceof UploadedFile) {
                 return response()->json([
                     'error' => 'Invalid image',
@@ -208,24 +211,25 @@ class AdministratorController extends Controller
 
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
 
-            Storage::disk('uploads')->putFileAs('', $file, $filename);
-
-            $oldImage = $administrator->Image;
+            Storage::disk('uploads')->putFileAs(
+                '',
+                $file,
+                $filename
+            );
 
             $data['Image'] = "/upload/$filename";
-
-            if (
-                $oldImage &&
-                Storage::disk('uploads')->exists(basename($oldImage))
-            ) {
-                Storage::disk('uploads')->delete(basename($oldImage));
-            }
         } else {
             unset($data['Image']);
         }
 
         $administrator->update($data);
-
+        if (
+            $imageChanged &&
+            $oldImage &&
+            Storage::disk('uploads')->exists(basename($oldImage))
+        ) {
+            Storage::disk('uploads')->delete(basename($oldImage));
+        }
         return response()->json($administrator);
     }
 
