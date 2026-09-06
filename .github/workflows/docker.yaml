@@ -1,0 +1,101 @@
+name: Docker Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  docker:
+    name: Build, Scan and Push
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - name: server
+            context: ./server
+            dockerfile: ./server/Dockerfile
+            image: theschool-server
+
+          - name: redis
+            context: ./redis
+            dockerfile: ./redis/Dockerfile
+            image: theschool-redis
+
+          - name: sql
+            context: ./sql
+            dockerfile: ./sql/Dockerfile
+            image: theschool-sql
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Check tag points to latest main commit
+        id: branch_check
+        shell: bash
+        run: |
+          git fetch origin main:refs/remotes/origin/main
+
+          if [ "${{ github.sha }}" = "$(git rev-parse origin/main)" ]; then
+            echo "on_main=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "on_main=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Docker Buildx
+        if: steps.branch_check.outputs.on_main == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        if: steps.branch_check.outputs.on_main == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Generate image metadata
+        if: steps.branch_check.outputs.on_main == 'true'
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+            type=raw,value=latest
+
+      - name: Build image for scanning
+        if: steps.branch_check.outputs.on_main == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          load: true
+          push: false
+          tags: local-${{ matrix.name }}:${{ github.sha }}
+
+      - name: Scan image with Trivy
+        if: steps.branch_check.outputs.on_main == 'true'
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: local-${{ matrix.name }}:${{ github.sha }}
+          format: table
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Push scanned image
+        if: steps.branch_check.outputs.on_main == 'true'
+        shell: bash
+        run: |
+          while IFS= read -r tag; do
+            [ -z "$tag" ] && continue
+            docker tag "local-${{ matrix.name }}:${{ github.sha }}" "$tag"
+            docker push "$tag"
+          done <<< "${{ steps.meta.outputs.tags }}"
