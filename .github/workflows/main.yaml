@@ -5,6 +5,10 @@ on:
     branches:
       - dev
       - main
+    paths-ignore:
+      - README.md
+      - .github/workflows/main.yaml
+      - .github/workflows/docker.yaml
 
   pull_request:
     branches:
@@ -12,6 +16,8 @@ on:
       - main
     paths-ignore:
       - README.md
+      - .github/workflows/main.yaml
+      - .github/workflows/docker.yaml
 
 jobs:
   checkov:

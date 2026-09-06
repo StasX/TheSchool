@@ -1,0 +1,22 @@
+name: Docker
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+    paths-ignore:
+      - README.md
+      - .github/workflows/main.yaml
+      - .github/workflows/docker.yaml
+
+  pull_request:
+    branches:
+      - dev
+      - main
+    paths-ignore:
+      - README.md
+      - .github/workflows/main.yaml
+      - .github/workflows/docker.yaml
+
+jobs:
