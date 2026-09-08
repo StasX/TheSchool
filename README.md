@@ -25,10 +25,10 @@ The main purpose of the project is to demonstrate backend modernization, automat
 The application supports three administrator roles:
 
 | Role | Administrators | Students | Courses |
-|---|---|---|---|
-| Owner | Manage | Manage | Manage |
-| Manager | Manage | Manage | Manage |
-| Sales | No | Manage | Manage |
+| --- | --- | --- | --- |
+| Owner | Manage all | Manage | Manage |
+| Manager | Manage non-owner accounts | Manage | Manage |
+| Sales | No access | Manage | View |
 
 Additional restrictions protect the `owner` role:
 
@@ -58,7 +58,8 @@ Additional restrictions protect the `owner` role:
 - Docker
 - Docker Compose
 - Apache
-- NGINX
+- MariaDB
+- Redis
 
 ### Testing and Code Quality
 
@@ -70,10 +71,11 @@ Additional restrictions protect the `owner` role:
 - Infection mutation testing
 - Semgrep
 - Checkov
+- Trivy
 
-### CI
+### CI/CD
 
-GitHub Actions automatically runs the project's test and quality checks.
+GitHub Actions runs automated testing and quality checks on application changes. Version tags trigger a separate Docker release workflow that scans images with Trivy before publishing them to Docker Hub.
 
 The pipeline includes:
 
@@ -86,6 +88,7 @@ The pipeline includes:
 - Infection mutation testing
 - Semgrep security analysis
 - Checkov infrastructure/container checks
+- Trivy container-image scanning for tagged releases
 
 ## Mutation Testing
 
@@ -130,21 +133,52 @@ TheSchool/
 └── README.md
 ```
 
-## Main API Resources
+## API Endpoints
 
-The backend exposes endpoints for:
+All endpoints use the `/api` prefix. Except for login, all endpoints require an authenticated administrator session. Access is further restricted by role.
 
-```text
-/api/login
-/api/logout
-/api/auth
+### Authentication
 
-/api/administrator
-/api/student
-/api/course
-```
+| Method | Endpoint | Description | Access |
+| --- | --- | --- | --- |
+| `POST` | `/api/login` | Authenticate an administrator | Public |
+| `POST` | `/api/logout` | End the current session | Authenticated |
+| `GET` | `/api/auth` | Return the authenticated administrator | Authenticated |
+| `GET` | `/api/help` | Display the API documentation | Authenticated |
 
-Protected API routes require authentication and are additionally restricted according to administrator role.
+### Administrators
+
+| Method | Endpoint | Description | Roles |
+| --- | --- | --- | --- |
+| `GET` | `/api/administrator` | List all administrators | Owner, Manager |
+| `GET` | `/api/administrator/{id}` | Get an administrator by ID | Owner, Manager |
+| `POST` | `/api/administrator` | Create an administrator | Owner, Manager |
+| `PUT` | `/api/administrator/{id}` | Update an administrator | Owner, Manager |
+| `DELETE` | `/api/administrator/{id}` | Delete an administrator | Owner, Manager |
+
+The owner account has additional protection and cannot be created, reassigned, or deleted through these endpoints.
+
+### Students
+
+| Method | Endpoint | Description | Roles |
+| --- | --- | --- | --- |
+| `GET` | `/api/student` | List all students | Owner, Manager, Sales |
+| `GET` | `/api/student/{id}` | Get a student by ID | Owner, Manager, Sales |
+| `POST` | `/api/student` | Create a student | Owner, Manager, Sales |
+| `PUT` | `/api/student/{id}` | Update a student | Owner, Manager, Sales |
+| `DELETE` | `/api/student/{id}` | Delete a student | Owner, Manager, Sales |
+
+### Courses
+
+| Method | Endpoint | Description | Roles |
+| --- | --- | --- | --- |
+| `GET` | `/api/course` | List all courses | Owner, Manager, Sales |
+| `GET` | `/api/course/{id}` | Get a course by ID | Owner, Manager, Sales |
+| `POST` | `/api/course` | Create a course | Owner, Manager |
+| `PUT` | `/api/course/{id}` | Update a course | Owner, Manager |
+| `DELETE` | `/api/course/{id}` | Delete a course | Owner, Manager |
+
+Authenticated administrators can access detailed API documentation at `/api/help`.
 
 ## Running the Application
 
@@ -209,7 +243,7 @@ docker compose exec app vendor/bin/php-cs-fixer fix --dry-run --diff
 
 ```bash
 docker compose exec app vendor/bin/infection \
-    --threads=10 \
+    --threads=4 \
     --no-progress \
     --min-msi=80
 ```
@@ -296,4 +330,4 @@ It is intended to show how a legacy web application can be progressively moderni
 
 ## License
 
-See the repository license for details.
+This project is licensed under the [MIT License](LICENSE).
