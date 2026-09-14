@@ -8,6 +8,11 @@ body>.container-fluid {
     margin-top: 10px;
 }
 
+pre{
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: var(--bs-code-color);
+}
 
 .item-row {
     height: 46px;
