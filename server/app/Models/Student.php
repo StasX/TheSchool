@@ -11,6 +11,8 @@ class Student extends Model
 
     protected $primaryKey = 'Student_ID';
 
+    protected $hidden = ['pivot'];
+
     public $timestamps = false;
 
     protected $fillable = [

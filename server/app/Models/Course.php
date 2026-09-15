@@ -11,6 +11,8 @@ class Course extends Model
 
     protected $primaryKey = 'Course_ID';
 
+    protected $hidden = ['pivot'];
+
     public $timestamps = false;
 
     protected $fillable = [
