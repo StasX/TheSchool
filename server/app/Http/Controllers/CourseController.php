@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CourseResource;
 use App\Models\Course;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,7 +14,9 @@ class CourseController extends Controller
 {
     public function getAll(): JsonResponse
     {
-        return response()->json(Course::with('students')->get());
+        return CourseResource::collection(
+            Course::with('students')->get()
+        )->response();
     }
 
     //------------------------------------------------------------------------
@@ -22,10 +26,12 @@ class CourseController extends Controller
         $course = Course::with('students')->find($id);
 
         if (! $course) {
-            return response()->json(['error' => 'Course not found'], 404);
+            return response()->json([
+                'error' => 'Course not found',
+            ], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($course);
+        return (new CourseResource($course))->response();
     }
 
     //------------------------------------------------------------------------
@@ -34,35 +40,39 @@ class CourseController extends Controller
     {
         /**
          * @var array{
-         *     Name: string,
-         *     Description: string,
-         *     Image: UploadedFile
+         *     name: string,
+         *     description: string,
+         *     image: UploadedFile
          * } $validated
          */
         $validated = $request->validate([
-            'Name' => ['required', 'string', 'max:32'],
-            'Description' => ['required', 'string', 'max:500'],
-            'Image' => [
+            'name' => ['required', 'string', 'max:32'],
+            'description' => ['required', 'string', 'max:500'],
+            'image' => [
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
                 'max:2048',
             ],
         ]);
-        $file = $request->file('Image');
+        $file = $request->file('image');
         if (! $file instanceof UploadedFile) {
             return response()->json([
                 'error' => 'Invalid image',
-            ], 422);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         Storage::disk('uploads')->putFileAs('', $file, $filename);
         /** @var array<string, mixed> $data */
-        $data = $validated;
-        $data['Image'] = "/upload/$filename";
+        $data = [
+            'Name' => $validated['name'],
+            'Description' => $validated['description'],
+            'Image' => "/upload/$filename"
+        ];
         $course = Course::create($data);
-
-        return response()->json($course, 201);
+        return (new CourseResource($course))
+        ->response()
+        ->setStatusCode(Response::HTTP_CREATED);
     }
 
     //------------------------------------------------------------------------
@@ -72,19 +82,19 @@ class CourseController extends Controller
         $course = Course::find($id);
 
         if (! $course) {
-            return response()->json(['error' => 'Course not found'], 404);
+            return response()->json(['error' => 'Course not found'], Response::HTTP_NOT_FOUND);
         }
         /**
          * @var array{
-         *     Name: string,
-         *     Description: string,
-         *     Image?: UploadedFile|null
+         *     name: string,
+         *     description: string,
+         *     image?: UploadedFile|null
          * } $validated
          */
         $validated = $request->validate([
-            'Name' => ['required', 'string', 'max:32'],
-            'Description' => ['required', 'string', 'max:500'],
-            'Image' => [
+            'name' => ['required', 'string', 'max:32'],
+            'description' => ['required', 'string', 'max:500'],
+            'image' => [
                 'sometimes',
                 'nullable',
                 'image',
@@ -93,17 +103,20 @@ class CourseController extends Controller
             ],
         ]);
         /** @var array<string, mixed> $data */
-        $data = $validated;
-        $oldImage = $course->Image;
-        $imageChanged = $request->hasFile('Image');
+        $data         = [
+            'Name' => $validated['name'],
+            'Description' => $validated['description']
+        ];
+        $oldImage     = $course->Image;
+        $imageChanged = $request->hasFile('image');
 
         if ($imageChanged) {
-            $file = $request->file('Image');
+            $file = $request->file('image');
 
             if (! $file instanceof UploadedFile) {
                 return response()->json([
                     'error' => 'Invalid image',
-                ], 422);
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
@@ -127,17 +140,19 @@ class CourseController extends Controller
             Storage::disk('uploads')->delete(basename($oldImage));
         }
 
-        return response()->json($course);
+        return (new CourseResource(
+            $course->refresh()->load('students')
+        ))->response();
     }
 
     //------------------------------------------------------------------------
 
-    public function remove(int $id): JsonResponse
+    public function remove(int $id): Response
     {
         $course = Course::find($id);
 
         if (! $course) {
-            return response()->json(['error' => 'Course not found'], 404);
+            return response('', Response::HTTP_NOT_FOUND);
         }
         $oldImage = $course->Image;
         $course->students()->detach();
@@ -146,6 +161,6 @@ class CourseController extends Controller
             Storage::disk('uploads')->delete(basename($oldImage));
         }
 
-        return response()->json(null, 204);
+        return response('', Response::HTTP_NO_CONTENT);
     }
 }
