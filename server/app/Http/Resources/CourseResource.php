@@ -14,11 +14,11 @@ class CourseResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->Course_ID,
-            'name'        => $this->Name,
+            'id' => $this->Course_ID,
+            'name' => $this->Name,
             'description' => $this->Description,
-            'image'       => $this->Image,
-            'students'    => StudentResource::collection(
+            'image' => $this->Image,
+            'students' => StudentResource::collection(
                 $this->whenLoaded('students')
             ),
         ];
