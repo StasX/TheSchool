@@ -17,7 +17,7 @@ export function courseRender(data) {
 
 export function courseInfoRender(data) {
     const html = $(courseInfoTemplate);
-    html.find("#course-img").attr({ "src": data.Image, "alt": data.image });
+    html.find("#course-img").attr({ "src": data.image, "alt": data.name });
     html.find("#course-name").text(`${data.name}, ${data.students.length} Students`);
     html.find("#course-description").text(data.description);
     const studentsContainer = html.find("#members-list");
