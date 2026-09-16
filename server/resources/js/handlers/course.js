@@ -5,7 +5,7 @@ import CourseApi from "../api/courseApi";
 
 export const courseHandlers = {
     info: id => {
-        CourseApi.getAll().done(data => {
+        CourseApi.getById(id).done(data => {
             courseInfoRender(data);
         });
     },
