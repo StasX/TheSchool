@@ -73,11 +73,11 @@ class StudentTest extends TestCase
             ->assertJsonCount(3)
             ->assertJsonStructure([
                 '*' => [
-                    'Student_ID',
-                    'Email',
-                    'Name',
-                    'Phone',
-                    'Image',
+                    'id',
+                    'email',
+                    'name',
+                    'phone',
+                    'image',
                     'courses',
                 ],
             ]);
@@ -92,9 +92,9 @@ class StudentTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonPath('Student_ID', $student->Student_ID)
-            ->assertJsonPath('Email', $student->Email)
-            ->assertJsonPath('Name', $student->Name);
+            ->assertJsonPath('id', $student->Student_ID)
+            ->assertJsonPath('email', $student->Email)
+            ->assertJsonPath('name', $student->Name);
     }
 
     public function test_get_non_existing_student_returns_404(): void
@@ -115,10 +115,10 @@ class StudentTest extends TestCase
 
         $response = $this
             ->post('/api/student', [
-                'Email' => 'student@example.com',
-                'Name' => 'Test Student',
-                'Phone' => '0501234567',
-                'Image' => $image,
+                'email' => 'student@example.com',
+                'name' => 'Test Student',
+                'phone' => '0501234567',
+                'image' => $image,
             ]);
 
         $response->assertCreated();
@@ -149,10 +149,10 @@ class StudentTest extends TestCase
 
         $response = $this
             ->post('/api/student', [
-                'Email' => 'student@example.com',
-                'Name' => 'Test Student',
-                'Phone' => '0501234567',
-                'Image' => UploadedFile::fake()->image('student.jpg'),
+                'email' => 'student@example.com',
+                'name' => 'Test Student',
+                'phone' => '0501234567',
+                'image' => UploadedFile::fake()->image('student.jpg'),
                 'courses' => $courses->pluck('Course_ID')->all(),
             ]);
 
@@ -177,15 +177,15 @@ class StudentTest extends TestCase
         $response = $this
             ->withHeader('Accept', 'application/json')
             ->post('/api/student', [
-                'Email' => 'student@example.com',
-                'Name' => 'Another Student',
-                'Phone' => '0501234567',
-                'Image' => UploadedFile::fake()->image('student.jpg'),
+                'email' => 'student@example.com',
+                'name' => 'Another Student',
+                'phone' => '0501234567',
+                'image' => UploadedFile::fake()->image('student.jpg'),
             ]);
 
         $response
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('Email');
+            ->assertJsonValidationErrors('email');
     }
 
     public function test_authenticated_administrator_can_update_student(): void
@@ -194,9 +194,9 @@ class StudentTest extends TestCase
 
         $response = $this
             ->putJson("/api/student/{$student->Student_ID}", [
-                'Email' => 'updated@example.com',
-                'Name' => 'Updated Student',
-                'Phone' => '0509999999',
+                'email' => 'updated@example.com',
+                'name' => 'Updated Student',
+                'phone' => '0509999999',
             ]);
 
         $response->assertSuccessful();
@@ -229,9 +229,9 @@ class StudentTest extends TestCase
 
         $response = $this
             ->putJson("/api/student/{$student->Student_ID}", [
-                'Name' => $student->Name,
-                'Phone' => $student->Phone,
-                'Email' => $student->Email,
+                'name' => $student->Name,
+                'phone' => $student->Phone,
+                'email' => $student->Email,
                 'courses' => $newCourses->pluck('Course_ID')->all(),
             ]);
 
@@ -285,10 +285,10 @@ class StudentTest extends TestCase
             "/api/student/{$student->Student_ID}",
             [
                 '_method' => 'PUT',
-                'Email' => $student->Email,
-                'Name' => $student->Name,
-                'Phone' => $student->Phone,
-                'Image' => UploadedFile::fake()->image('new.jpg'),
+                'email' => $student->Email,
+                'name' => $student->Name,
+                'phone' => $student->Phone,
+                'image' => UploadedFile::fake()->image('new.jpg'),
             ]
         );
 
@@ -312,10 +312,10 @@ class StudentTest extends TestCase
         string $field
     ): void {
         $data = [
-            'Email' => 'student@example.com',
-            'Name' => 'Test Student',
-            'Phone' => '0501234567',
-            'Image' => UploadedFile::fake()->image('student.jpg'),
+            'email' => 'student@example.com',
+            'name' => 'Test Student',
+            'phone' => '0501234567',
+            'image' => UploadedFile::fake()->image('student.jpg'),
         ];
 
         unset($data[$field]);
@@ -329,10 +329,10 @@ class StudentTest extends TestCase
     public static function requiredStudentFieldsProvider(): array
     {
         return [
-            ['Email'],
-            ['Name'],
-            ['Phone'],
-            ['Image'],
+            ['email'],
+            ['name'],
+            ['phone'],
+            ['image'],
         ];
     }
 
@@ -343,9 +343,9 @@ class StudentTest extends TestCase
         $student = $this->createStudent();
 
         $data = [
-            'Email' => $student->Email,
-            'Name' => $student->Name,
-            'Phone' => $student->Phone,
+            'email' => $student->Email,
+            'name' => $student->Name,
+            'phone' => $student->Phone,
         ];
 
         unset($data[$field]);
@@ -361,9 +361,9 @@ class StudentTest extends TestCase
     public static function requiredStudentUpdateFieldsProvider(): array
     {
         return [
-            ['Email'],
-            ['Name'],
-            ['Phone'],
+            ['email'],
+            ['name'],
+            ['phone'],
         ];
     }
 
@@ -383,9 +383,9 @@ class StudentTest extends TestCase
         $this->putJson(
             "/api/student/{$student->Student_ID}",
             [
-                'Email' => $student->Email,
-                'Name' => 'Updated Student',
-                'Phone' => $student->Phone,
+                'email' => $student->Email,
+                'name' => 'Updated Student',
+                'phone' => $student->Phone,
             ]
         )->assertOk();
 
@@ -413,9 +413,9 @@ class StudentTest extends TestCase
         $this->putJson(
             "/api/student/{$student->Student_ID}",
             [
-                'Email' => $student->Email,
-                'Name' => $student->Name,
-                'Phone' => $student->Phone,
+                'email' => $student->Email,
+                'name' => $student->Name,
+                'phone' => $student->Phone,
                 'courses' => [],
             ]
         )->assertOk();
@@ -436,9 +436,9 @@ class StudentTest extends TestCase
         $this->putJson(
             "/api/student/{$student->Student_ID}",
             [
-                'Email' => $student->Email,
-                'Name' => 'Updated Student',
-                'Phone' => $student->Phone,
+                'email' => $student->Email,
+                'name' => 'Updated Student',
+                'phone' => $student->Phone,
             ]
         )->assertOk();
 
@@ -465,10 +465,10 @@ class StudentTest extends TestCase
             "/api/student/{$student->Student_ID}",
             [
                 '_method' => 'PUT',
-                'Email' => $student->Email,
-                'Name' => $student->Name,
-                'Phone' => $student->Phone,
-                'Image' => UploadedFile::fake()->image('new.jpg'),
+                'email' => $student->Email,
+                'name' => $student->Name,
+                'phone' => $student->Phone,
+                'image' => UploadedFile::fake()->image('new.jpg'),
             ]
         )->assertOk();
 
