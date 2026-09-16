@@ -3,21 +3,21 @@
 const CourseApi = {
     getAll() {
         return $.ajax({
-            url: '/api/student',
+            url: '/api/course',
             method: 'GET'
         });
     },
 
     getById(id) {
         return $.ajax({
-            url: `/api/student/${id}`,
+            url: `/api/course/${id}`,
             method: 'GET'
         });
     },
 
     add(data) {
         return $.ajax({
-            url: '/api/student',
+            url: '/api/course',
             method: 'POST',
             data,
             processData: false,
@@ -27,7 +27,7 @@ const CourseApi = {
 
     update(id, data) {
         return $.ajax({
-            url: `/api/student/${id}`,
+            url: `/api/course/${id}`,
             method: 'POST',
             data,
             processData: false,
@@ -37,7 +37,7 @@ const CourseApi = {
 
     remove(id) {
         return $.ajax({
-            url: `/api/student/${id}`,
+            url: `/api/course/${id}`,
             method: 'DELETE'
         });
     }
