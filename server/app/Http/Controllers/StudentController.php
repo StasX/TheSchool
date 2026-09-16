@@ -93,8 +93,8 @@ class StudentController extends Controller
             'Email' => $validated['email'],
             'Name' => $validated['name'],
             'Phone' => $validated['phone'],
-            'Image' => "/upload/$filename"
-            ];
+            'Image' => "/upload/$filename",
+        ];
         $courses = $validated['courses'] ?? [];
         $student = Student::create($data);
         $student->courses()->sync($courses);
@@ -162,7 +162,7 @@ class StudentController extends Controller
         $data = [
             'Email' => $validated['email'],
             'Name' => $validated['name'],
-            'Phone' => $validated['phone']
+            'Phone' => $validated['phone'],
         ];
 
         $courses = $validated['courses'] ?? null;

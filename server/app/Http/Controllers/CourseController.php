@@ -67,7 +67,7 @@ class CourseController extends Controller
         $data = [
             'Name' => $validated['name'],
             'Description' => $validated['description'],
-            'Image' => "/upload/$filename"
+            'Image' => "/upload/$filename",
         ];
         $course = Course::create($data);
         return (new CourseResource($course))
@@ -103,11 +103,11 @@ class CourseController extends Controller
             ],
         ]);
         /** @var array<string, mixed> $data */
-        $data         = [
+        $data = [
             'Name' => $validated['name'],
-            'Description' => $validated['description']
+            'Description' => $validated['description'],
         ];
-        $oldImage     = $course->Image;
+        $oldImage = $course->Image;
         $imageChanged = $request->hasFile('image');
 
         if ($imageChanged) {
