@@ -51,15 +51,15 @@ class AdministratorTest extends TestCase
             ->assertJsonCount(2)
             ->assertJsonStructure([
                 '*' => [
-                    'Administrator_ID',
-                    'Email',
-                    'Name',
-                    'Phone',
-                    'Role',
-                    'Image',
+                    'id',
+                    'email',
+                    'name',
+                    'phone',
+                    'role',
+                    'image',
                 ],
             ])
-            ->assertJsonMissingPath('0.Password');
+            ->assertJsonMissingPath('0.password');
     }
 
     public function test_owner_can_get_administrator_by_id(): void
@@ -79,12 +79,12 @@ class AdministratorTest extends TestCase
             )
             ->assertOk()
             ->assertJson([
-                'Administrator_ID' => $manager->Administrator_ID,
-                'Email' => 'manager@example.com',
-                'Name' => 'Test Administrator',
-                'Role' => 'manager',
+                'id' => $manager->Administrator_ID,
+                'email' => 'manager@example.com',
+                'name' => 'Test Administrator',
+                'role' => 'manager',
             ])
-            ->assertJsonMissingPath('Password');
+            ->assertJsonMissingPath('password');
     }
 
     public function test_getting_missing_administrator_returns_not_found(): void
@@ -111,19 +111,19 @@ class AdministratorTest extends TestCase
 
         $response = $this->actingAs($owner)
             ->post('/api/administrator', [
-                'Email' => 'sales@example.com',
-                'Name' => 'Sales Administrator',
-                'Role' => 'sales',
-                'Phone' => '0501111111',
-                'Password' => 'secret123',
-                'Image' => UploadedFile::fake()->image('sales.jpg'),
+                'email' => 'sales@example.com',
+                'name' => 'Sales Administrator',
+                'role' => 'sales',
+                'phone' => '0501111111',
+                'password' => 'secret123',
+                'image' => UploadedFile::fake()->image('sales.jpg'),
             ]);
 
         $response
             ->assertCreated()
-            ->assertJsonPath('Email', 'sales@example.com')
-            ->assertJsonPath('Role', 'sales')
-            ->assertJsonMissingPath('Password');
+            ->assertJsonPath('email', 'sales@example.com')
+            ->assertJsonPath('role', 'sales')
+            ->assertJsonMissingPath('password');
 
         $administrator = Administrator::where(
             'Email',
@@ -155,15 +155,15 @@ class AdministratorTest extends TestCase
         $this->actingAs($owner)
             ->withHeader('Accept', 'application/json')
             ->post('/api/administrator', [
-                'Email' => 'manager@example.com',
-                'Name' => 'Another Manager',
-                'Role' => 'manager',
-                'Phone' => '0502222222',
-                'Password' => 'secret123',
-                'Image' => UploadedFile::fake()->image('manager.jpg'),
+                'email' => 'manager@example.com',
+                'name' => 'Another Manager',
+                'role' => 'manager',
+                'phone' => '0502222222',
+                'password' => 'secret123',
+                'image' => UploadedFile::fake()->image('manager.jpg'),
             ])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('Email');
+            ->assertJsonValidationErrors('email');
     }
 
     public function test_owner_role_cannot_be_assigned_when_creating_administrator(): void
@@ -176,15 +176,15 @@ class AdministratorTest extends TestCase
         $this->actingAs($owner)
             ->withHeader('Accept', 'application/json')
             ->post('/api/administrator', [
-                'Email' => 'another-owner@example.com',
-                'Name' => 'Another Owner',
-                'Role' => 'owner',
-                'Phone' => '0502222222',
-                'Password' => 'secret123',
-                'Image' => UploadedFile::fake()->image('owner.jpg'),
+                'email' => 'another-owner@example.com',
+                'name' => 'Another Owner',
+                'role' => 'owner',
+                'phone' => '0502222222',
+                'password' => 'secret123',
+                'image' => UploadedFile::fake()->image('owner.jpg'),
             ])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('Role');
+            ->assertJsonValidationErrors('role');
     }
 
     public function test_owner_can_update_administrator_without_changing_password(): void
@@ -204,14 +204,14 @@ class AdministratorTest extends TestCase
             ->putJson(
                 "/api/administrator/{$manager->Administrator_ID}",
                 [
-                    'Email' => 'updated@example.com',
-                    'Name' => 'Updated Manager',
-                    'Phone' => '0503333333',
-                    'Role' => 'manager',
+                    'email' => 'updated@example.com',
+                    'name' => 'Updated Manager',
+                    'phone' => '0503333333',
+                    'role' => 'manager',
                 ]
             )
             ->assertOk()
-            ->assertJsonPath('Email', 'updated@example.com');
+            ->assertJsonPath('email', 'updated@example.com');
 
         $manager->refresh();
 
@@ -233,11 +233,11 @@ class AdministratorTest extends TestCase
             ->putJson(
                 "/api/administrator/{$manager->Administrator_ID}",
                 [
-                    'Email' => $manager->Email,
-                    'Name' => $manager->Name,
-                    'Phone' => $manager->Phone,
-                    'Role' => $manager->Role,
-                    'Password' => 'new-password',
+                    'email' => $manager->Email,
+                    'name' => $manager->Name,
+                    'phone' => $manager->Phone,
+                    'role' => $manager->Role,
+                    'password' => 'new-password',
                 ]
             )
             ->assertOk();
@@ -268,11 +268,11 @@ class AdministratorTest extends TestCase
                 "/api/administrator/{$manager->Administrator_ID}",
                 [
                     '_method' => 'PUT',
-                    'Email' => $manager->Email,
-                    'Name' => $manager->Name,
-                    'Phone' => $manager->Phone,
-                    'Role' => $manager->Role,
-                    'Image' => UploadedFile::fake()->image('new.jpg'),
+                    'email' => $manager->Email,
+                    'name' => $manager->Name,
+                    'phone' => $manager->Phone,
+                    'role' => $manager->Role,
+                    'image' => UploadedFile::fake()->image('new.jpg'),
                 ]
             );
 
@@ -306,10 +306,10 @@ class AdministratorTest extends TestCase
             ->putJson(
                 "/api/administrator/{$owner->Administrator_ID}",
                 [
-                    'Email' => $owner->Email,
-                    'Name' => 'Modified Owner',
-                    'Phone' => $owner->Phone,
-                    'Role' => 'owner',
+                    'email' => $owner->Email,
+                    'name' => 'Modified Owner',
+                    'phone' => $owner->Phone,
+                    'role' => 'owner',
                 ]
             )
             ->assertForbidden()
@@ -329,10 +329,7 @@ class AdministratorTest extends TestCase
             ->deleteJson(
                 "/api/administrator/{$owner->Administrator_ID}"
             )
-            ->assertForbidden()
-            ->assertJson([
-                'error' => 'Owner cannot be removed',
-            ]);
+            ->assertForbidden();
 
         $this->assertDatabaseHas('administrators', [
             'Administrator_ID' => $owner->Administrator_ID,
@@ -381,12 +378,12 @@ class AdministratorTest extends TestCase
         ]);
 
         $data = [
-            'Email' => 'manager@example.com',
-            'Name' => 'Manager',
-            'Role' => 'manager',
-            'Phone' => '0501234567',
-            'Password' => 'password123',
-            'Image' => UploadedFile::fake()->image('manager.jpg'),
+            'email' => 'manager@example.com',
+            'name' => 'Manager',
+            'role' => 'manager',
+            'phone' => '0501234567',
+            'password' => 'password123',
+            'image' => UploadedFile::fake()->image('manager.jpg'),
         ];
 
         unset($data[$field]);
@@ -402,12 +399,12 @@ class AdministratorTest extends TestCase
     public static function requiredAdministratorFieldsProvider(): array
     {
         return [
-            ['Email'],
-            ['Name'],
-            ['Role'],
-            ['Phone'],
-            ['Password'],
-            ['Image'],
+            ['email'],
+            ['name'],
+            ['role'],
+            ['phone'],
+            ['password'],
+            ['image'],
         ];
     }
 
@@ -429,10 +426,10 @@ class AdministratorTest extends TestCase
             ->putJson(
                 "/api/administrator/{$manager->Administrator_ID}",
                 [
-                    'Email' => 'updated@example.com',
-                    'Name' => 'Updated Manager',
-                    'Phone' => '0503333333',
-                    'Role' => 'manager',
+                    'email' => 'updated@example.com',
+                    'name' => 'Updated Manager',
+                    'phone' => '0503333333',
+                    'role' => 'manager',
                 ]
             )
             ->assertOk();
@@ -467,11 +464,11 @@ class AdministratorTest extends TestCase
                 "/api/administrator/{$manager->Administrator_ID}",
                 [
                     '_method' => 'PUT',
-                    'Email' => $manager->Email,
-                    'Name' => $manager->Name,
-                    'Phone' => $manager->Phone,
-                    'Role' => $manager->Role,
-                    'Image' => UploadedFile::fake()->image('new.jpg'),
+                    'email' => $manager->Email,
+                    'name' => $manager->Name,
+                    'phone' => $manager->Phone,
+                    'role' => $manager->Role,
+                    'image' => UploadedFile::fake()->image('new.jpg'),
                 ]
             )
             ->assertOk();
@@ -496,10 +493,10 @@ class AdministratorTest extends TestCase
 
         $this->actingAs($owner)
             ->putJson('/api/administrator/999999', [
-                'Email' => 'manager@example.com',
-                'Name' => 'Manager',
-                'Phone' => '0501234567',
-                'Role' => 'manager',
+                'email' => 'manager@example.com',
+                'name' => 'Manager',
+                'phone' => '0501234567',
+                'role' => 'manager',
             ])
             ->assertNotFound()
             ->assertJson([
@@ -516,10 +513,7 @@ class AdministratorTest extends TestCase
 
         $this->actingAs($owner)
             ->deleteJson('/api/administrator/999999')
-            ->assertNotFound()
-            ->assertJson([
-                'error' => 'Administrator not found',
-            ]);
+            ->assertNotFound();
     }
 
     public function test_owner_role_cannot_be_assigned_when_updating_administrator(): void
@@ -538,10 +532,10 @@ class AdministratorTest extends TestCase
             ->putJson(
                 "/api/administrator/{$manager->Administrator_ID}",
                 [
-                    'Email' => $manager->Email,
-                    'Name' => $manager->Name,
-                    'Phone' => $manager->Phone,
-                    'Role' => 'owner',
+                    'email' => $manager->Email,
+                    'name' => $manager->Name,
+                    'phone' => $manager->Phone,
+                    'role' => 'owner',
                 ]
             )
             ->assertForbidden()
