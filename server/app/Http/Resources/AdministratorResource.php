@@ -19,12 +19,12 @@ class AdministratorResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->Administrator_ID,
-            'email' => $this->Email,
-            'name' => $this->Name,
-            'role' => $this->Role,
-            'phone' => $this->Phone,
-            'image' => $this->Image,
+            'id' => $this->resource->Administrator_ID,
+            'email' => $this->resource->Email,
+            'name' => $this->resource->Name,
+            'role' => $this->resource->Role,
+            'phone' => $this->resource->Phone,
+            'image' => $this->resource->Image,
         ];
     }
 }
