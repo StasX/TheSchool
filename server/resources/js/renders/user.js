@@ -1,7 +1,7 @@
 export function userRender(user) {
     const navbar = $('#navbar');
     const navItems = navbar.find('.nav-item');
-    const canAdministrate = ['owner', 'manager'].includes(user.Role);
+    const canAdministrate = ['owner', 'manager'].includes(user.role);
 
     if (canAdministrate && navItems.length === 1) {
         navbar.append(`
@@ -12,8 +12,8 @@ export function userRender(user) {
             </li>
         `);
     }
-    $('#user-info').text(`${user.Name}, ${user.Role}`);
-    $('#user-image').attr('src', user.Image);
+    $('#user-info').text(`${user.name}, ${user.role}`);
+    $('#user-image').attr('src', user.image);
     $('#logout').on('click', () => {
         $.post('/api/logout')
             .done(() => {
