@@ -2,6 +2,7 @@ import template from "../../templates/partials/administrator.html?raw";
 import { display } from "../utils/image";
 import { administratorRender } from "../renders/administrator";
 import Swal from "sweetalert2";
+import AdministratorApi from "../api/administratorApi";
 
 export const administratorHandlers = {
     add: () => {
@@ -10,7 +11,7 @@ export const administratorHandlers = {
         const form = html.filter("#administrators-form");
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
-                const roleInput = html.find("#role");
+        const roleInput = html.find("#role");
         const roles = ['manager', 'sales'];
         $.each(roles, (i, role) => {
             const option = $('<option></option>');
@@ -23,17 +24,11 @@ export const administratorHandlers = {
             e.preventDefault();
             const formData = new FormData(this);
             if (fileInput[0].files.length) {
-                formData.set("Image", fileInput[0].files[0]);
+                formData.set("image", fileInput[0].files[0]);
             }
-            $.ajax({
-                method: "POST",
-                url: `/api/administrator`,
-                data: formData,
-                processData: false,
-                contentType: false
-            }).done((data) => {
+            AdministratorApi.add(formData).done((data) => {
                 administratorHandlers.edit(data);
-                $.get('/api/administrator').done(administrator => administratorRender(administrator));
+                AdministratorApi.getAll().done(administrator => administratorRender(administrator));
             }).fail(xhr => console.error(xhr));
         });
         saveBtn.on("click", () => form.trigger("submit"));
@@ -58,8 +53,8 @@ export const administratorHandlers = {
             </button>
         `);
         const roleInput = html.find("#role");
-        const roles = ['owner', 'manager', 'sales', () => roleInput.val(administrator.Role)];
-        if (administrator.Role == 'owner') {
+        const roles = ['owner', 'manager', 'sales', () => roleInput.val(administrator.role)];
+        if (administrator.role == 'owner') {
             roles.splice(1, 2);
         }
         $.each(roles, (i, role) => {
@@ -83,13 +78,7 @@ export const administratorHandlers = {
             if (fileInput[0].files.length) {
                 formData.set("Image", fileInput[0].files[0]);
             }
-            $.ajax({
-                method: "POST",
-                url: `/api/administrator/${administrator.Administrator_ID}`,
-                data: formData,
-                processData: false,
-                contentType: false
-            }).done((data) => {
+            AdministratorApi.update(administrator.id, formData).done((data) => {
                 administratorHandlers.edit(data);
                 $.get('/api/administrator').done(administrators => administratorRender(administrators));
             }).fail(xhr => console.error(xhr));
@@ -100,15 +89,15 @@ export const administratorHandlers = {
             btnContainer.append(removeBtn);
         }
         buttons.append(btnContainer);
-        nameInput.val(administrator.Name);
-        phoneInput.val(administrator.Phone);
-        emailInput.val(administrator.Email);
-        imageElement.attr("src", administrator.Image);
+        nameInput.val(administrator.name);
+        phoneInput.val(administrator.phone);
+        emailInput.val(administrator.email);
+        imageElement.attr("src", administrator.image);
         $("#main-container").html(html);
     },
     remove: administrator => {
         Swal.fire({
-            title: `Do you really want to delete administrator: ${administrator.Name}?`,
+            title: `Do you really want to delete administrator: ${administrator.name}?`,
             icon: "question",
             showCloseButton: true,
             showCancelButton: true,
@@ -138,10 +127,7 @@ export const administratorHandlers = {
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $.ajax({
-                            method: "DELETE",
-                            url: `/api/administrator/${administrator.Administrator_ID}`
-                        }).done(() => {
+                        AdministratorApi.remove(administrator.id).done(() => {
                             Swal.fire({
                                 title: "Administrator deleted successfully!",
                                 icon: "success",
