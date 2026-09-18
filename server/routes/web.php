@@ -4,6 +4,7 @@ use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentController;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -22,8 +23,12 @@ Route::get('/upload/{filename}', function (string $filename) {
 });
 
 Route::prefix('api')->group(function () {
+    Route::get('/healthcheck', function () {
+        return response('', Response::HTTP_OK);
+    });
 
     Route::post('/login', [AuthController::class, 'login']);
+
     Route::get('/help', function () {
                 if (! Auth::check()) {
                     return redirect('/');
