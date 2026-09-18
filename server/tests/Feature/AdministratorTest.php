@@ -547,4 +547,41 @@ class AdministratorTest extends TestCase
 
         $this->assertSame('manager', $manager->Role);
     }
+
+    #[DataProvider('validRolesProvider')]
+    public function test_can_create_administrator_with_valid_role(
+        string $role
+    ): void {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $response = $this->actingAs($owner)
+            ->post('/api/administrator', [
+                'email' => "{$role}@example.com",
+                'name' => 'Test Admin',
+                'role' => $role,
+                'phone' => '0500000000',
+                'password' => 'password123',
+                'image' => UploadedFile::fake()->image('avatar.jpg'),
+            ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('role', $role);
+
+        $this->assertDatabaseHas('administrators', [
+            'Email' => "{$role}@example.com",
+            'Role' => $role,
+        ]);
+    }
+
+    public static function validRolesProvider(): array
+    {
+        return [
+            'manager' => ['manager'],
+            'sales' => ['sales'],
+        ];
+    }
 }

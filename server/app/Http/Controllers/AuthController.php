@@ -2,38 +2,55 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AdministratorResource;
 use App\Models\Administrator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function login(Request $request): JsonResponse
     {
-        $email = $request->input('email');
-        $password = $request->input('password');
-        if (
-            ! (is_string($email) &&
-            filter_var($email, FILTER_VALIDATE_EMAIL) &&
-            is_string($password) &&
-            $password !== '')
-        ) {
+        $validator = Validator::make($request->all(), [
+            'email' => [
+                'required',
+                'email',
+            ],
+            'password' => [
+                'required',
+                'string',
+            ],
+        ]);
+
+        if ($validator->fails()) {
             return response()->json([
                 'error' => 'Invalid username or password.',
             ], Response::HTTP_UNAUTHORIZED);
         }
-        $users = Administrator::where('Email', $email)->get();
+
+        $validated = $validator->validated();
+
+        $users = Administrator::where(
+            'Email',
+            $validated['email']
+        )->get();
+
         if ($users->count() !== 1) {
             return response()->json([
                 'error' => 'Invalid username or password.',
             ], Response::HTTP_UNAUTHORIZED);
         }
+
         $user = $users->first();
 
-        if (! $user || ! Hash::check($password, $user->Password)) {
+        if (
+            ! $user ||
+            ! Hash::check($validated['password'], $user->Password)
+        ) {
             return response()->json([
                 'error' => 'Invalid username or password.',
             ], Response::HTTP_UNAUTHORIZED);
@@ -44,13 +61,7 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         return response()->json([
-            'administrator' => [
-                'id' => $user->Administrator_ID,
-                'email' => $user->Email,
-                'name' => $user->Name,
-                'role' => $user->Role,
-                'image' => $user->Image,
-            ],
+            'administrator' => new AdministratorResource($user),
             'token' => csrf_token(),
         ]);
     }
@@ -69,12 +80,6 @@ class AuthController extends Controller
 
     public function auth(): JsonResponse
     {
-        if (! Auth::check()) {
-            return response()->json([
-                'error' => 'Unauthorized',
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
         $administrator = Auth::user();
 
         if (! $administrator instanceof Administrator) {
@@ -83,12 +88,6 @@ class AuthController extends Controller
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        return response()->json([
-            'id' => $administrator->Administrator_ID,
-            'email' => $administrator->Email,
-            'name' => $administrator->Name,
-            'role' => $administrator->Role,
-            'image' => $administrator->Image,
-        ]);
+        return (new AdministratorResource($administrator))->response();
     }
 }
