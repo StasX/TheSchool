@@ -84,7 +84,7 @@ export const administratorHandlers = {
             }).fail(xhr => console.error(xhr));
         });
         saveBtn.on("click", () => form.trigger("submit"));
-        if (administrator.Role != 'owner') {
+        if (administrator.role != 'owner') {
             removeBtn.on("click", () => administratorHandlers.remove(administrator));
             btnContainer.append(removeBtn);
         }

@@ -6,7 +6,7 @@ import { userRender } from './renders/user';
 import AdministratorApi from './api/administratorApi';
 
 export default function administration(user) {
-    if (!['owner', 'manager'].includes(user.Role)) {
+    if (!['owner', 'manager'].includes(user.role)) {
         location.replace('/#!school');
         return;
     }
