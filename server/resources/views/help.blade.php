@@ -41,8 +41,8 @@
                         <pre>
                             <code>
                                 {
-                                    "Email": string,
-                                    "Password": string
+                                    "email": string,
+                                    "password": string
                                 }
                             </code>
                         </pre>
@@ -54,11 +54,12 @@
                                 {
                                     "token": csrf_token,
                                     "administrator": {
-                                        "Administrator_ID": integer,
-                                        "Email": string,
-                                        "Name": string,
-                                        "Role": string,
-                                        "Image": string
+                                        "id": integer,
+                                        "email": string,
+                                        "name": string,
+                                        "role": string,
+                                        "phone": string,
+                                        "image": string
                                     }
                                 }
                             </code>
@@ -108,12 +109,12 @@
                         <pre>
                             <code>
                                 {
-                                    "Administrator_ID": integer,
-                                    "Email": string,
-                                    "Name": string,
-                                    "Role": string,
-                                    "Phone": string,
-                                    "Image": string
+                                    "id": integer,
+                                    "email": string,
+                                    "name": string,
+                                    "role": string,
+                                    "phone": string,
+                                    "image": string
                                 }
                             </code>
                         </pre>
@@ -142,12 +143,12 @@
                             <code>
                                 [
                                     {
-                                        "Administrator_ID": integer,
-                                        "Email": string,
-                                        "Name": string,
-                                        "Role": string,
-                                        "Phone": string,
-                                        "Image": string
+                                        "id": integer,
+                                        "email": string,
+                                        "name": string,
+                                        "role": string,
+                                        "phone": string,
+                                        "image": string
                                     },
                                     ...
                                 ]
@@ -173,12 +174,12 @@
                         <pre>
                             <code>
                                 {
-                                    "Administrator_ID": integer,
-                                    "Email": string,
-                                    "Name": string,
-                                    "Role": string,
-                                    "Phone": string,
-                                    "Image": string
+                                    "id": integer,
+                                    "email": string,
+                                    "name": string,
+                                    "role": string,
+                                    "phone": string,
+                                    "image": string
                                 }
                             </code>
                         </pre>
@@ -194,12 +195,12 @@
                         <pre>
                             <code>
                                 FormData(
-                                    "Email": string,
-                                    "Name": string,
-                                    "Role": string,
-                                    "Phone": string,
-                                    "Password": string,
-                                    "Image": Blob
+                                    "email": string,
+                                    "name": string,
+                                    "role": string,
+                                    "phone": string,
+                                    "password": string,
+                                    "image": Blob
                                 )
                             </code>
                         </pre>
@@ -209,12 +210,12 @@
                         <pre>
                             <code>
                                 {
-                                    "Administrator_ID": integer,
-                                    "Email": string,
-                                    "Name": string,
-                                    "Role": string,
-                                    "Phone": string,
-                                    "Image": string
+                                    "id": integer,
+                                    "email": string,
+                                    "name": string,
+                                    "role": string,
+                                    "phone": string,
+                                    "image": string
                                 }
                             </code>
                         </pre>
@@ -229,12 +230,12 @@
                         <b>Request:</b>
                         <pre>
                             <code>FormData(
-                                    "Email": string,
-                                    "Name": string,
-                                    "Role": string | null,
-                                    "Phone": string,
-                                    "Password": string | null,
-                                    "Image": Blob | null
+                                    "email": string,
+                                    "name": string,
+                                    "role": string | null,
+                                    "phone": string,
+                                    "password": string | null,
+                                    "image": Blob | null
                                 )
                             </code>
                         </pre>
@@ -244,12 +245,12 @@
                         <pre>
                             <code>
                                 {
-                                    "Administrator_ID": integer,
-                                    "Email": string,
-                                    "Name": string,
-                                    "Role": string,
-                                    "Phone": string,
-                                    "Image": string
+                                    "id": integer,
+                                    "email": string,
+                                    "name": string,
+                                    "role": string,
+                                    "phone": string,
+                                    "image": string
                                 }
                             </code>
                         </pre>
@@ -300,17 +301,17 @@
                             <code>
                                 [
                                     {
-                                        "Student_ID": integer,
-                                        "Email": string,
-                                        "Name": string,
-                                        "Phone": string,
-                                        "Image": string,
+                                        "id": integer,
+                                        "email": string,
+                                        "name": string,
+                                        "phone": string,
+                                        "image": string,
                                         "courses": [
                                             {
-                                                "Course_ID": integer,
-                                                "Name": string,
-                                                "Description": string,
-                                                "Image": string
+                                                "id": integer,
+                                                "name": string,
+                                                "description": string,
+                                                "image": string
                                             },
                                             ...
                                         ]
@@ -334,17 +335,17 @@
                         <pre>
                             <code>
                                 {
-                                    "Student_ID": integer,
-                                    "Email": string,
-                                    "Name": string,
-                                    "Phone": string,
-                                    "Image": string,
+                                    "id": integer,
+                                    "email": string,
+                                    "name": string,
+                                    "phone": string,
+                                    "image": string,
                                     "courses": [
                                         {
-                                            "Course_ID": integer,
-                                            "Name": string,
-                                            "Description": string,
-                                            "Image": string
+                                            "id": integer,
+                                            "name": string,
+                                            "description": string,
+                                            "image": string
                                         },
                                         ...
                                     ]
@@ -363,13 +364,13 @@
                         <pre>
                             <code>
                                 FormData(
-                                    "Email": string,
-                                    "Name": string,
-                                    "Phone": string,
-                                    "Image": Blob,
+                                    "email": string,
+                                    "name": string,
+                                    "phone": string,
+                                    "image": Blob,
                                     "courses": [
                                         {
-                                            "Corse_ID": integer
+                                            "id": integer
                                         },
                                         ...
                                     ]
@@ -382,17 +383,17 @@
                         <pre>
                             <code>
                                 {
-                                    "Student_ID": integer,
-                                    "Email": string,
-                                    "Name": string,
-                                    "Phone": string,
-                                    "Image": string,
+                                    "id": integer,
+                                    "email": string,
+                                    "name": string,
+                                    "phone": string,
+                                    "image": string,
                                     "courses": [
                                         {
-                                            "Course_ID": integer,
-                                            "Name": string,
-                                            "Description": string,
-                                            "Image": string
+                                            "id": integer,
+                                            "name": string,
+                                            "description": string,
+                                            "image": string
                                         },
                                         ...
                                     ]
@@ -411,13 +412,13 @@
                         <pre>
                             <code>
                                 FormData(
-                                    "Email": string,
-                                    "Name": string,
-                                    "Phone": string,
-                                    "Image": Blob |null,
+                                    "email": string,
+                                    "name": string,
+                                    "phone": string,
+                                    "image": Blob |null,
                                     "courses": [
                                         {
-                                           "Corse_ID": integer
+                                           "id": integer
                                         },
                                         ...
                                     ]
@@ -430,17 +431,17 @@
                         <pre>
                             <code>
                                 {
-                                    "Student_ID": integer,
-                                    "Email": string,
-                                    "Name": string,
-                                    "Phone": string,
-                                    "Image": string,
+                                    "id": integer,
+                                    "email": string,
+                                    "name": string,
+                                    "phone": string,
+                                    "image": string,
                                     "courses": [
                                         {
-                                            "Course_ID": integer,
-                                            "Name": string,
-                                            "Description": string,
-                                            "Image": string
+                                            "id": integer,
+                                            "name": string,
+                                            "description": string,
+                                            "image": string
                                         },
                                         ...
                                     ]
@@ -493,10 +494,10 @@
                             <code>
                                 [
                                     {
-                                        "Course_ID": integer,
-                                        "Name": string,
-                                        "Description": string,
-                                        "Image": string
+                                        "id": integer,
+                                        "name": string,
+                                        "description": string,
+                                        "image": string
                                     },
                                     ...
                                 ]
@@ -522,17 +523,17 @@
                         <pre>
                             <code>
                                 {
-                                    "Course_ID": integer,
-                                    "Name": string,
-                                    "Description": string,
-                                    "Image": string,
+                                    "id": integer,
+                                    "name": string,
+                                    "description": string,
+                                    "image": string,
                                     "students": [
                                         {
-                                            "Student_ID": integer,
-                                            "Email": string,
-                                            "Name": string,
-                                            "Phone": string,
-                                            "Image": string
+                                            "id": integer,
+                                            "email": string,
+                                            "name": string,
+                                            "phone": string,
+                                            "image": string
                                         },
                                         ...
                                     ]
@@ -551,9 +552,9 @@
                         <pre>
                             <code>
                                 FormData(
-                                    "Name", string,
-                                    "Description": string,
-                                    "Image": Blob
+                                    "name", string,
+                                    "description": string,
+                                    "image": Blob
                                 )
                             </code>
                         </pre>
@@ -563,10 +564,10 @@
                         <pre>
                             <code>
                                 {
-                                    "Course_ID": integer,
-                                    "Name": string,
-                                    "Description": string,
-                                    "Image": string
+                                    "id": integer,
+                                    "name": string,
+                                    "description": string,
+                                    "image": string
                                 }
                             </code>
                         </pre>
@@ -582,9 +583,9 @@
                         <pre>
                             <code>
                                 FormData(
-                                    "Name": string,
-                                    "Description": string,
-                                    "Image": Blob | null
+                                    "name": string,
+                                    "description": string,
+                                    "image": Blob | null
                                 )
                             </code>
                         </pre>
@@ -594,10 +595,10 @@
                         <pre>
                             <code>
                                 {
-                                    "CourseID": integer,
-                                    "Name": string,
-                                    "Description": string,
-                                    "Image": string
+                                    "id": integer,
+                                    "name": string,
+                                    "description": string,
+                                    "image": string
                                 }
                             </code>
                         </pre>
@@ -627,12 +628,28 @@
                 </td>
             </tr>
             <tr>
+                <td>Health check</td>
+                <td><b>GET</b> /api/healthcheck</td>
+                <td>
+                    <div><b>Request:</b>
+                        <pre><code>(empty)</code></pre>
+                    </div>
+                    <div><b>Response:</b>
+                        <pre><code>(empty)</code></pre>
+                    </div>
+                </td>
+            </tr>
+            <tr>
                 <td>API documentation</td>
                 <td><b>GET</b> /api/help</td>
                 <td>
-                    <div><b>Request:</b> <pre><code>(empty)</code></pre></div>
-                    <div><b>Response:</b> <pre><code>help view</code></pre></div>
-            </td>
+                    <div><b>Request:</b>
+                        <pre><code>(empty)</code></pre>
+                    </div>
+                    <div><b>Response:</b>
+                        <pre><code>help view</code></pre>
+                    </div>
+                </td>
             </tr>
         </tbody>
     </table>
