@@ -12,10 +12,12 @@ export default function school(user) {
     userRender(user);
     StudentApi.getAll().done((data) => {
         studentRender(data);
+        $('#total-students').text(data.length);
     });
     $("#add-student").on("click", studentHandlers.add);
     CourseApi.getAll().done((data) => {
         courseRender(data);
+        $('#total-courses').text(data.length);
     });
     $("#add-course").on("click", courseHandlers.add);
 
