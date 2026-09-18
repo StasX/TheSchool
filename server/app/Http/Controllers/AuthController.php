@@ -34,9 +34,15 @@ class AuthController extends Controller
 
         $validated = $validator->validated();
 
+        /** @var string $email */
+        $email = $validated['email'];
+
+        /** @var string $password */
+        $password = $validated['password'];
+
         $users = Administrator::where(
             'Email',
-            $validated['email']
+            $email
         )->get();
 
         if ($users->count() !== 1) {
@@ -48,8 +54,8 @@ class AuthController extends Controller
         $user = $users->first();
 
         if (
-            ! $user ||
-            ! Hash::check($validated['password'], $user->Password)
+            $user === null ||
+            ! Hash::check($password, $user->Password)
         ) {
             return response()->json([
                 'error' => 'Invalid username or password.',
@@ -63,7 +69,7 @@ class AuthController extends Controller
         return response()->json([
             'administrator' => new AdministratorResource($user),
             'token' => csrf_token(),
-        ]);
+        ], Response::HTTP_OK);
     }
 
     public function logout(Request $request): JsonResponse
