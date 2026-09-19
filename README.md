@@ -180,6 +180,7 @@ All endpoints use the `/api` prefix. Except for login, all endpoints require an 
 | --- | --- | --- | --- |
 | `GET` | `/api/administrator` | List all administrators | Owner, Manager |
 | `GET` | `/api/administrator/{id}` | Get an administrator by ID | Owner, Manager |
+| `GET` | `/api/count` | Get the total number of administrators | Owner, Manager |
 | `POST` | `/api/administrator` | Create an administrator | Owner, Manager |
 | `PUT` | `/api/administrator/{id}` | Update an administrator | Owner, Manager |
 | `DELETE` | `/api/administrator/{id}` | Delete an administrator | Owner, Manager |

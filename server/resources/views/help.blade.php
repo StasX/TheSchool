@@ -187,6 +187,30 @@
                 </td>
             </tr>
             <tr>
+                <td>Get the total number of administrators</td>
+                <td><b>GET</b> /api/count</td>
+                <td>
+                    <div>
+                        <b>Request:</b>
+                        <pre>
+                            <code>
+                                (empty)
+                            </code>
+                        </pre>
+                    </div>
+                    <div>
+                        <b>Response:</b>
+                        <pre>
+                            <code>
+                                {
+                                    "count": integer
+                                }
+                            </code>
+                        </pre>
+                    </div>
+                </td>
+            </tr>
+            <tr>
                 <td>Create administrator</td>
                 <td><b>POST</b> /api/administrator</td>
                 <td>
