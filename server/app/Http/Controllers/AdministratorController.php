@@ -27,19 +27,14 @@ class AdministratorController extends Controller
 
     //------------------------------------------------------------------------
 
-    public function getById(string $id): JsonResponse
+    public function getById(int $id): JsonResponse
     {
-        if (! ctype_digit($id)) {
-            return response()->json([
-                'error' => 'Administrator not found',
-            ], Response::HTTP_NOT_FOUND);
-        }
 
         /** @var Administrator $admin */
         $admin = Auth::user();
 
         $administrator = Administrator::visibleTo($admin)
-            ->where('Administrator_ID', (int) $id)
+            ->where('Administrator_ID', $id)
             ->first();
 
         if (! $administrator) {
