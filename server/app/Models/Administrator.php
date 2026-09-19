@@ -41,6 +41,10 @@ class Administrator extends Authenticatable
         return $this->Password;
     }
 
+    /**
+     * @param Builder<Administrator> $query
+     * @return Builder<Administrator>
+     */
     public function scopeVisibleTo(
         Builder $query,
         Administrator $viewer
