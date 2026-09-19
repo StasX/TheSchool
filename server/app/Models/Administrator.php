@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -38,5 +39,15 @@ class Administrator extends Authenticatable
     public function getAuthPassword(): string
     {
         return $this->Password;
+    }
+
+    public function scopeVisibleTo(
+        Builder $query,
+        Administrator $viewer
+    ): Builder {
+        if ($viewer->Role !== 'owner') {
+            $query->where('Role', '!=', 'owner');
+        }
+        return $query;
     }
 }

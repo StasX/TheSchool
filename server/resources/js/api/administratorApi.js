@@ -15,6 +15,13 @@ const AdministratorApi = {
         });
     },
 
+    getCount() {
+        return $.ajax({
+            url: '/api/administrator/count',
+            method: 'GET'
+        });
+    },
+
     add(data) {
         return $.ajax({
             url: '/api/administrator',
@@ -40,7 +47,7 @@ const AdministratorApi = {
             url: `/api/administrator/${id}`,
             method: 'DELETE'
         });
-    }
+    },
 };
 
 export default AdministratorApi;

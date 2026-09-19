@@ -17,16 +17,30 @@ class AdministratorController extends Controller
 {
     public function getAll(): JsonResponse
     {
+        /** @var Administrator $admin */
+        $admin = Auth::user();
+
         return AdministratorResource::collection(
-            Administrator::all()
+            Administrator::visibleTo($admin)->get()
         )->response();
     }
 
     //------------------------------------------------------------------------
 
-    public function getById(int $id): JsonResponse
+    public function getById(string $id): JsonResponse
     {
-        $administrator = Administrator::find($id);
+        if (! ctype_digit($id)) {
+            return response()->json([
+                'error' => 'Administrator not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        /** @var Administrator $admin */
+        $admin = Auth::user();
+
+        $administrator = Administrator::visibleTo($admin)
+            ->where('Administrator_ID', (int) $id)
+            ->first();
 
         if (! $administrator) {
             return response()->json([
@@ -103,8 +117,8 @@ class AdministratorController extends Controller
         ];
         $administrator = Administrator::create($data);
         return (new AdministratorResource($administrator))
-        ->response()
-        ->setStatusCode(Response::HTTP_CREATED);
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     //------------------------------------------------------------------------
@@ -249,5 +263,14 @@ class AdministratorController extends Controller
             Storage::disk('uploads')->delete(basename($oldImage));
         }
         return response('', Response::HTTP_NO_CONTENT);
+    }
+
+    //------------------------------------------------------------------------
+
+    public function getCount(): JsonResponse
+    {
+        return response()->json([
+            'count' => Administrator::count(),
+        ]);
     }
 }

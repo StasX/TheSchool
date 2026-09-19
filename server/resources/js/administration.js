@@ -14,7 +14,12 @@ export default function administration(user) {
     userRender(user);
     AdministratorApi.getAll().done((data) => {
         administratorRender(data);
-        $('#total-administrators').text(data.length);
+    })
+        .fail((xhr) => {
+            console.error(xhr);
+        });
+    AdministratorApi.getCount().done((data) => {
+        $('#total-administrators').text(data.count);
     })
         .fail((xhr) => {
             console.error(xhr);
