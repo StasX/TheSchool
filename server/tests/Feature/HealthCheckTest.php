@@ -8,7 +8,7 @@ class HealthCheckTest extends TestCase
 {
     public function test_example(): void
     {
-        $response = $this->get('/api/healthcheck');
+        $response = $this->get('/api/health');
 
         $response->assertOk();
     }
