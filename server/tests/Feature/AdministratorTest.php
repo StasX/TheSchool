@@ -584,4 +584,64 @@ class AdministratorTest extends TestCase
             'sales' => ['sales'],
         ];
     }
+
+    public function test_manager_cannot_see_owner_in_administrator_list(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $manager = $this->createAdministrator([
+            'Email' => 'manager@example.com',
+            'Role' => 'manager',
+        ]);
+
+        $this->actingAs($manager)
+            ->getJson('/api/administrator')
+            ->assertOk()
+            ->assertJsonFragment([
+                'id' => $manager->Administrator_ID,
+            ])
+            ->assertJsonMissing([
+                'id' => $owner->Administrator_ID,
+            ]);
+    }
+
+    public function test_manager_cannot_get_owner_by_id(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $manager = $this->createAdministrator([
+            'Email' => 'manager@example.com',
+            'Role' => 'manager',
+        ]);
+
+        $this->actingAs($manager)
+            ->getJson(
+                "/api/administrator/{$owner->Administrator_ID}"
+            )
+            ->assertNotFound();
+    }
+
+    public function test_owner_can_see_owner(): void
+    {
+        $owner = $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Role' => 'owner',
+        ]);
+
+        $this->actingAs($owner)
+            ->getJson(
+                "/api/administrator/{$owner->Administrator_ID}"
+            )
+            ->assertOk()
+            ->assertJsonPath(
+                'id',
+                $owner->Administrator_ID
+            );
+    }
 }
