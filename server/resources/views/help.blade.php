@@ -629,7 +629,7 @@
             </tr>
             <tr>
                 <td>Health check</td>
-                <td><b>GET</b> /api/healthcheck</td>
+                <td><b>GET</b> /api/health</td>
                 <td>
                     <div><b>Request:</b>
                         <pre><code>(empty)</code></pre>

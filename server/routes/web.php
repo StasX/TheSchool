@@ -23,7 +23,7 @@ Route::get('/upload/{filename}', function (string $filename) {
 });
 
 Route::prefix('api')->group(function () {
-    Route::get('/healthcheck', function () {
+    Route::get('/health', function () {
         return response('', Response::HTTP_OK);
     });
 
