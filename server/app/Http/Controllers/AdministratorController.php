@@ -262,7 +262,7 @@ class AdministratorController extends Controller
 
     //------------------------------------------------------------------------
 
-    public function getCount(): JsonResponse
+    public function getTotalCount(): JsonResponse
     {
         return response()->json([
             'count' => Administrator::count(),
