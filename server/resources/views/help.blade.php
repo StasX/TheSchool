@@ -188,7 +188,7 @@
             </tr>
             <tr>
                 <td>Get the total number of administrators</td>
-                <td><b>GET</b> /api/count</td>
+                <td><b>GET</b> /api/administrator/count</td>
                 <td>
                     <div>
                         <b>Request:</b>
