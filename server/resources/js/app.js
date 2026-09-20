@@ -2,6 +2,7 @@ import './bootstrap';
 import school from './school';
 import administration from './administration';
 import notFound from './notFound';
+import AuthApi from './api/authApi';
 
 
 $(function () {
@@ -33,20 +34,18 @@ $(function () {
             e.preventDefault();
 
             const data = {
-                Email: $('#user').val(),
-                Password: $('#password').val()
+                email: $('#user').val(),
+                password: $('#password').val()
             };
-
-            $.post('/api/login', data)
-                .done(function (data) {
-                    user = data.administrator;
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': data.token
-                        }
-                    });
-                    location.hash = '#!school';
-                })
+            AuthApi.login(data).done(function (data) {
+                user = data.administrator;
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': data.token
+                    }
+                });
+                location.hash = '#!school';
+            })
                 .fail(function (xhr) {
                     const error = xhr.status === 401
                         ? 'Invalid username or password'
@@ -60,8 +59,7 @@ $(function () {
                 });
         });
     } else {
-        $.get('/api/auth')
-            .done(function (data) {
+        AuthApi.auth().done(function (data) {
                 render(data);
             })
             .fail(function () {

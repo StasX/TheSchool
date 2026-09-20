@@ -4,6 +4,7 @@ use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentController;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -22,8 +23,12 @@ Route::get('/upload/{filename}', function (string $filename) {
 });
 
 Route::prefix('api')->group(function () {
+    Route::get('/health', function () {
+        return response('', Response::HTTP_OK);
+    });
 
     Route::post('/login', [AuthController::class, 'login']);
+
     Route::get('/help', function () {
                 if (! Auth::check()) {
                     return redirect('/');
@@ -52,7 +57,8 @@ Route::prefix('api')->group(function () {
             Route::delete('/course/{id}', [CourseController::class, 'remove']);
 
             Route::get('/administrator', [AdministratorController::class, 'getAll']);
-            Route::get('/administrator/{id}', [AdministratorController::class, 'getById']);
+            Route::get('/administrator/{id}', [AdministratorController::class, 'getById'])->whereNumber('id');
+            Route::get('/administrator/count', [AdministratorController::class, 'getTotalCount']);
             Route::post('/administrator', [AdministratorController::class, 'add']);
             Route::put('/administrator/{id}', [AdministratorController::class, 'update']);
             Route::delete('/administrator/{id}', [AdministratorController::class, 'remove']);

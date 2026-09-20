@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StudentResource;
 use App\Models\Student;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -13,9 +15,9 @@ class StudentController extends Controller
 {
     public function getAll(): JsonResponse
     {
-        return response()->json(
+        return StudentResource::collection(
             Student::with('courses')->get()
-        );
+        )->response();
     }
 
     //------------------------------------------------------------------------
@@ -30,7 +32,7 @@ class StudentController extends Controller
             ], 404);
         }
 
-        return response()->json($student);
+        return (new StudentResource($student))->response();
     }
 
     //------------------------------------------------------------------------
@@ -39,30 +41,30 @@ class StudentController extends Controller
     {
         /**
          * @var array{
-         *     Email: string,
-         *     Name: string,
-         *     Phone: string,
-         *     Image: UploadedFile,
+         *     email: string,
+         *     name: string,
+         *     phone: string,
+         *     image: UploadedFile,
          *     courses?: array<int, int>
          * } $validated
          */
         $validated = $request->validate([
-            'Email' => [
+            'email' => [
                 'required',
                 'email',
                 'unique:students,Email',
             ],
-            'Name' => [
+            'name' => [
                 'required',
                 'string',
                 'max:32',
             ],
-            'Phone' => [
+            'phone' => [
                 'required',
                 'string',
                 'max:54',
             ],
-            'Image' => [
+            'image' => [
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
@@ -78,9 +80,7 @@ class StudentController extends Controller
                 'exists:courses,Course_ID',
             ],
         ]);
-        /** @var array<string, mixed> $data */
-        $data = $validated;
-        $file = $request->file('Image');
+        $file = $request->file('image');
         if (! $file instanceof UploadedFile) {
             return response()->json([
                 'error' => 'Invalid image',
@@ -88,12 +88,19 @@ class StudentController extends Controller
         }
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         Storage::disk('uploads')->putFileAs('', $file, $filename);
-        $data['Image'] = "/upload/$filename";
+        /** @var array<string, mixed> $data */
+        $data = [
+            'Email' => $validated['email'],
+            'Name' => $validated['name'],
+            'Phone' => $validated['phone'],
+            'Image' => "/upload/$filename",
+        ];
         $courses = $validated['courses'] ?? [];
-        unset($data['courses']);
         $student = Student::create($data);
         $student->courses()->sync($courses);
-        return response()->json($student->load('courses'), 201);
+        return (new StudentResource($student->load('courses')))
+        ->response()
+        ->setStatusCode(201);
     }
 
     //------------------------------------------------------------------------
@@ -109,32 +116,32 @@ class StudentController extends Controller
         }
         /**
          * @var array{
-         *     Email: string,
-         *     Name: string,
-         *     Phone: string,
-         *     Image?: UploadedFile|null,
+         *     email: string,
+         *     name: string,
+         *     phone: string,
+         *     image?: UploadedFile|null,
          *     courses?: array<int, int>
          * } $validated
          */
         $validated = $request->validate([
-            'Email' => [
+            'email' => [
                 'required',
                 'email',
                 Rule::unique('students', 'Email')
                     ->ignore($id, 'Student_ID'),
                 'max:60',
             ],
-            'Name' => [
+            'name' => [
                 'required',
                 'string',
                 'max:32',
             ],
-            'Phone' => [
+            'phone' => [
                 'required',
                 'string',
                 'max:54',
             ],
-            'Image' => [
+            'image' => [
                 'sometimes',
                 'nullable',
                 'image',
@@ -152,16 +159,18 @@ class StudentController extends Controller
             ],
         ]);
         /** @var array<string, mixed> $data */
-        $data = $validated;
+        $data = [
+            'Email' => $validated['email'],
+            'Name' => $validated['name'],
+            'Phone' => $validated['phone'],
+        ];
 
         $courses = $validated['courses'] ?? null;
 
-        unset($data['courses']);
-
         $oldImage = $student->Image;
-        $imageChanged = $request->hasFile('Image');
+        $imageChanged = $request->hasFile('image');
         if ($imageChanged) {
-            $file = $request->file('Image');
+            $file = $request->file('image');
 
             if (! $file instanceof UploadedFile) {
                 return response()->json([
@@ -178,8 +187,6 @@ class StudentController extends Controller
             );
 
             $data['Image'] = "/upload/$filename";
-        } else {
-            unset($data['Image']);
         }
 
         $student->update($data);
@@ -197,21 +204,18 @@ class StudentController extends Controller
         }
 
         $student->refresh();
-        return response()->json(
-            $student->load('courses')
-        );
+        return (new StudentResource($student->load('courses')))
+        ->response();
     }
 
     //------------------------------------------------------------------------
 
-    public function remove(int $id): JsonResponse
+    public function remove(int $id): Response
     {
         $student = Student::find($id);
 
         if (! $student) {
-            return response()->json([
-                'error' => 'Student not found',
-            ], 404);
+            return response('', Response::HTTP_NOT_FOUND);
         }
         $oldImage = $student->Image;
         $student->courses()->detach();
@@ -221,6 +225,6 @@ class StudentController extends Controller
             Storage::disk('uploads')->delete(basename($oldImage));
         }
 
-        return response()->json(null, 204);
+        return response('', Response::HTTP_NO_CONTENT);
     }
 }

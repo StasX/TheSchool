@@ -3,10 +3,12 @@ import courseCheckboxTemplate from "../../templates/partials/courseCheckbox.html
 import { display } from "../utils/image";
 import { studentInfoRender, studentRender } from "../renders/student";
 import Swal from "sweetalert2";
+import StudentApi from "../api/studentApi";
+import CourseApi from "../api/courseApi";
 
 export const studentHandlers = {
     info: (id) => {
-        $.get(`/api/student/${id}`).done((data) => {
+        StudentApi.getById(id).done((data) => {
             studentInfoRender(data);
         }
         ).fail(xhr => console.error(xhr));
@@ -23,28 +25,22 @@ export const studentHandlers = {
             e.preventDefault();
             const formData = new FormData(this);
             if (fileInput[0].files.length) {
-                formData.set("Image", fileInput[0].files[0]);
+                formData.set("image", fileInput[0].files[0]);
             }
-            $.ajax({
-                method: "POST",
-                url: `/api/student`,
-                data: formData,
-                processData: false,
-                contentType: false
-            }).done((data) => {
-                studentHandlers.info(data.Student_ID);
-                $.get('/api/student').done((students) => studentRender(students));
+            StudentApi.add(formData).done((data) => {
+                studentHandlers.info(data.id);
+                StudentApi.getAll().done((students) => studentRender(students));
             }).fail(xhr => console.error(xhr));
         });
         saveBtn.on("click", () => form.trigger("submit"));
-        $.get("/api/course").done((data) => $.each(data, (id, course) => {
+        CourseApi.getAll().done((data) => $.each(data, (i, course) => {
             const $course = $(courseCheckboxTemplate);
             const input = $course.find("input");
-            input.val(course.Course_ID);
-            input.attr("id",`course-${course.Course_ID}`);
+            input.val(course.id);
+            input.attr("id", `course-${course.id}`);
             const label = $course.find("label");
-            label.attr("for",`course-${course.Course_ID}`);
-            label.text(course.Name);
+            label.attr("for", `course-${course.id}`);
+            label.text(course.name);
             coursesContainer.append($course);
         }));
 
@@ -75,38 +71,32 @@ export const studentHandlers = {
             const formData = new FormData(this);
             formData.set("_method", "PUT");
             if (fileInput[0].files.length) {
-                formData.set("Image", fileInput[0].files[0]);
+                formData.set("image", fileInput[0].files[0]);
             }
-            $.ajax({
-                method: "POST",
-                url: `/api/student/${student.Student_ID}`,
-                data: formData,
-                processData: false,
-                contentType: false
-            }).done((data) => {
-                studentHandlers.info(data.Student_ID);
-                $.get('/api/student').done(students => studentRender(students));
+            StudentApi.update(student.id, formData).done((data) => {
+                studentHandlers.info(data.id);
+                StudentApi.getAll().done(students => studentRender(students));
             }).fail(xhr => console.error(xhr));
         });
         removeBtn.on("click", () => studentHandlers.remove(student));
         saveBtn.on("click", () => form.trigger("submit"));
         btnContainer.append(removeBtn);
         buttons.append(btnContainer);
-        nameInput.val(student.Name);
-        phoneInput.val(student.Phone);
-        emailInput.val(student.Email);
-        imageElement.attr("src", student.Image);
-        const subscriptions = student.courses.map(obj => obj.Course_ID);
-        $.get("/api/course").done(data => $.each(data, (id, course) => {
-                        const $course = $(courseCheckboxTemplate);
+        nameInput.val(student.name);
+        phoneInput.val(student.phone);
+        emailInput.val(student.email);
+        imageElement.attr("src", student.image);
+        const subscriptions = student.courses.map(obj => obj.id);
+        CourseApi.getAll().done(data => $.each(data, (id, course) => {
+            const $course = $(courseCheckboxTemplate);
             const input = $course.find("input");
-            input.val(course.Course_ID);
-            input.attr("id",`course-${course.Course_ID}`);
+            input.val(course.id);
+            input.attr("id", `course-${course.id}`);
             const label = $course.find("label");
-            label.attr("for",`course-${course.Course_ID}`);
-            label.text(course.Name);
-            if (subscriptions.includes(course.Course_ID)) {
-                $course.find(`#course-${course.Course_ID}`).prop("checked", true);
+            label.attr("for", `course-${course.id}`);
+            label.text(course.name);
+            if (subscriptions.includes(course.id)) {
+                $course.find(`#course-${course.id}`).prop("checked", true);
             }
             coursesContainer.append($course);
         }));
@@ -114,7 +104,7 @@ export const studentHandlers = {
     },
     remove: student => {
         Swal.fire({
-            title: `Do you really want to delete student: ${student.Name}?`,
+            title: `Do you really want to delete student: ${student.name}?`,
             icon: "question",
             showCloseButton: true,
             showCancelButton: true,
@@ -144,15 +134,12 @@ export const studentHandlers = {
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $.ajax({
-                            method: "DELETE",
-                            url: `/api/student/${student.Student_ID}`
-                        }).done(() => {
+                        StudentApi.remove(student.id).done(() => {
                             Swal.fire({
                                 title: "Student deleted successfully!",
                                 icon: "success",
                             }).then(() => {
-                                $.get("/api/student").done(students => studentRender(students));
+                                StudentApi.getAll().done(students => studentRender(students));
                                 $("#main-container").html("");
                             });
                         }).fail(xhr => console.error(xhr));

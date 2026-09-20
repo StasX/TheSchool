@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AdministratorResource;
 use App\Models\Administrator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,40 +17,33 @@ class AdministratorController extends Controller
 {
     public function getAll(): JsonResponse
     {
-        return response()->json(Administrator::query()
-                ->select([
-                    'Administrator_ID',
-                    'Email',
-                    'Name',
-                    'Phone',
-                    'Role',
-                    'Image',
-                ])
-                ->get());
+        /** @var Administrator $admin */
+        $admin = Auth::user();
+
+        return AdministratorResource::collection(
+            Administrator::visibleTo($admin)->get()
+        )->response();
     }
 
     //------------------------------------------------------------------------
 
     public function getById(int $id): JsonResponse
     {
-        $administrator = Administrator::query()
-            ->select([
-                'Administrator_ID',
-                'Email',
-                'Name',
-                'Phone',
-                'Role',
-                'Image',
-            ])
-            ->find($id);
+
+        /** @var Administrator $admin */
+        $admin = Auth::user();
+
+        $administrator = Administrator::visibleTo($admin)
+            ->where('Administrator_ID', $id)
+            ->first();
 
         if (! $administrator) {
             return response()->json([
                 'error' => 'Administrator not found',
-            ], 404);
+            ], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($administrator);
+        return (new AdministratorResource($administrator))->response();
     }
 
     //------------------------------------------------------------------------
@@ -57,61 +52,68 @@ class AdministratorController extends Controller
     {
         /**
          * @var array{
-         *     Email: string,
-         *     Name: string,
-         *     Role: 'manager'|'sales',
-         *     Phone: string,
-         *     Password: string,
-         *     Image: UploadedFile
+         *     email: string,
+         *     name: string,
+         *     role: 'manager'|'sales',
+         *     phone: string,
+         *     password: string,
+         *     image: UploadedFile
          * } $validated
          */
         $validated = $request->validate([
-            'Email' => [
+            'email' => [
                 'required',
                 'email',
                 'unique:administrators,Email',
                 'max:64',
             ],
-            'Name' => [
+            'name' => [
                 'required',
                 'string',
                 'max:32',
             ],
-            'Role' => [
+            'role' => [
                 'required',
                 Rule::in(['manager', 'sales']),
             ],
-            'Phone' => [
+            'phone' => [
                 'required',
                 'string',
                 'max:16',
             ],
-            'Password' => [
+            'password' => [
                 'required',
                 'string',
                 'min:8',
             ],
-            'Image' => [
+            'image' => [
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
                 'max:2048',
             ],
         ]);
-        $file = $request->file('Image');
+        $file = $request->file('image');
         if (! $file instanceof UploadedFile) {
             return response()->json([
                 'error' => 'Invalid image',
-            ], 422);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         Storage::disk('uploads')->putFileAs('', $file, $filename);
         /** @var array<string, mixed> $data */
-        $data = $validated;
-        $data['Password'] = Hash::make($validated['Password']);
-        $data['Image'] = "/upload/$filename";
+        $data = [
+            'Email' => $validated['email'],
+            'Name' => $validated['name'],
+            'Role' => $validated['role'],
+            'Phone' => $validated['phone'],
+            'Password' => Hash::make($validated['password']),
+            'Image' => "/upload/$filename",
+        ];
         $administrator = Administrator::create($data);
-        return response()->json($administrator, 201);
+        return (new AdministratorResource($administrator))
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     //------------------------------------------------------------------------
@@ -124,54 +126,54 @@ class AdministratorController extends Controller
         if (! $administrator) {
             return response()->json([
                 'error' => 'Administrator not found',
-            ], 404);
+            ], Response::HTTP_NOT_FOUND);
         }
 
         if ($administrator->Role === 'owner' && $admin->Role !== 'owner') {
             return response()->json([
                 'error' => 'Only an owner can modify an owner',
-            ], 403);
+            ], Response::HTTP_FORBIDDEN);
         }
         /**
          * @var array{
-         *     Email: string,
-         *     Name: string,
-         *     Role?: 'manager'|'owner'|'sales',
-         *     Phone: string,
-         *     Password?: string|null,
-         *     Image?: UploadedFile|null
+         *     email: string,
+         *     name: string,
+         *     role?: 'manager'|'owner'|'sales',
+         *     phone: string,
+         *     password?: string|null,
+         *     image?: UploadedFile|null
          * } $validated
          */
         $validated = $request->validate([
-            'Email' => [
+            'email' => [
                 'required',
                 'email',
                 'max:64',
                 Rule::unique('administrators', 'Email')
                     ->ignore($id, 'Administrator_ID'),
             ],
-            'Name' => [
+            'name' => [
                 'required',
                 'string',
                 'max:32',
             ],
-            'Role' => [
+            'role' => [
                 'sometimes',
                 Rule::in(['manager', 'owner', 'sales']),
             ],
-            'Phone' => [
+            'phone' => [
                 'required',
                 'string',
                 'max:16',
             ],
-            'Image' => [
+            'image' => [
                 'sometimes',
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
                 'max:2048',
             ],
-            'Password' => [
+            'password' => [
                 'sometimes',
                 'nullable',
                 'string',
@@ -179,7 +181,12 @@ class AdministratorController extends Controller
             ],
         ]);
         /** @var array<string, mixed> $data */
-        $data = $validated;
+        $data = [
+            'Email' => $validated['email'],
+            'Name' => $validated['name'],
+            'Role' => $validated['role'] ?? $administrator->Role,
+            'Phone' => $validated['phone'],
+        ];
 
         if ($administrator->Role === 'owner') {
             unset($data['Role']);
@@ -189,24 +196,22 @@ class AdministratorController extends Controller
         ) {
             return response()->json([
                 'error' => 'Owner role cannot be assigned',
-            ], 403);
+            ], Response::HTTP_FORBIDDEN);
         }
 
-        if (! empty($validated['Password'])) {
-            $data['Password'] = Hash::make($validated['Password']);
-        } else {
-            unset($data['Password']);
+        if (! empty($validated['password'])) {
+            $data['Password'] = Hash::make($validated['password']);
         }
 
         $oldImage = $administrator->Image;
-        $imageChanged = $request->hasFile('Image');
+        $imageChanged = $request->hasFile('image');
         if ($imageChanged) {
-            $file = $request->file('Image');
+            $file = $request->file('image');
 
             if (! $file instanceof UploadedFile) {
                 return response()->json([
                     'error' => 'Invalid image',
-                ], 422);
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
@@ -218,8 +223,6 @@ class AdministratorController extends Controller
             );
 
             $data['Image'] = "/upload/$filename";
-        } else {
-            unset($data['Image']);
         }
 
         $administrator->update($data);
@@ -230,26 +233,22 @@ class AdministratorController extends Controller
         ) {
             Storage::disk('uploads')->delete(basename($oldImage));
         }
-        return response()->json($administrator);
+        return (new AdministratorResource($administrator))->response();
     }
 
     //------------------------------------------------------------------------
 
-    public function remove(int $id): JsonResponse
+    public function remove(int $id): Response
     {
 
         $administrator = Administrator::find($id);
 
         if (! $administrator) {
-            return response()->json([
-                'error' => 'Administrator not found',
-            ], 404);
+            return response('', Response::HTTP_NOT_FOUND);
         }
 
         if ($administrator->Role === 'owner') {
-            return response()->json([
-                'error' => 'Owner cannot be removed',
-            ], 403);
+            return response('', Response::HTTP_FORBIDDEN);
         }
 
         $oldImage = $administrator->Image;
@@ -258,6 +257,15 @@ class AdministratorController extends Controller
         if ($oldImage && Storage::disk('uploads')->exists(basename($oldImage))) {
             Storage::disk('uploads')->delete(basename($oldImage));
         }
-        return response()->json(null, 204);
+        return response('', Response::HTTP_NO_CONTENT);
+    }
+
+    //------------------------------------------------------------------------
+
+    public function getTotalCount(): JsonResponse
+    {
+        return response()->json([
+            'count' => Administrator::count(),
+        ]);
     }
 }

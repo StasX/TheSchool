@@ -98,10 +98,10 @@ Current result:
 
 ```text
 Mutation Code Coverage: 100%
-Mutation Score Indicator (MSI): 80.60%
-Killed mutants: 241
-Escaped mutants: 58
-Total mutants: 299
+Mutation Score Indicator (MSI): 80.15%
+Killed mutants: 214
+Escaped mutants: 53
+Total mutants: 267
 ```
 
 Mutation testing helped identify tests that executed code without sufficiently verifying its behavior.
@@ -113,23 +113,52 @@ TheSchool/
 ├── .github/
 │   └── workflows/
 ├── cypress/
+├── redis/
 ├── server/
 │   ├── app/
 │   │   ├── Http/
 │   │   │   ├── Controllers/
-│   │   │   └── Middleware/
+│   │   │   ├── Middleware/
+│   │   │   └── Resources/
 │   │   └── Models/
+│   ├── bootstrap/
+│   │   └── cache/
+│   ├── config/
 │   ├── database/
 │   │   └── migrations/
+│   ├── public/
+│   │   └── img/
 │   ├── resources/
 │   ├── routes/
 │   ├── tests/
 │   │   └── Feature/
+│   ├── uploads/
+│   ├── .dockerignore
+│   ├── .editorconfig
+│   ├── .env.example
+│   ├── .gitattributes
+│   ├── .gitignore
+│   ├── .php-cs-fixer.php
+│   ├── artisan
 │   ├── composer.json
+│   ├── composer.lock
+│   ├── docker-entrypoint.sh
+│   ├── Dockerfile
 │   ├── infection.json5
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── phpcs.xml
 │   ├── phpstan.neon
-│   └── phpcs.xml
+│   ├── phpunit.xml
+│   └── vite.config.js
+├── sql/
+├── .gitignore
+├── .hintrc
+├── cypress.config.js
 ├── docker-compose.yml
+├── LICENSE
+├── package-lock.json
+├── package.json
 └── README.md
 ```
 
@@ -144,7 +173,6 @@ All endpoints use the `/api` prefix. Except for login, all endpoints require an 
 | `POST` | `/api/login` | Authenticate an administrator | Public |
 | `POST` | `/api/logout` | End the current session | Authenticated |
 | `GET` | `/api/auth` | Return the authenticated administrator | Authenticated |
-| `GET` | `/api/help` | Display the API documentation | Authenticated |
 
 ### Administrators
 
@@ -152,6 +180,7 @@ All endpoints use the `/api` prefix. Except for login, all endpoints require an 
 | --- | --- | --- | --- |
 | `GET` | `/api/administrator` | List all administrators | Owner, Manager |
 | `GET` | `/api/administrator/{id}` | Get an administrator by ID | Owner, Manager |
+| `GET` | `/api/administrator/count` | Get the total number of administrators | Owner, Manager |
 | `POST` | `/api/administrator` | Create an administrator | Owner, Manager |
 | `PUT` | `/api/administrator/{id}` | Update an administrator | Owner, Manager |
 | `DELETE` | `/api/administrator/{id}` | Delete an administrator | Owner, Manager |
@@ -177,6 +206,13 @@ The owner account has additional protection and cannot be created, reassigned, o
 | `POST` | `/api/course` | Create a course | Owner, Manager |
 | `PUT` | `/api/course/{id}` | Update a course | Owner, Manager |
 | `DELETE` | `/api/course/{id}` | Delete a course | Owner, Manager |
+
+### Utils
+
+| Method | Endpoint | Description | Access |
+| --- | --- | --- | --- |
+| `GET` | `/api/help` | Display the API documentation | Authenticated |
+| `GET` | `/api/health` | Check the application health status | Public |
 
 Authenticated administrators can access detailed API documentation at `/api/help`.
 

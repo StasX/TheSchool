@@ -7,8 +7,9 @@ on:
       - main
     paths-ignore:
       - README.md
-      - .github/workflows/main.yaml
-      - .github/workflows/docker.yaml
+      - LICENSE
+      - .hintrc
+      - server/.editorconfig
 
   pull_request:
     branches:

@@ -7,25 +7,25 @@ export function studentRender(data) {
     $("#students-container").html('');
     $.each(data, (i, student) => {
         const html = $(studentListItemTemplate);
-        html.find(".student-name").text(student.Name);
-        html.find(".student-phone").text(student.Phone);
-        html.find(".student-img").attr({ "src": student.Image, "alt": student.Name });
-        html.on("click", () => studentHandlers.info(student.Student_ID));
+        html.find(".student-name").text(student.name);
+        html.find(".student-phone").text(student.phone);
+        html.find(".student-img").attr({ "src": student.image, "alt": student.name });
+        html.on("click", () => studentHandlers.info(student.id));
         $("#students-container").append(html);
     });
 }
 
 export function studentInfoRender(data) {
     const html = $(studentInfoTemplate);
-    html.find("#student-img").attr({ "src": data.Image, "alt": data.Name });
-    html.find("#student-name").text(data.Name);
-    html.find("#student-phone").text(data.Phone);
-    html.find("#student-email").text(data.Email);
+    html.find("#student-img").attr({ "src": data.image, "alt": data.name });
+    html.find("#student-name").text(data.name);
+    html.find("#student-phone").text(data.phone);
+    html.find("#student-email").text(data.email);
     const coursesElement = html.find("#member-of");
     $.each(data.courses, (i, course) => {
         const memberItem = $(memberItemTemplate);
-        memberItem.find(".course-name").text(course.Name);
-        memberItem.find(".course-img").attr({ "alt": course.Name, "src": course.Image });
+        memberItem.find(".course-name").text(course.name);
+        memberItem.find(".course-img").attr({ "alt": course.name, "src": course.image });
         coursesElement.append(memberItem);
     });
     html.find("#edit").on("click", () => studentHandlers.edit(data));

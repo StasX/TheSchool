@@ -2,40 +2,64 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AdministratorResource;
 use App\Models\Administrator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function login(Request $request): JsonResponse
     {
-        $email = $request->input('Email');
-        $password = $request->input('Password');
-        if (
-            ! (is_string($email) &&
-            filter_var($email, FILTER_VALIDATE_EMAIL) &&
-            is_string($password) &&
-            $password !== '')
-        ) {
+        $validator = Validator::make($request->all(), [
+            'email' => [
+                'required',
+                'email',
+            ],
+            'password' => [
+                'required',
+                'string',
+            ],
+        ]);
+
+        if ($validator->fails()) {
             return response()->json([
                 'error' => 'Invalid username or password.',
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
-        $users = Administrator::where('Email', $email)->get();
+
+        $validated = $validator->validated();
+
+        /** @var string $email */
+        $email = $validated['email'];
+
+        /** @var string $password */
+        $password = $validated['password'];
+
+        $users = Administrator::where(
+            'Email',
+            $email
+        )->get();
+
         if ($users->count() !== 1) {
             return response()->json([
                 'error' => 'Invalid username or password.',
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
+
         $user = $users->first();
 
-        if (! $user || ! Hash::check($password, $user->Password)) {
+        if (
+            $user === null ||
+            ! Hash::check($password, $user->Password)
+        ) {
             return response()->json([
                 'error' => 'Invalid username or password.',
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         Auth::login($user);
@@ -43,15 +67,9 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         return response()->json([
-            'administrator' => [
-                'Administrator_ID' => $user->Administrator_ID,
-                'Email' => $user->Email,
-                'Name' => $user->Name,
-                'Role' => $user->Role,
-                'Image' => $user->Image,
-            ],
+            'administrator' => new AdministratorResource($user),
             'token' => csrf_token(),
-        ]);
+        ], Response::HTTP_OK);
     }
 
     public function logout(Request $request): JsonResponse
@@ -68,27 +86,14 @@ class AuthController extends Controller
 
     public function auth(): JsonResponse
     {
-        if (! Auth::check()) {
-            return response()->json([
-                'error' => 'Unauthorized',
-            ], 401);
-        }
-
         $administrator = Auth::user();
 
         if (! $administrator instanceof Administrator) {
             return response()->json([
                 'error' => 'Unauthorized',
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
-        return response()->json([
-            'Administrator_ID' => $administrator->Administrator_ID,
-            'Email' => $administrator->Email,
-            'Name' => $administrator->Name,
-            'Role' => $administrator->Role,
-            'Phone' => $administrator->Phone,
-            'Image' => $administrator->Image,
-        ]);
+        return (new AdministratorResource($administrator))->response();
     }
 }

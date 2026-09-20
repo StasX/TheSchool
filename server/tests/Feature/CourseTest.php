@@ -61,10 +61,10 @@ class CourseTest extends TestCase
             ->assertJsonCount(3)
             ->assertJsonStructure([
                 '*' => [
-                    'Course_ID',
-                    'Name',
-                    'Description',
-                    'Image',
+                    'id',
+                    'name',
+                    'description',
+                    'image',
                     'students',
                 ],
             ]);
@@ -80,9 +80,9 @@ class CourseTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonPath('Course_ID', $course->Course_ID)
-            ->assertJsonPath('Name', $course->Name)
-            ->assertJsonPath('Description', $course->Description);
+            ->assertJsonPath('id', $course->Course_ID)
+            ->assertJsonPath('name', $course->Name)
+            ->assertJsonPath('description', $course->Description);
     }
 
     public function test_get_non_existing_course_returns_404(): void
@@ -100,9 +100,9 @@ class CourseTest extends TestCase
 
         $response = $this
             ->post('/api/course', [
-                'Name' => 'PHP Course',
-                'Description' => 'Laravel backend course',
-                'Image' => $image,
+                'name' => 'PHP Course',
+                'description' => 'Laravel backend course',
+                'image' => $image,
             ]);
 
         $response->assertCreated();
@@ -134,14 +134,14 @@ class CourseTest extends TestCase
         $response = $this
             ->withHeader('Accept', 'application/json')
             ->post('/api/course', [
-                'Name' => 'PHP Course',
-                'Description' => 'Test description',
-                'Image' => $file,
+                'name' => 'PHP Course',
+                'description' => 'Test description',
+                'image' => $file,
             ]);
 
         $response
             ->assertUnprocessable()
-            ->assertJsonValidationErrors('Image');
+            ->assertJsonValidationErrors('image');
     }
 
     public function test_authenticated_administrator_can_update_course(): void
@@ -151,8 +151,8 @@ class CourseTest extends TestCase
         $response = $this->putJson(
             "/api/course/{$course->Course_ID}",
             [
-                'Name' => 'Updated Course',
-                'Description' => 'Updated description',
+                'name' => 'Updated Course',
+                'description' => 'Updated description',
             ]
         );
 
@@ -182,9 +182,9 @@ class CourseTest extends TestCase
             "/api/course/{$course->Course_ID}",
             [
                 '_method' => 'PUT',
-                'Name' => $course->Name,
-                'Description' => $course->Description,
-                'Image' => $newImage,
+                'name' => $course->Name,
+                'description' => $course->Description,
+                'image' => $newImage,
             ]
         );
 
@@ -234,9 +234,9 @@ class CourseTest extends TestCase
         string $field
     ): void {
         $data = [
-            'Name' => 'PHP Course',
-            'Description' => 'Laravel backend course',
-            'Image' => UploadedFile::fake()->image('course.jpg'),
+            'name' => 'PHP Course',
+            'description' => 'Laravel backend course',
+            'image' => UploadedFile::fake()->image('course.jpg'),
         ];
 
         unset($data[$field]);
@@ -250,9 +250,9 @@ class CourseTest extends TestCase
     public static function requiredCourseFieldsProvider(): array
     {
         return [
-            ['Name'],
-            ['Description'],
-            ['Image'],
+            ['name'],
+            ['description'],
+            ['image'],
         ];
     }
 
@@ -263,8 +263,8 @@ class CourseTest extends TestCase
         $course = $this->createCourse();
 
         $data = [
-            'Name' => 'Updated Course',
-            'Description' => 'Updated description',
+            'name' => 'Updated Course',
+            'description' => 'Updated description',
         ];
 
         unset($data[$field]);
@@ -280,16 +280,16 @@ class CourseTest extends TestCase
     public static function requiredCourseUpdateFieldsProvider(): array
     {
         return [
-            ['Name'],
-            ['Description'],
+            ['name'],
+            ['description'],
         ];
     }
 
     public function test_update_non_existing_course_returns_404(): void
     {
         $this->putJson('/api/course/999999', [
-            'Name' => 'Updated Course',
-            'Description' => 'Updated description',
+            'name' => 'Updated Course',
+            'description' => 'Updated description',
         ])
             ->assertNotFound()
             ->assertJson([
@@ -299,11 +299,9 @@ class CourseTest extends TestCase
 
     public function test_delete_non_existing_course_returns_404(): void
     {
-        $this->deleteJson('/api/course/999999')
-            ->assertNotFound()
-            ->assertJson([
-                'error' => 'Course not found',
-            ]);
+        $response = $this->deleteJson('/api/course/999999');
+        $response->assertNotFound();
+        $this->assertSame('', $response->getContent());
     }
 
     public function test_course_image_can_be_updated_when_old_image_is_missing(): void
@@ -320,9 +318,9 @@ class CourseTest extends TestCase
             "/api/course/{$course->Course_ID}",
             [
                 '_method' => 'PUT',
-                'Name' => $course->Name,
-                'Description' => $course->Description,
-                'Image' => UploadedFile::fake()->image('new.jpg'),
+                'name' => $course->Name,
+                'description' => $course->Description,
+                'image' => UploadedFile::fake()->image('new.jpg'),
             ]
         )->assertSuccessful();
 
@@ -348,8 +346,8 @@ class CourseTest extends TestCase
         $this->putJson(
             "/api/course/{$course->Course_ID}",
             [
-                'Name' => 'Updated Course',
-                'Description' => 'Updated description',
+                'name' => 'Updated Course',
+                'description' => 'Updated description',
             ]
         )->assertSuccessful();
 

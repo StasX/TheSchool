@@ -28,31 +28,31 @@ class AuthenticationTest extends TestCase
         $administrator = $this->createAdministrator();
 
         $response = $this->postJson('/api/login', [
-            'Email' => 'owner@example.com',
-            'Password' => 'password123',
+            'email' => 'owner@example.com',
+            'password' => 'password123',
         ]);
 
         $response
             ->assertOk()
             ->assertJsonPath(
-                'administrator.Administrator_ID',
+                'administrator.id',
                 $administrator->Administrator_ID
             )
             ->assertJsonPath(
-                'administrator.Email',
+                'administrator.email',
                 $administrator->Email
             )
             ->assertJsonPath(
-                'administrator.Role',
+                'administrator.role',
                 'owner'
             )
             ->assertJsonStructure([
                 'administrator' => [
-                    'Administrator_ID',
-                    'Email',
-                    'Name',
-                    'Role',
-                    'Image',
+                    'id',
+                    'email',
+                    'name',
+                    'role',
+                    'image',
                 ],
                 'token',
             ]);
@@ -65,8 +65,8 @@ class AuthenticationTest extends TestCase
         $this->createAdministrator();
 
         $this->postJson('/api/login', [
-            'Email' => 'owner@example.com',
-            'Password' => 'incorrect-password',
+            'email' => 'owner@example.com',
+            'password' => 'incorrect-password',
         ])
             ->assertUnauthorized()
             ->assertJson([
@@ -79,8 +79,8 @@ class AuthenticationTest extends TestCase
     public function test_login_fails_with_unknown_email(): void
     {
         $this->postJson('/api/login', [
-            'Email' => 'unknown@example.com',
-            'Password' => 'password123',
+            'email' => 'unknown@example.com',
+            'password' => 'password123',
         ])
             ->assertUnauthorized()
             ->assertJson([
@@ -109,16 +109,13 @@ class AuthenticationTest extends TestCase
             ->getJson('/api/auth')
             ->assertOk()
             ->assertJson([
-                'Administrator_ID' => $administrator->Administrator_ID,
-                'Email' => $administrator->Email,
-                'Name' => $administrator->Name,
-                'Role' => $administrator->Role,
-                'Phone' => $administrator->Phone,
-                'Image' => $administrator->Image,
+                'id' => $administrator->Administrator_ID,
+                'email' => $administrator->Email,
+                'name' => $administrator->Name,
+                'role' => $administrator->Role,
+                'image' => $administrator->Image,
             ])
-            ->assertJsonMissing([
-                'Password' => $administrator->Password,
-            ]);
+            ->assertJsonMissingPath('administrator.password');
     }
 
     public function test_guest_cannot_get_authenticated_user_data(): void
@@ -156,7 +153,7 @@ class AuthenticationTest extends TestCase
     public function test_login_rejects_missing_email(): void
     {
         $this->postJson('/api/login', [
-            'Password' => 'password123',
+            'password' => 'password123',
         ])
             ->assertUnauthorized()
             ->assertJson([
@@ -168,8 +165,8 @@ class AuthenticationTest extends TestCase
     public function test_login_rejects_invalid_email(): void
     {
         $this->postJson('/api/login', [
-            'Email' => 'not-an-email',
-            'Password' => 'password123',
+            'email' => 'not-an-email',
+            'password' => 'password123',
         ])
             ->assertUnauthorized()
             ->assertJson([
@@ -181,7 +178,7 @@ class AuthenticationTest extends TestCase
     public function test_login_rejects_missing_password(): void
     {
         $this->postJson('/api/login', [
-            'Email' => 'owner@example.com',
+            'email' => 'owner@example.com',
         ])
             ->assertUnauthorized()
             ->assertJson([
@@ -197,8 +194,8 @@ class AuthenticationTest extends TestCase
         $oldSessionId = session()->getId();
 
         $this->postJson('/api/login', [
-            'Email' => 'owner@example.com',
-            'Password' => 'password123',
+            'email' => 'owner@example.com',
+            'password' => 'password123',
         ])->assertOk();
 
         $this->assertNotSame($oldSessionId, session()->getId());
@@ -207,8 +204,8 @@ class AuthenticationTest extends TestCase
     public function test_login_rejects_non_string_email(): void
     {
         $this->postJson('/api/login', [
-            'Email' => ['owner@example.com'],
-            'Password' => 'password123',
+            'email' => ['owner@example.com'],
+            'password' => 'password123',
         ])
             ->assertUnauthorized()
             ->assertJson([
@@ -220,8 +217,8 @@ class AuthenticationTest extends TestCase
     public function test_login_rejects_empty_password(): void
     {
         $this->postJson('/api/login', [
-            'Email' => 'owner@example.com',
-            'Password' => '',
+            'email' => 'owner@example.com',
+            'password' => '',
         ])
             ->assertUnauthorized()
             ->assertJson([
@@ -233,8 +230,8 @@ class AuthenticationTest extends TestCase
     public function test_login_rejects_non_string_password(): void
     {
         $this->postJson('/api/login', [
-            'Email' => 'owner@example.com',
-            'Password' => ['password123'],
+            'email' => 'owner@example.com',
+            'password' => ['password123'],
         ])
             ->assertUnauthorized()
             ->assertJson([
