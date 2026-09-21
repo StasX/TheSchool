@@ -5,6 +5,62 @@ import { studentInfoRender, studentRender } from "../renders/student";
 import Swal from "sweetalert2";
 import StudentApi from "../api/studentApi";
 import CourseApi from "../api/courseApi";
+import { haveSameElements } from "../utils/arrays";
+import { warningAddCourse, warningAddStudent } from "../messages/warnings";
+import { courseHandlers } from "./course";
+
+function resetHandlers() {
+    $("#add-student")
+        .off("click", warningAddStudent)
+        .on('click', studentHandlers.add)
+    $("#add-course")
+        .off("click", warningAddCourse)
+        .on('click', courseHandlers.add);
+}
+function setStudentWarnings() {
+    $("#add-student")
+        .off('click', studentHandlers.add)
+        .off("click", warningAddStudent)
+        .on("click", warningAddStudent);
+    $("#add-course")
+        .off('click', courseHandlers.add)
+        .off("click", warningAddCourse)
+        .on("click", warningAddCourse);
+    $('#courses-container .item-row')
+    .off('click', resetHandlers)
+    .on('click', resetHandlers);
+    $('#students-container .item-row')
+    .off('click', resetHandlers)
+    .on('click', resetHandlers);
+}
+
+export function removeStudentWarnings() {
+    $("#add-student").off("click", warningAddStudent);
+    $("#add-course").off("click", warningAddCourse);
+}
+
+function isStudentFormChanged(student) {
+    const currentCourses = (student?.courses || []).map(obj => obj.id);
+    const selectedCourses = [];
+    $('input[name="course[]"]:checked').each(function () {
+        selectedCourses.push($(this).val());
+    });
+    return (
+        (student?.name ?? "") !== $("#name").val() ||
+        (student?.email ?? "") !== $("#email").val() ||
+        (student?.phone ?? "") !== $("#phone").val() ||
+        $('#image-file')[0].files.length ||
+        !haveSameElements(currentCourses, selectedCourses)
+    );
+}
+
+function updateStudentWarnings(student = null) {
+    if (isStudentFormChanged(student)) {
+        setStudentWarnings();
+    } else {
+        removeStudentWarnings();
+    }
+}
 
 export const studentHandlers = {
     info: (id) => {
@@ -21,6 +77,7 @@ export const studentHandlers = {
         const imageElement = html.find("#image-upload");
         const coursesContainer = form.find("#courses-container");
         fileInput.on("change", function () { display(imageElement, this); });
+        form.on("input change", () => updateStudentWarnings());
         form.on("submit", function (e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -65,7 +122,11 @@ export const studentHandlers = {
                 Delete <i class="fa-regular fa-trash-can"></i>
             </button>
         `);
-        fileInput.on("change", function () { display(imageElement, this); });
+        fileInput.on("change", function () {
+            display(imageElement, this);
+             updateStudentWarnings(student);
+        });
+        form.on("input change", () => updateStudentWarnings(student));
         form.on("submit", function (e) {
             e.preventDefault();
             const formData = new FormData(this);
