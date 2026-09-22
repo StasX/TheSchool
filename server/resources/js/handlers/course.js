@@ -1,4 +1,5 @@
 import template from "../../templates/partials/course.html?raw";
+import deleteButtonTemplate from "../../templates/partials/deleteButton.html?raw";
 import { courseRender, courseInfoRender } from "../renders/course";
 import { display } from "../utils/image";
 import CourseApi from "../api/courseApi";
@@ -50,6 +51,9 @@ export const courseHandlers = {
     },
     edit: course => {
         const html = $(template);
+        if (!course.students.length) {
+            html.filter('#btn-row').append(deleteButtonTemplate);
+        }
         const form = html.filter("#courses-form");
         html.find("#container-title").text("Edit Course");
         html.find("#name").val(course.name);
@@ -64,7 +68,7 @@ export const courseHandlers = {
             e.preventDefault();
             const formData = new FormData(this);
             formData.set("_method", "PUT");
-            CourseApi.update(course.id,formData).done(data => {
+            CourseApi.update(course.id, formData).done(data => {
                 courseHandlers.info(data.id);
                 CourseApi.getAll().done(courses => courseRender(courses));
             }).fail(xhr => console.error(xhr));
