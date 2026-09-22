@@ -154,8 +154,10 @@ class CourseController extends Controller
         if (! $course) {
             return response('', Response::HTTP_NOT_FOUND);
         }
+        if ($course->students()->exists()) {
+            return response('', Response::HTTP_CONFLICT);
+        }
         $oldImage = $course->Image;
-        $course->students()->detach();
         $course->delete();
         if ($oldImage && Storage::disk('uploads')->exists(basename($oldImage))) {
             Storage::disk('uploads')->delete(basename($oldImage));
