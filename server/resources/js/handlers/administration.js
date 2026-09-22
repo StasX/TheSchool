@@ -1,7 +1,5 @@
 import { warningAddAdministrator } from "../messages/warnings";
 import { administratorHandlers } from "./administrator";
-import { courseHandlers } from "./course";
-import { studentHandlers } from "./student";
 
 export function resetAdministrationHandlers() {
     $("#add-administrator")
@@ -16,10 +14,9 @@ export function setAdministrationWarningsHandler() {
         .on("click", warningAddAdministrator);
 
     $('#administrators-container .item-row')
-        .off('click', resetAdministratorHandlers)
-        .on('click', resetSchoolHandlers);
+        .off('click', resetAdministrationHandlers)
 }
 
 export function removeAdministrationWarningsHandler() {
-    $("#add-administrator").off("click", warningAddStudent);
+    $("#add-administrator").off("click", warningAddAdministrator);
 }
