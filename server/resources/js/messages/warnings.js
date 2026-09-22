@@ -44,7 +44,7 @@ export function warningAddCourse(e) {
     });
 }
 
-export function warningAdministrator(e) {
+export function warningAddAdministrator(e) {
     e.preventDefault();
     e.stopImmediatePropagation();
 

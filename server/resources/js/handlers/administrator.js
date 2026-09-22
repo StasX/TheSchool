@@ -3,6 +3,26 @@ import { display } from "../utils/image";
 import { administratorRender } from "../renders/administrator";
 import Swal from "sweetalert2";
 import AdministratorApi from "../api/administratorApi";
+import { removeAdministrationWarningsHandler, setAdministrationWarningsHandler } from "./administration";
+
+function isAdministratorFormChanged(administrator) {
+    return (
+        (administrator?.name ?? "") !== $("#name").val() ||
+        (administrator?.email ?? "") !== $("#email").val() ||
+        (administrator?.phone ?? "") !== $("#phone").val() ||
+        (administrator?.role ?? "") !== $("#role").val() ||
+        ($("#password").val()!=="") ||
+        $('#image-file')[0].files.length
+    );
+}
+
+function updateAdministratorWarnings(student = null) {
+    if (isAdministratorFormChanged(student)) {
+        setAdministrationWarningsHandler();
+    } else {
+        removeAdministrationWarningsHandler();
+    }
+}
 
 export const administratorHandlers = {
     add: () => {
@@ -20,6 +40,7 @@ export const administratorHandlers = {
             roleInput.append(option);
         });
         fileInput.on("change", function () { display(imageElement, this); });
+        form.on("input change", () => updateAdministratorWarnings());
         form.on("submit", function (e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -71,6 +92,7 @@ export const administratorHandlers = {
 
 
         fileInput.on("change", function () { display(imageElement, this); });
+        form.on("input change", () => updateAdministratorWarnings(administrator));
         form.on("submit", function (e) {
             e.preventDefault();
             const formData = new FormData(this);
