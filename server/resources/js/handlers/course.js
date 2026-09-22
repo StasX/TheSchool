@@ -2,6 +2,23 @@ import template from "../../templates/partials/course.html?raw";
 import { courseRender, courseInfoRender } from "../renders/course";
 import { display } from "../utils/image";
 import CourseApi from "../api/courseApi";
+import { removeSchoolWarningsHandler, setSchoolWarningsHandler } from "./school";
+
+function isCourseFormChanged(course) {
+    return (
+        (course?.name ?? "") !== $("#name").val() ||
+        (course?.description ?? "") !== $("#description").val() ||
+        $('#image-file')[0].files.length
+    );
+}
+
+function updateCourseWarnings(course = null) {
+    if (isCourseFormChanged(course)) {
+        setSchoolWarningsHandler();
+    } else {
+        removeSchoolWarningsHandler();
+    }
+}
 
 export const courseHandlers = {
     info: id => {
@@ -16,6 +33,7 @@ export const courseHandlers = {
         const imageElement = html.find("#image-upload");
         html.find("#total").text(0);
         fileInput.on("change", function () { display(imageElement, this); });
+        form.on("input change", () => updateCourseWarnings());
         form.on("submit", function (e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -40,6 +58,7 @@ export const courseHandlers = {
         html.find("#total").text(course.students.length);
         imageElement.attr("src", course.image);
         html.find("#image-file").on("change", function () { display(imageElement, this); });
+        form.on("input change", () => updateCourseWarnings());
         html.find("#delete-course").on("click", () => courseHandlers.remove(course));
         form.on("submit", function (e) {
             e.preventDefault();
