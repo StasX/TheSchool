@@ -6,38 +6,7 @@ import Swal from "sweetalert2";
 import StudentApi from "../api/studentApi";
 import CourseApi from "../api/courseApi";
 import { haveSameElements } from "../utils/arrays";
-import { warningAddCourse, warningAddStudent } from "../messages/warnings";
-import { courseHandlers } from "./course";
-
-function resetHandlers() {
-    $("#add-student")
-        .off("click", warningAddStudent)
-        .on('click', studentHandlers.add)
-    $("#add-course")
-        .off("click", warningAddCourse)
-        .on('click', courseHandlers.add);
-}
-function setStudentWarnings() {
-    $("#add-student")
-        .off('click', studentHandlers.add)
-        .off("click", warningAddStudent)
-        .on("click", warningAddStudent);
-    $("#add-course")
-        .off('click', courseHandlers.add)
-        .off("click", warningAddCourse)
-        .on("click", warningAddCourse);
-    $('#courses-container .item-row')
-    .off('click', resetHandlers)
-    .on('click', resetHandlers);
-    $('#students-container .item-row')
-    .off('click', resetHandlers)
-    .on('click', resetHandlers);
-}
-
-export function removeStudentWarnings() {
-    $("#add-student").off("click", warningAddStudent);
-    $("#add-course").off("click", warningAddCourse);
-}
+import { removeSchoolWarningsHandler, setSchoolWarningsHandler } from "./school";
 
 function isStudentFormChanged(student) {
     const currentCourses = (student?.courses || []).map(obj => obj.id);
@@ -56,9 +25,9 @@ function isStudentFormChanged(student) {
 
 function updateStudentWarnings(student = null) {
     if (isStudentFormChanged(student)) {
-        setStudentWarnings();
+        setSchoolWarningsHandler();
     } else {
-        removeStudentWarnings();
+        removeSchoolWarningsHandler();
     }
 }
 
@@ -124,7 +93,6 @@ export const studentHandlers = {
         `);
         fileInput.on("change", function () {
             display(imageElement, this);
-             updateStudentWarnings(student);
         });
         form.on("input change", () => updateStudentWarnings(student));
         form.on("submit", function (e) {

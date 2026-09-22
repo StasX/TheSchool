@@ -1,18 +1,19 @@
 import Swal from "sweetalert2";
 
-import { removeStudentWarnings, studentHandlers } from "../handlers/student";
+import { removeSchoolWarningsHandler, setSchoolWarningsHandler } from "../handlers/school";
+import { studentHandlers } from "../handlers/student";
 import { courseHandlers } from "../handlers/course";
 import { administratorHandlers } from "../handlers/administrator";
 
 function showWarning(action) {
     return Swal.fire({
         title: `Do you want to continue to ${action}?`,
-        text: `If you continue to ${action}, all changes will be discarded.`,
+        text: `If you will continue to ${action}, all changes will be discarded.`,
         icon: "warning",
         showCloseButton: true,
         showCancelButton: true,
         confirmButtonText: "Continue",
-        cancelButtonText: "Discard changes",
+        cancelButtonText: "Cancel",
         buttonsStyling: false,
         customClass: {
             confirmButton: "btn btn-dark",
@@ -23,10 +24,9 @@ function showWarning(action) {
 
 export function warningAddStudent(e) {
     e.preventDefault();
-
     showWarning("add a new student").then(result => {
         if (result.isConfirmed) {
-            removeStudentWarnings();
+            removeSchoolWarningsHandler();
             studentHandlers.add();
         }
     });
@@ -38,7 +38,7 @@ export function warningAddCourse(e) {
 
     showWarning("add a new course").then(result => {
         if (result.isConfirmed) {
-            removeStudentWarnings();
+            removeSchoolWarningsHandler();
             courseHandlers.add();
         }
     });
