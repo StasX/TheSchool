@@ -10,7 +10,9 @@ export function studentRender(data) {
         html.find(".student-name").text(student.name);
         html.find(".student-phone").text(student.phone);
         html.find(".student-img").attr({ "src": student.image, "alt": student.name });
-        html.on("click", () => studentHandlers.info(student.id));
+        const clickHandler = () => studentHandlers.info(student.id);
+        html.data("clickHandler", clickHandler);
+        html.on("click", clickHandler);
         $("#students-container").append(html);
     });
 }

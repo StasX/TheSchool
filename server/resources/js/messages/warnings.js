@@ -24,6 +24,7 @@ function showWarning(action) {
 
 export function warningAddStudent(e) {
     e.preventDefault();
+    e.stopImmediatePropagation();
     showWarning("add a new student").then(result => {
         if (result.isConfirmed) {
             removeSchoolWarningsHandler();
@@ -51,6 +52,21 @@ export function warningAddAdministrator(e) {
     showWarning("add a new administrator").then(result => {
         if (result.isConfirmed) {
             administratorHandlers.add();
+        }
+    });
+}
+
+export function warningNavigation(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    const row = $(e.currentTarget);
+    const clickHandler = row.data("clickHandler");
+
+    showWarning("navigate away").then(result => {
+        if (result.isConfirmed && clickHandler) {
+            removeSchoolWarningsHandler();
+            clickHandler();
         }
     });
 }

@@ -10,7 +10,9 @@ export function courseRender(data) {
         html.find(".course-name").text(course.name);
         html.find(".course-description").text(course.description);
         html.find(".course-img").attr({ "src": course.image, "alt": course.name });
-        html.on("click", () => courseHandlers.info(course.id));
+        const clickHandler = () => courseHandlers.info(course.id);
+        html.data("clickHandler", clickHandler);
+        html.on("click", clickHandler);
         $("#courses-container").append(html);
     });
 }
