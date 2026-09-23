@@ -31,4 +31,8 @@ export function setSchoolWarningsHandler() {
 export function removeSchoolWarningsHandler() {
     $("#add-student").off("click", warningAddStudent);
     $("#add-course").off("click", warningAddCourse);
+    $('#courses-container .item-row')
+        .off('click', resetSchoolHandlers);
+    $('#students-container .item-row')
+        .off('click', resetSchoolHandlers);
 }

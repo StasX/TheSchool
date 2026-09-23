@@ -41,6 +41,7 @@ export const courseHandlers = {
             if (fileInput[0].files.length) {
                 formData.set("image", fileInput[0].files[0]);
             }
+            removeSchoolWarningsHandler();
             CourseApi.add(formData).done(data => {
                 courseHandlers.info(data.id);
                 CourseApi.getAll().done(courses => courseRender(courses));
@@ -68,6 +69,7 @@ export const courseHandlers = {
             e.preventDefault();
             const formData = new FormData(this);
             formData.set("_method", "PUT");
+            removeSchoolWarningsHandler();
             CourseApi.update(course.id, formData).done(data => {
                 courseHandlers.info(data.id);
                 CourseApi.getAll().done(courses => courseRender(courses));

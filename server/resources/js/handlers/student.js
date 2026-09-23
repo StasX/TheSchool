@@ -55,6 +55,7 @@ export const studentHandlers = {
             }
             StudentApi.add(formData).done((data) => {
                 studentHandlers.info(data.id);
+                removeSchoolWarningsHandler();
                 StudentApi.getAll().done((students) => studentRender(students));
             }).fail(xhr => console.error(xhr));
         });
@@ -102,6 +103,7 @@ export const studentHandlers = {
             if (fileInput[0].files.length) {
                 formData.set("image", fileInput[0].files[0]);
             }
+            removeSchoolWarningsHandler()
             StudentApi.update(student.id, formData).done((data) => {
                 studentHandlers.info(data.id);
                 StudentApi.getAll().done(students => studentRender(students));
