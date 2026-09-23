@@ -77,6 +77,8 @@ export const administratorHandlers = {
         const roles = ['owner', 'manager', 'sales', () => roleInput.val(administrator.role)];
         if (administrator.role == 'owner') {
             roles.splice(1, 2);
+        }else{
+            roles.splice(0, 1);
         }
         $.each(roles, (i, role) => {
 
