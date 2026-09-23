@@ -3,7 +3,7 @@ import { display } from "../utils/image";
 import { administratorRender } from "../renders/administrator";
 import Swal from "sweetalert2";
 import AdministratorApi from "../api/administratorApi";
-import { removeAdministrationWarningsHandler, setAdministrationWarningsHandler } from "./administration";
+import { resetAdministrationHandlers, setAdministrationWarningsHandler } from "./administration";
 
 function isAdministratorFormChanged(administrator) {
     return (
@@ -11,16 +11,16 @@ function isAdministratorFormChanged(administrator) {
         (administrator?.email ?? "") !== $("#email").val() ||
         (administrator?.phone ?? "") !== $("#phone").val() ||
         (administrator?.role ?? "") !== $("#role").val() ||
-        ($("#password").val()!=="") ||
-        $('#image-file')[0].files.length
+        $("#password").val() !== "" ||
+        !!$('#image-file')[0].files.length
     );
 }
 
-function updateAdministratorWarnings(student = null) {
-    if (isAdministratorFormChanged(student)) {
+function updateAdministratorWarnings(administrator = null) {
+    if (isAdministratorFormChanged(administrator)) {
         setAdministrationWarningsHandler();
     } else {
-        removeAdministrationWarningsHandler();
+        resetAdministrationHandlers();
     }
 }
 
@@ -48,6 +48,7 @@ export const administratorHandlers = {
                 formData.set("image", fileInput[0].files[0]);
             }
             AdministratorApi.add(formData).done((data) => {
+                resetAdministrationHandlers();
                 administratorHandlers.edit(data);
                 AdministratorApi.getAll().done(administrator => administratorRender(administrator));
             }).fail(xhr => console.error(xhr));
@@ -77,7 +78,7 @@ export const administratorHandlers = {
         const roles = ['owner', 'manager', 'sales', () => roleInput.val(administrator.role)];
         if (administrator.role == 'owner') {
             roles.splice(1, 2);
-        }else{
+        } else {
             roles.splice(0, 1);
         }
         $.each(roles, (i, role) => {
@@ -100,9 +101,10 @@ export const administratorHandlers = {
             const formData = new FormData(this);
             formData.set("_method", "PUT");
             if (fileInput[0].files.length) {
-                formData.set("Image", fileInput[0].files[0]);
+                formData.set("image", fileInput[0].files[0]);
             }
             AdministratorApi.update(administrator.id, formData).done((data) => {
+                resetAdministrationHandlers();
                 administratorHandlers.edit(data);
                 $.get('/api/administrator').done(administrators => administratorRender(administrators));
             }).fail(xhr => console.error(xhr));

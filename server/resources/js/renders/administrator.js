@@ -8,7 +8,9 @@ export function administratorRender(data) {
         html.find(".administrator-name").text(administrator.name);
         html.find(".administrator-role").text(administrator.role);
         html.find(".administrator-img").attr({ "src": administrator.image, "alt": administrator.name });
-        html.on("click", () => administratorHandlers.edit(administrator));
+        const clickHandler = () => administratorHandlers.edit(administrator);
+        html.data("clickHandler", clickHandler);
+        html.on("click", clickHandler);
         $("#administrators-container").append(html);
     });
 }
