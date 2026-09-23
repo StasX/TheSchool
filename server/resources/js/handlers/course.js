@@ -3,13 +3,13 @@ import deleteButtonTemplate from "../../templates/partials/deleteButton.html?raw
 import { courseRender, courseInfoRender } from "../renders/course";
 import { display } from "../utils/image";
 import CourseApi from "../api/courseApi";
-import { removeSchoolWarningsHandler, setSchoolWarningsHandler } from "./school";
+import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
 
 function isCourseFormChanged(course) {
     return (
         (course?.name ?? "") !== $("#name").val() ||
         (course?.description ?? "") !== $("#description").val() ||
-        $('#image-file')[0].files.length
+        !!$('#image-file')[0].files.length
     );
 }
 
@@ -17,7 +17,7 @@ function updateCourseWarnings(course = null) {
     if (isCourseFormChanged(course)) {
         setSchoolWarningsHandler();
     } else {
-        removeSchoolWarningsHandler();
+        resetSchoolHandlers();
     }
 }
 
@@ -41,8 +41,8 @@ export const courseHandlers = {
             if (fileInput[0].files.length) {
                 formData.set("image", fileInput[0].files[0]);
             }
-            removeSchoolWarningsHandler();
             CourseApi.add(formData).done(data => {
+                resetSchoolHandlers();
                 courseHandlers.info(data.id);
                 CourseApi.getAll().done(courses => courseRender(courses));
             }).fail(xhr => console.error(xhr));
@@ -63,14 +63,14 @@ export const courseHandlers = {
         html.find("#total").text(course.students.length);
         imageElement.attr("src", course.image);
         html.find("#image-file").on("change", function () { display(imageElement, this); });
-        form.on("input change", () => updateCourseWarnings());
+        form.on("input change", () => updateCourseWarnings(course));
         html.find("#delete-course").on("click", () => courseHandlers.remove(course));
         form.on("submit", function (e) {
             e.preventDefault();
             const formData = new FormData(this);
             formData.set("_method", "PUT");
-            removeSchoolWarningsHandler();
             CourseApi.update(course.id, formData).done(data => {
+                resetSchoolHandlers();
                 courseHandlers.info(data.id);
                 CourseApi.getAll().done(courses => courseRender(courses));
             }).fail(xhr => console.error(xhr));

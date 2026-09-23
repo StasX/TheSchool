@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import StudentApi from "../api/studentApi";
 import CourseApi from "../api/courseApi";
 import { haveSameElements } from "../utils/arrays";
-import { removeSchoolWarningsHandler, setSchoolWarningsHandler } from "./school";
+import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
 
 function isStudentFormChanged(student) {
     const currentCourses = (student?.courses || []).map(obj => obj.id);
@@ -19,7 +19,7 @@ function isStudentFormChanged(student) {
         (student?.email ?? "") !== $("#email").val() ||
         (student?.phone ?? "") !== $("#phone").val() ||
         $('#image-file')[0].files.length ||
-        !haveSameElements(currentCourses, selectedCourses)
+        !!haveSameElements(currentCourses, selectedCourses)
     );
 }
 
@@ -27,7 +27,7 @@ function updateStudentWarnings(student = null) {
     if (isStudentFormChanged(student)) {
         setSchoolWarningsHandler();
     } else {
-        removeSchoolWarningsHandler();
+        resetSchoolHandlers();
     }
 }
 
@@ -54,8 +54,8 @@ export const studentHandlers = {
                 formData.set("image", fileInput[0].files[0]);
             }
             StudentApi.add(formData).done((data) => {
+                resetSchoolHandlers();
                 studentHandlers.info(data.id);
-                removeSchoolWarningsHandler();
                 StudentApi.getAll().done((students) => studentRender(students));
             }).fail(xhr => console.error(xhr));
         });
@@ -103,8 +103,8 @@ export const studentHandlers = {
             if (fileInput[0].files.length) {
                 formData.set("image", fileInput[0].files[0]);
             }
-            removeSchoolWarningsHandler()
             StudentApi.update(student.id, formData).done((data) => {
+                resetSchoolHandlers();
                 studentHandlers.info(data.id);
                 StudentApi.getAll().done(students => studentRender(students));
             }).fail(xhr => console.error(xhr));
