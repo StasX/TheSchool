@@ -99,8 +99,8 @@ class StudentController extends Controller
         $student = Student::create($data);
         $student->courses()->sync($courses);
         return (new StudentResource($student->load('courses')))
-        ->response()
-        ->setStatusCode(201);
+            ->response()
+            ->setStatusCode(201);
     }
 
     //------------------------------------------------------------------------
@@ -205,7 +205,7 @@ class StudentController extends Controller
 
         $student->refresh();
         return (new StudentResource($student->load('courses')))
-        ->response();
+            ->response();
     }
 
     //------------------------------------------------------------------------
@@ -225,6 +225,18 @@ class StudentController extends Controller
             Storage::disk('uploads')->delete(basename($oldImage));
         }
 
+        return response('', Response::HTTP_NO_CONTENT);
+    }
+
+    //------------------------------------------------------------------------
+
+    public function unsubscribe(int $studentId, int $courseId): Response
+    {
+        $student = Student::find($studentId);
+        if (! $student) {
+            return response('', Response::HTTP_NOT_FOUND);
+        }
+        $student->courses()->detach($courseId);
         return response('', Response::HTTP_NO_CONTENT);
     }
 }

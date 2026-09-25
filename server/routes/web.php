@@ -46,6 +46,7 @@ Route::prefix('api')->group(function () {
             Route::post('/student', [StudentController::class, 'add']);
             Route::put('/student/{id}', [StudentController::class, 'update']);
             Route::delete('/student/{id}', [StudentController::class, 'remove']);
+            Route::delete('/student/{studentId}/course/{courseId}', [StudentController::class, 'unsubscribe']);
 
             Route::get('/course', [CourseController::class, 'getAll']);
             Route::get('/course/{id}', [CourseController::class, 'getById']);

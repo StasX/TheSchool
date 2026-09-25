@@ -7,6 +7,7 @@ import StudentApi from "../api/studentApi";
 import CourseApi from "../api/courseApi";
 import { haveSameElements } from "../utils/arrays";
 import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
+import { courseHandlers } from "./course";
 
 function isStudentFormChanged(student) {
     const currentCourses = (student?.courses || []).map(obj => obj.id);
@@ -18,8 +19,8 @@ function isStudentFormChanged(student) {
         (student?.name ?? "") !== $("#name").val() ||
         (student?.email ?? "") !== $("#email").val() ||
         (student?.phone ?? "") !== $("#phone").val() ||
-        $('#image-file')[0].files.length ||
-        !!haveSameElements(currentCourses, selectedCourses)
+        !!$('#image-file')[0].files.length ||
+        !haveSameElements(currentCourses, selectedCourses)
     );
 }
 
@@ -178,5 +179,10 @@ export const studentHandlers = {
                 });
             }
         });
+    },
+    unsubscribe: (courseId, studentId) => {
+        StudentApi.unsubscribe(courseId, studentId).done(() => {
+            courseHandlers.info(courseId);
+        }).fail(xhr => console.error(xhr));
     }
 }

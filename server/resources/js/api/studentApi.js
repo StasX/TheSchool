@@ -40,6 +40,12 @@ const StudentApi = {
             url: `/api/student/${id}`,
             method: 'DELETE'
         });
+    },
+    unsubscribe(courseId, studentId) {
+        return $.ajax({
+            url: `/api/student/${studentId}/course/${courseId}`,
+            method: 'DELETE'
+        });
     }
 };
 

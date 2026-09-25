@@ -2,6 +2,7 @@ import { courseHandlers } from '../handlers/course';
 import courseListItemTemplate from "../../templates/partials/courseListItem.html?raw";
 import courseInfoTemplate from "../../templates/partials/courseInfo.html?raw";
 import courseMemberTemplate from "../../templates/partials/courseMember.html?raw";
+import { studentHandlers } from '../handlers/student';
 
 export function courseRender(data) {
     $("#courses-container").html("");
@@ -26,7 +27,11 @@ export function courseInfoRender(data) {
     $.each(data.students, (i, student) => {
         const member = $(courseMemberTemplate);
         member.find(".member-img").attr({ "alt": student.name, "src": student.image });
-        member.find(".member-name").text(student.name)
+        member.find(".member-name").text(student.name);
+        member.find(".fa-xmark").on("click", e => {
+            e.stopPropagation();
+            studentHandlers.unsubscribe(data.id, student.id);
+        });
         studentsContainer.append(member);
     });
     const editBtn = html.find("#edit");

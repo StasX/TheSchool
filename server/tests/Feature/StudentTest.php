@@ -482,4 +482,60 @@ class StudentTest extends TestCase
             )
         );
     }
+
+    public function test_unsubscribe_student_from_course(): void
+    {
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+
+        $student->courses()->attach($course->Course_ID);
+
+        $this->assertDatabaseHas('students_courses', [
+            'Student_ID' => $student->Student_ID,
+            'Course_ID' => $course->Course_ID,
+        ]);
+
+        $response = $this->delete(
+            "/api/student/{$student->Student_ID}/unsubscribe/{$course->Course_ID}"
+        );
+
+        $response->assertNoContent();
+
+        $this->assertDatabaseMissing('students_courses', [
+            'Student_ID' => $student->Student_ID,
+            'Course_ID' => $course->Course_ID,
+        ]);
+
+        // Student and course themselves must still exist.
+        $this->assertDatabaseHas('students', [
+            'Student_ID' => $student->Student_ID,
+        ]);
+
+        $this->assertDatabaseHas('courses', [
+            'Course_ID' => $course->Course_ID,
+        ]);
+    }
+
+    public function test_unsubscribe_returns_404_when_student_not_found(): void
+    {
+        $course = Course::factory()->create();
+
+        $response = $this->delete(
+            "/api/student/999999/unsubscribe/{$course->Course_ID}"
+        );
+
+        $response->assertNotFound();
+    }
+
+    public function test_unsubscribe_returns_204_when_student_is_not_subscribed(): void
+    {
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+
+        $response = $this->delete(
+            "/api/student/{$student->Student_ID}/unsubscribe/{$course->Course_ID}"
+        );
+
+        $response->assertNoContent();
+    }
 }
