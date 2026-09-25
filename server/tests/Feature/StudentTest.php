@@ -490,23 +490,22 @@ class StudentTest extends TestCase
 
         $student->courses()->attach($course->Course_ID);
 
-        $this->assertDatabaseHas('students_courses', [
-            'Student_ID' => $student->Student_ID,
-            'Course_ID' => $course->Course_ID,
-        ]);
-
-        $response = $this->delete(
-            "/api/student/{$student->Student_ID}/course/{$course->Course_ID}"
+        $this->assertTrue(
+            $student->courses()
+                ->where('courses.Course_ID', $course->Course_ID)
+                ->exists()
         );
 
-        $response->assertNoContent();
+        $this->deleteJson(
+            "/api/student/{$student->Student_ID}/course/{$course->Course_ID}"
+        )->assertNoContent();
 
-        $this->assertDatabaseMissing('students_courses', [
-            'Student_ID' => $student->Student_ID,
-            'Course_ID' => $course->Course_ID,
-        ]);
+        $this->assertFalse(
+            $student->courses()
+                ->where('courses.Course_ID', $course->Course_ID)
+                ->exists()
+        );
 
-        // Student and course themselves must still exist.
         $this->assertDatabaseHas('students', [
             'Student_ID' => $student->Student_ID,
         ]);
@@ -532,16 +531,21 @@ class StudentTest extends TestCase
         $student = $this->createStudent();
         $course = $this->createCourse();
 
-        $response = $this->delete(
-            "/api/student/{$student->Student_ID}/course/{$course->Course_ID}"
+        $this->assertFalse(
+            $student->courses()
+                ->where('courses.Course_ID', $course->Course_ID)
+                ->exists()
         );
 
-        $response->assertNoContent();
+        $this->deleteJson(
+            "/api/student/{$student->Student_ID}/course/{$course->Course_ID}"
+        )->assertNoContent();
 
-        $this->assertDatabaseMissing('students_courses', [
-            'Student_ID' => $student->Student_ID,
-            'Course_ID' => $course->Course_ID,
-        ]);
+        $this->assertFalse(
+            $student->courses()
+                ->where('courses.Course_ID', $course->Course_ID)
+                ->exists()
+        );
     }
 
     public function test_unsubscribe_returns_404_when_course_not_found(): void
