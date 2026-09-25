@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\StudentResource;
+use App\Models\Course;
 use App\Models\Student;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -230,13 +231,26 @@ class StudentController extends Controller
 
     //------------------------------------------------------------------------
 
-    public function unsubscribe(int $studentId, int $courseId): Response
+    public function unsubscribe(int $studentId, int $courseId): Response|JsonResponse
     {
         $student = Student::find($studentId);
+
         if (! $student) {
-            return response('', Response::HTTP_NOT_FOUND);
+            return response()->json([
+                'error' => 'Student not found',
+            ], Response::HTTP_NOT_FOUND);
         }
+
+        $course = Course::find($courseId);
+
+        if (! $course) {
+            return response()->json([
+                'error' => 'Course not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
         $student->courses()->detach($courseId);
+
         return response('', Response::HTTP_NO_CONTENT);
     }
 }
