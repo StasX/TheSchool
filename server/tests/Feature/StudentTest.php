@@ -485,8 +485,8 @@ class StudentTest extends TestCase
 
     public function test_unsubscribe_student_from_course(): void
     {
-        $student = Student::factory()->create();
-        $course = Course::factory()->create();
+        $student = $this->createStudent();
+        $course = $this->createCourse();
 
         $student->courses()->attach($course->Course_ID);
 
@@ -496,7 +496,7 @@ class StudentTest extends TestCase
         ]);
 
         $response = $this->delete(
-            "/api/student/{$student->Student_ID}/unsubscribe/{$course->Course_ID}"
+            "/api/student/{$student->Student_ID}/course/{$course->Course_ID}"
         );
 
         $response->assertNoContent();
@@ -518,10 +518,10 @@ class StudentTest extends TestCase
 
     public function test_unsubscribe_returns_404_when_student_not_found(): void
     {
-        $course = Course::factory()->create();
+        $course = $this->createCourse();
 
         $response = $this->delete(
-            "/api/student/999999/unsubscribe/{$course->Course_ID}"
+            "/api/student/999999/course/{$course->Course_ID}"
         );
 
         $response->assertNotFound();
@@ -529,13 +529,29 @@ class StudentTest extends TestCase
 
     public function test_unsubscribe_returns_204_when_student_is_not_subscribed(): void
     {
-        $student = Student::factory()->create();
-        $course = Course::factory()->create();
+        $student = $this->createStudent();
+        $course = $this->createCourse();
 
         $response = $this->delete(
-            "/api/student/{$student->Student_ID}/unsubscribe/{$course->Course_ID}"
+            "/api/student/{$student->Student_ID}/course/{$course->Course_ID}"
         );
 
         $response->assertNoContent();
+
+        $this->assertDatabaseMissing('students_courses', [
+            'Student_ID' => $student->Student_ID,
+            'Course_ID' => $course->Course_ID,
+        ]);
+    }
+
+    public function test_unsubscribe_returns_404_when_course_not_found(): void
+    {
+        $student = $this->createStudent();
+
+        $response = $this->delete(
+            "/api/student/{$student->Student_ID}/course/999999"
+        );
+
+        $response->assertNotFound();
     }
 }
