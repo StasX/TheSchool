@@ -1,4 +1,5 @@
 import "jquery-validation";
+import "jquery-validation/dist/additional-methods";
 import template from "../../templates/partials/administrator.html?raw";
 import { display } from "../utils/image";
 import { administratorRender } from "../renders/administrator";
