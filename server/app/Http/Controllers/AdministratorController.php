@@ -90,7 +90,8 @@ class AdministratorController extends Controller
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:500',
+                'dimensions:max_width=250,max_height=250',
             ],
         ]);
         $file = $request->file('image');
@@ -171,7 +172,8 @@ class AdministratorController extends Controller
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:500',
+                'dimensions:max_width=250,max_height=250',
             ],
             'password' => [
                 'sometimes',

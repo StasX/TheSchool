@@ -5,6 +5,8 @@ import { administratorRender } from "../renders/administrator";
 import Swal from "sweetalert2";
 import AdministratorApi from "../api/administratorApi";
 import { resetAdministrationHandlers, setAdministrationWarningsHandler } from "./administration";
+import { filesizeRegister } from "../validators/filesize";
+import { imagesizeRegister } from "../validators/imagesize";
 
 function isAdministratorFormChanged(administrator) {
     return (
@@ -30,34 +32,8 @@ export const administratorHandlers = {
         const html = $(template);
         const saveBtn = html.find("#save-administrator");
         const form = html.filter("#administrators-form");
-        $.validator.addMethod(
-            "filesize",
-            function (value, element, maxSize) {
-                if (this.optional(element)) {
-                    return true;
-                }
-                return element.files[0].size <= maxSize;
-            },
-            "File is too large."
-        );
-        $.validator.addMethod(
-            "imagesize",
-            function (value, element, dimensions) {
-                if (this.optional(element)) {
-                    return true;
-                }
-                const width = $(element).data("image-width");
-                const height = $(element).data("image-height");
-                if (width === undefined || height === undefined) {
-                    return false;
-                }
-                return (
-                    width <= dimensions.width &&
-                    height <= dimensions.height
-                );
-            },
-            "Image dimensions are too large."
-        );
+        filesizeRegister();
+        imagesizeRegister();
         form.validate({
             rules: {
                 name: {
@@ -149,6 +125,60 @@ export const administratorHandlers = {
         const buttons = html.filter("#btn-row");
         const saveBtn = buttons.find("#save-administrator");
         const form = html.filter("#administrators-form");
+        filesizeRegister();
+        imagesizeRegister();
+        form.validate({
+            rules: {
+                name: {
+                    required: true,
+                    minlength: 2
+                },
+                phone: {
+                    required: true
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                password: {
+                    required: false,
+                    minlength: 8
+                },
+                image: {
+                    required: false,
+                    extension: "jpg|jpeg|png|gif",
+                    filesize: 500 * 1024,
+                    imagesize: {
+                        width: 250,
+                        height: 250
+                    }
+                }
+            },
+
+            messages: {
+                name: {
+                    required: "Name is required.",
+                    minlength: "Name must contain at least 2 characters."
+                },
+                phone: {
+                    required: "Phone is required."
+                },
+                email: {
+                    required: "Email is required.",
+                    email: "Enter a valid email address."
+                },
+                password: {
+                    required: "Password is required.",
+                    minlength: "Password must contain at least 8 characters."
+                },
+                image: {
+                    required: "Image is required.",
+                    extension: "Image have to be jpg, png, gif file.",
+                    filesize: "Image must not exceed 500 KB.",
+                    imagesize: "Image too large."
+                }
+            }
+        });
         titleContainer.text("Edit Administrator");
         const btnContainer = $('<div class="col d-flex align-items-center"></div>');
         const removeBtn = $(`
@@ -180,6 +210,7 @@ export const administratorHandlers = {
         form.on("input change", () => updateAdministratorWarnings(administrator));
         form.on("submit", function (e) {
             e.preventDefault();
+            if (!form.valid()) return;
             const formData = new FormData(this);
             formData.set("_method", "PUT");
             if (fileInput[0].files.length) {
