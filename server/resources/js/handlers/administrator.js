@@ -54,7 +54,7 @@ export const administratorHandlers = {
                 },
                 image: {
                     required: true,
-                    extension: "jpg|jpeg|png|gif",
+                    extension: ".jpg,.jpeg,.png,.gif",
                     filesize: 500 * 1024,
                     imagesize: {
                         width: 250,
@@ -147,7 +147,7 @@ export const administratorHandlers = {
                 },
                 image: {
                     required: false,
-                    extension: "jpg|jpeg|png|gif",
+                    extension: ".jpg,.jpeg,.png,.gif",
                     filesize: 500 * 1024,
                     imagesize: {
                         width: 250,
