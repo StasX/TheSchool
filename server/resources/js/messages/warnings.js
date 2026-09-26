@@ -1,6 +1,7 @@
 import Swal from "sweetalert2";
 
-import { removeSchoolWarningsHandler, setSchoolWarningsHandler } from "../handlers/school";
+import { removeSchoolWarningsHandler } from "../handlers/school";
+import { resetAdministrationHandlers } from "../handlers/administration";
 import { studentHandlers } from "../handlers/student";
 import { courseHandlers } from "../handlers/course";
 import { administratorHandlers } from "../handlers/administrator";
@@ -51,6 +52,7 @@ export function warningAddAdministrator(e) {
 
     showWarning("add a new administrator").then(result => {
         if (result.isConfirmed) {
+            resetAdministrationHandlers();
             administratorHandlers.add();
         }
     });
@@ -62,10 +64,10 @@ export function warningNavigation(e) {
 
     const row = $(e.currentTarget);
     const clickHandler = row.data("clickHandler");
-
+    const isInAdministration = !!row.closest("#administrators-container").length;
     showWarning("navigate away").then(result => {
         if (result.isConfirmed && clickHandler) {
-            removeSchoolWarningsHandler();
+            isInAdministration ? resetAdministrationHandlers() : removeSchoolWarningsHandler();
             clickHandler();
         }
     });
