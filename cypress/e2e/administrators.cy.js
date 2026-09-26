@@ -56,11 +56,21 @@ describe('Administrators', () => {
         cy.get('#add-administrator').click();
         cy.get('#save-administrator').click();
         cy.get('#administrators-form').should('exist');
-        cy.get('#name').then($input => {
-            expect($input[0].validity.valueMissing).to.equal(true);
-        });
-        cy.get('#password').should('have.attr', 'required');
-        cy.get('#image-file').should('have.attr', 'required');
+        cy.get('#name-error')
+            .should('be.visible')
+            .and('contain.text', 'Name is required');
+        cy.get('#phone-error')
+            .should('be.visible')
+            .and('contain.text', 'Phone is required');
+        cy.get('#email-error')
+            .should('be.visible')
+            .and('contain.text', 'Email is required');
+        cy.get('#password-error')
+            .should('be.visible')
+            .and('contain.text', 'Password is required');
+        cy.get('#image-file-error')
+            .should('be.visible')
+            .and('contain.text', 'Image is required');
     });
 
     it('keeps changes on cancel and clears row navigation warnings on confirm', () => {
