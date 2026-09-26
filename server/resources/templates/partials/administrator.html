@@ -26,7 +26,7 @@
                     <div class="col">
                         <div class="input-group mb-3">
                             <label for="name" class="input-group-text">Name</label>
-                            <input type="text" id="name" name="name" class="form-control" spellcheck="false" />
+                            <input type="text" id="name" name="name" class="form-control" required="required" minlength="2" spellcheck="false" />
                         </div>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
                     <div class="col">
                         <div class="input-group mb-3">
                             <label for="phone" class="input-group-text">Phone</label>
-                            <input type="tel" id="phone" name="phone" class="form-control" />
+                            <input type="tel" id="phone" name="phone" class="form-control" required="required" />
                         </div>
                     </div>
                 </div>
@@ -48,15 +48,16 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <select id="role" name="role" class="form-select" aria-label="Default select example">
+                        <select id="role" name="role" class="form-select" aria-label="Default role" required="required">
                         </select>
                     </div>
                 </div>
-                                <div class="row">
+                <div class="row">
                     <div class="col">
                         <div class="input-group mb-3">
                             <label for="password" class="input-group-text">Password</label>
-                            <input type="password" id="password" name="password" class="form-control" spellcheck="false" />
+                            <input type="password" id="password" name="password" class="form-control"
+                                spellcheck="false" />
                         </div>
                     </div>
                 </div>
@@ -64,7 +65,8 @@
                     <div class="col">
                         <div class="input-group mb-3">
                             <label for="image-file" class="input-group-text">Image</label>
-                            <input type="file" id="image-file" name="image" class="form-control">
+                            <input type="file" id="image-file" name="image" class="form-control"
+                                accept=".jpg,.jpeg,.png,.gif">
                         </div>
                     </div>
                 </div>

@@ -1,3 +1,4 @@
+import "jquery-validation";
 import template from "../../templates/partials/administrator.html?raw";
 import { display } from "../utils/image";
 import { administratorRender } from "../renders/administrator";
@@ -29,6 +30,86 @@ export const administratorHandlers = {
         const html = $(template);
         const saveBtn = html.find("#save-administrator");
         const form = html.filter("#administrators-form");
+        $.validator.addMethod(
+            "filesize",
+            function (value, element, maxSize) {
+                if (this.optional(element)) {
+                    return true;
+                }
+                return element.files[0].size <= maxSize;
+            },
+            "File is too large."
+        );
+        $.validator.addMethod(
+            "imagesize",
+            function (value, element, dimensions) {
+                if (this.optional(element)) {
+                    return true;
+                }
+                const width = $(element).data("image-width");
+                const height = $(element).data("image-height");
+                if (width === undefined || height === undefined) {
+                    return false;
+                }
+                return (
+                    width <= dimensions.width &&
+                    height <= dimensions.height
+                );
+            },
+            "Image dimensions are too large."
+        );
+        form.validate({
+            rules: {
+                name: {
+                    required: true,
+                    minlength: 2
+                },
+                phone: {
+                    required: true
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                password: {
+                    required: true,
+                    minlength: 8
+                },
+                image: {
+                    required: true,
+                    extension: "jpg|jpeg|png|gif",
+                    filesize: 500 * 1024,
+                    imagesize: {
+                        width: 250,
+                        height: 250
+                    }
+                }
+            },
+
+            messages: {
+                name: {
+                    required: "Name is required.",
+                    minlength: "Name must contain at least 2 characters."
+                },
+                phone: {
+                    required: "Phone is required."
+                },
+                email: {
+                    required: "Email is required.",
+                    email: "Enter a valid email address."
+                },
+                password: {
+                    required: "Password is required.",
+                    minlength: "Password must contain at least 8 characters."
+                },
+                image: {
+                    required: "Image is required.",
+                    extension: "Image have to be jpg, png, gif file.",
+                    filesize: "Image must not exceed 500 KB.",
+                    imagesize: "Image too large."
+                }
+            }
+        });
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
         const roleInput = html.find("#role");
@@ -43,6 +124,7 @@ export const administratorHandlers = {
         form.on("input change", () => updateAdministratorWarnings());
         form.on("submit", function (e) {
             e.preventDefault();
+            if (!form.valid()) return;
             const formData = new FormData(this);
             if (fileInput[0].files.length) {
                 formData.set("image", fileInput[0].files[0]);
