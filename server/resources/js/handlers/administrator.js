@@ -48,6 +48,10 @@ export const administratorHandlers = {
                     required: true,
                     email: true
                 },
+                role: {
+                    required: true,
+                    pattern: /^(manager|sales)$/
+                },
                 password: {
                     required: true,
                     minlength: 8
@@ -62,7 +66,6 @@ export const administratorHandlers = {
                     }
                 }
             },
-
             messages: {
                 name: {
                     required: "Name is required.",
@@ -74,6 +77,10 @@ export const administratorHandlers = {
                 email: {
                     required: "Email is required.",
                     email: "Enter a valid email address."
+                },
+                role: {
+                    required: "Role is required.",
+                    pattern: "Role should be Manager or Sales"
                 },
                 password: {
                     required: "Password is required.",
@@ -141,6 +148,12 @@ export const administratorHandlers = {
                     required: true,
                     email: true
                 },
+                role: {
+                    required: false,
+                    pattern: administrator.role === "owner"
+                        ? /^owner$/
+                        : /^(manager|sales)$/
+                },
                 password: {
                     required: false,
                     minlength: 8
@@ -155,7 +168,6 @@ export const administratorHandlers = {
                     }
                 }
             },
-
             messages: {
                 name: {
                     required: "Name is required.",
@@ -167,6 +179,10 @@ export const administratorHandlers = {
                 email: {
                     required: "Email is required.",
                     email: "Enter a valid email address."
+                },
+                role: {
+                    required: "Role is required.",
+                    pattern: "Role should be Owner, Manager or Sales"
                 },
                 password: {
                     required: "Password is required.",
