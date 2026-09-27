@@ -52,7 +52,8 @@ class CourseController extends Controller
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:1024',
+                'dimensions:max_width=350,max_height=350',
             ],
         ]);
         $file = $request->file('image');
@@ -99,7 +100,8 @@ class CourseController extends Controller
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:1024',
+                'dimensions:max_width=350,max_height=350',
             ],
         ]);
         /** @var array<string, mixed> $data */

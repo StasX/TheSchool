@@ -1,9 +1,13 @@
+import "jquery-validation";
+import "jquery-validation/dist/additional-methods";
 import template from "../../templates/partials/course.html?raw";
 import deleteButtonTemplate from "../../templates/partials/deleteButton.html?raw";
 import { courseRender, courseInfoRender } from "../renders/course";
 import { display } from "../utils/image";
 import CourseApi from "../api/courseApi";
 import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
+import { filesizeRegister } from "../validators/filesize";
+import { imagesizeRegister } from "../validators/imagesize";
 
 function isCourseFormChanged(course) {
     return (
@@ -30,6 +34,44 @@ export const courseHandlers = {
     add: () => {
         const html = $(template);
         const form = html.filter("#courses-form");
+        filesizeRegister();
+        imagesizeRegister();
+        form.validate({
+            rules: {
+                name: {
+                    required: true,
+                    minlength: 2
+                },
+                description: {
+                    required: true
+                },
+                image: {
+                    required: true,
+                    extension: "jpg|jpeg|png|gif",
+                    filesize: 1024 * 1024,
+                    imagesize: {
+                        width: 350,
+                        height: 350
+                    }
+                }
+            },
+
+            messages: {
+                name: {
+                    required: "Name is required.",
+                    minlength: "Name must contain at least 2 characters."
+                },
+                description: {
+                    required: "Description is required."
+                },
+                image: {
+                    required: "Image is required.",
+                    extension: "Image have to be jpg, png, gif file.",
+                    filesize: "Image must not exceed 500 KB.",
+                    imagesize: "Image too large."
+                }
+            }
+        });
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
         html.find("#total").text(0);
@@ -37,6 +79,7 @@ export const courseHandlers = {
         form.on("input change", () => updateCourseWarnings());
         form.on("submit", function (e) {
             e.preventDefault();
+            if (!form.valid()) return;
             const formData = new FormData(this);
             if (fileInput[0].files.length) {
                 formData.set("image", fileInput[0].files[0]);
@@ -56,6 +99,43 @@ export const courseHandlers = {
             html.filter('#btn-row').append(deleteButtonTemplate);
         }
         const form = html.filter("#courses-form");
+        filesizeRegister();
+        imagesizeRegister();
+        form.validate({
+            rules: {
+                name: {
+                    required: true,
+                    minlength: 2
+                },
+                description: {
+                    required: true
+                },
+                image: {
+                    required: false,
+                    extension: "jpg|jpeg|png|gif",
+                    filesize: 1024 * 1024,
+                    imagesize: {
+                        width: 350,
+                        height: 350
+                    }
+                }
+            },
+            messages: {
+                name: {
+                    required: "Name is required.",
+                    minlength: "Name must contain at least 2 characters."
+                },
+                description: {
+                    required: "Description is required."
+                },
+                image: {
+                    required: "Image is required.",
+                    extension: "Image have to be jpg, png, gif file.",
+                    filesize: "Image must not exceed 500 KB.",
+                    imagesize: "Image too large."
+                }
+            }
+        });
         html.find("#container-title").text("Edit Course");
         html.find("#name").val(course.name);
         html.find("#description").val(course.description);
@@ -67,6 +147,7 @@ export const courseHandlers = {
         html.find("#delete-course").on("click", () => courseHandlers.remove(course));
         form.on("submit", function (e) {
             e.preventDefault();
+            if (!form.valid()) return;
             const formData = new FormData(this);
             formData.set("_method", "PUT");
             CourseApi.update(course.id, formData).done(data => {
