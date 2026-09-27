@@ -1,3 +1,5 @@
+import AuthApi from "../api/authApi";
+
 export function userRender(user) {
     const navbar = $('#navbar');
     const navItems = navbar.find('.nav-item');
@@ -15,8 +17,7 @@ export function userRender(user) {
     $('#user-info').text(`${user.name}, ${user.role}`);
     $('#user-image').attr('src', user.image);
     $('#logout').on('click', () => {
-        $.post('/api/logout')
-            .done(() => {
+        AuthApi.logout().done(() => {
                 location.href='/';
             })
             .fail((xhr) => {

@@ -8,6 +8,7 @@ import CourseApi from "../api/courseApi";
 import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
 import { filesizeRegister } from "../validators/filesize";
 import { imagesizeRegister } from "../validators/imagesize";
+import AuthApi from "../api/authApi";
 
 function isCourseFormChanged(course) {
     return (
@@ -28,7 +29,9 @@ function updateCourseWarnings(course = null) {
 export const courseHandlers = {
     info: id => {
         CourseApi.getById(id).done(data => {
-            courseInfoRender(data);
+            AuthApi.auth().done((admin) => {
+                courseInfoRender(data, admin);
+            });
         });
     },
     add: () => {
@@ -55,7 +58,6 @@ export const courseHandlers = {
                     }
                 }
             },
-
             messages: {
                 name: {
                     required: "Name is required.",
@@ -168,7 +170,6 @@ export const courseHandlers = {
             confirmButtonText: "Yes",
             cancelButtonText: "No",
             buttonsStyling: false,
-
             customClass: {
                 confirmButton: "btn btn-danger",
                 cancelButton: "btn btn-dark ms-2"
@@ -184,7 +185,6 @@ export const courseHandlers = {
                     confirmButtonText: "Continue",
                     cancelButtonText: "Abort",
                     buttonsStyling: false,
-
                     customClass: {
                         confirmButton: "btn btn-danger",
                         cancelButton: "btn btn-dark ms-2"

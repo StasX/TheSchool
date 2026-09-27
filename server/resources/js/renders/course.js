@@ -3,6 +3,7 @@ import courseListItemTemplate from "../../templates/partials/courseListItem.html
 import courseInfoTemplate from "../../templates/partials/courseInfo.html?raw";
 import courseMemberTemplate from "../../templates/partials/courseMember.html?raw";
 import { studentHandlers } from '../handlers/student';
+import AdministratorApi from '../api/administratorApi';
 
 export function courseRender(data) {
     $("#courses-container").html("");
@@ -18,8 +19,13 @@ export function courseRender(data) {
     });
 }
 
-export function courseInfoRender(data) {
+export function courseInfoRender(data,admin) {
     const html = $(courseInfoTemplate);
+    if (["owner","manager"].includes(admin.role)){
+        const editBtn = $('<button class="btn btn-sm btn-dark ms-auto" id="edit">Edit</button>');
+        editBtn.on("click", () => courseHandlers.edit(data));
+        html.find("#head-row").append(editBtn);
+}
     html.find("#course-img").attr({ "src": data.image, "alt": data.name });
     html.find("#course-name").text(`${data.name}, ${data.students.length} Students`);
     html.find("#course-description").text(data.description);
@@ -34,8 +40,8 @@ export function courseInfoRender(data) {
         });
         studentsContainer.append(member);
     });
-    const editBtn = html.find("#edit");
-    editBtn.on("click", () => courseHandlers.edit(data));
+    //const editBtn = html.find("#edit");
+    //editBtn.on("click", () => courseHandlers.edit(data));
     $("#main-container").html(html);
 }
 
