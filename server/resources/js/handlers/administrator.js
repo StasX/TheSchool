@@ -236,7 +236,7 @@ export const administratorHandlers = {
             AdministratorApi.update(administrator.id, formData).done((data) => {
                 resetAdministrationHandlers();
                 administratorHandlers.edit(data);
-                $.get('/api/administrator').done(administrators => administratorRender(administrators));
+                AdministratorApi.getAll().done(administrators => administratorRender(administrators));
             }).fail(xhr => console.error(xhr));
         });
         saveBtn.on("click", () => form.trigger("submit"));
@@ -288,7 +288,7 @@ export const administratorHandlers = {
                                 title: "Administrator deleted successfully!",
                                 icon: "success",
                             }).then(() => {
-                                $.get("/api/administrator").done(administrator => administratorRender(administrator));
+                                AdministratorApi.getAll().done(administrator => administratorRender(administrator));
                                 $("#main-container").html("");
                             });
                         }).fail(xhr => console.error(xhr));
