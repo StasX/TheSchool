@@ -69,7 +69,8 @@ class StudentController extends Controller
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:500',
+                'dimensions:max_width=250,max_height=250',
             ],
             'courses' => [
                 'sometimes',
@@ -147,7 +148,8 @@ class StudentController extends Controller
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:500',
+                'dimensions:max_width=250,max_height=250',
             ],
             'courses' => [
                 'sometimes',
