@@ -25,11 +25,14 @@ export function display(image, input) {
         $(input).valid();
     };
 
-    imageElement.onerror = function () {
-        $(input).removeData("image-width image-height");
+    $(input).removeData("image-width image-height");
 
+    imageElement.onerror = function () {
         URL.revokeObjectURL(imageUrl);
 
+        if (input.files[0] !== file) return;
+
+        $(input).removeData("image-width image-height");
         $(input).valid();
     };
 
