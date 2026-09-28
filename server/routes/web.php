@@ -58,8 +58,8 @@ Route::prefix('api')->group(function () {
             Route::delete('/course/{id}', [CourseController::class, 'remove']);
 
             Route::get('/administrator', [AdministratorController::class, 'getAll']);
-            Route::get('/administrator/{id}', [AdministratorController::class, 'getById'])->whereNumber('id');
             Route::get('/administrator/count', [AdministratorController::class, 'getTotalCount']);
+            Route::get('/administrator/{id}', [AdministratorController::class, 'getById'])->whereNumber('id');
             Route::post('/administrator', [AdministratorController::class, 'add']);
             Route::put('/administrator/{id}', [AdministratorController::class, 'update']);
             Route::delete('/administrator/{id}', [AdministratorController::class, 'remove']);
