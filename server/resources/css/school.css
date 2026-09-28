@@ -14,6 +14,25 @@
     margin-top: 6px;
 }
 
+.view-row:nth-child(2) {
+    margin-top: 28px;
+}
+
+.management .item-row {
+    cursor: pointer;
+    height: 60px;
+}
+
+.management .item-row:hover {
+    background-color: #f8f9fa;
+    box-shadow: 5px 5px 8px #888;
+    border-radius: 8px 300px 300px 8px;
+}
+
+.management .item-row .row {
+    margin-top: 2px;
+}
+
 #image-upload {
     width: 180px;
 }
@@ -22,18 +41,30 @@
     margin-left: 10px;
 }
 
-.management img {
-    width: 60px;
-}
-
-#user-image{
-    width:50px;
-    max-height: 50px;
+#user-image {
+    width: 50px;
 }
 
 #edit {
     width: 100px;
 }
-#students-form{
+
+#students-form {
     margin-top: 10px;
+}
+
+.list-img {
+    width: 60px;
+    height: 60px;
+    border: 1px solid rgba(186, 186, 186, 0.75);
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+}
+
+.list-img img {
+    width: 54px;
+    height: auto;
+    border-radius: 50%;
+    object-fit: cover;
 }
