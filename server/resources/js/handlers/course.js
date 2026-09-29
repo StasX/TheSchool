@@ -1,14 +1,12 @@
-import "jquery-validation";
-import "jquery-validation/dist/additional-methods";
+
 import template from "../../templates/partials/course.html?raw";
 import deleteButtonTemplate from "../../templates/partials/deleteButton.html?raw";
 import { courseRender, courseInfoRender } from "../renders/course";
 import { display } from "../utils/image";
 import CourseApi from "../api/courseApi";
 import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
-import { filesizeRegister } from "../validators/filesize";
-import { imagesizeRegister } from "../validators/imagesize";
 import AuthApi from "../api/authApi";
+import { courseValidationConfig } from "../validations/course";
 
 function isCourseFormChanged(course) {
     return (
@@ -37,43 +35,8 @@ export const courseHandlers = {
     add: () => {
         const html = $(template);
         const form = html.filter("#courses-form");
-        filesizeRegister();
-        imagesizeRegister();
-        form.validate({
-            rules: {
-                name: {
-                    required: true,
-                    minlength: 2
-                },
-                description: {
-                    required: true
-                },
-                image: {
-                    required: true,
-                    extension: "jpg|jpeg|png|gif",
-                    filesize: 1024 * 1024,
-                    imagesize: {
-                        width: 350,
-                        height: 350
-                    }
-                }
-            },
-            messages: {
-                name: {
-                    required: "Name is required.",
-                    minlength: "Name must contain at least 2 characters."
-                },
-                description: {
-                    required: "Description is required."
-                },
-                image: {
-                    required: "Image is required.",
-                    extension: "Image have to be jpg, png, gif file.",
-                    filesize: "Image must not exceed 500 KB.",
-                    imagesize: "Image too large."
-                }
-            }
-        });
+
+        form.validate(courseValidationConfig());
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
         html.find("#total").text(0);
@@ -101,49 +64,14 @@ export const courseHandlers = {
             html.filter('#btn-row').append(deleteButtonTemplate);
         }
         const form = html.filter("#courses-form");
-        filesizeRegister();
-        imagesizeRegister();
-        form.validate({
-            rules: {
-                name: {
-                    required: true,
-                    minlength: 2
-                },
-                description: {
-                    required: true
-                },
-                image: {
-                    required: false,
-                    extension: "jpg|jpeg|png|gif",
-                    filesize: 1024 * 1024,
-                    imagesize: {
-                        width: 350,
-                        height: 350
-                    }
-                }
-            },
-            messages: {
-                name: {
-                    required: "Name is required.",
-                    minlength: "Name must contain at least 2 characters."
-                },
-                description: {
-                    required: "Description is required."
-                },
-                image: {
-                    required: "Image is required.",
-                    extension: "Image have to be jpg, png, gif file.",
-                    filesize: "Image must not exceed 500 KB.",
-                    imagesize: "Image too large."
-                }
-            }
-        });
+
+        form.validate(courseValidationConfig({ edit: true }));
         html.find("#container-title").text("Edit Course");
         html.find("#name").val(course.name);
         html.find("#description").val(course.description);
         const imageElement = html.find("#image-upload");
         const totalsRow = $(
-        `<div class="col">
+            `<div class="col">
             <em>Total <b id="total"></b> students taking this course</em>
         </div>`
         );

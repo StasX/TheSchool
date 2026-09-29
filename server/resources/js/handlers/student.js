@@ -1,5 +1,3 @@
-import "jquery-validation";
-import "jquery-validation/dist/additional-methods";
 import template from "../../templates/partials/student.html?raw";
 import courseCheckboxTemplate from "../../templates/partials/courseCheckbox.html?raw";
 import { display } from "../utils/image";
@@ -10,9 +8,7 @@ import CourseApi from "../api/courseApi";
 import { haveSameElements } from "../utils/arrays";
 import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
 import { courseHandlers } from "./course";
-import { filesizeRegister } from "../validators/filesize";
-import { imagesizeRegister } from "../validators/imagesize";
-import { integersArrayRegister } from "../validators/integersArray";
+import { studentValidationConfig } from "../validations/student";
 
 function isStudentFormChanged(student) {
     const currentCourses = (student?.courses || []).map(obj => obj.id);
@@ -48,58 +44,7 @@ export const studentHandlers = {
         const html = $(template);
         const saveBtn = html.find("#save-student");
         const form = html.filter("#students-form");
-        filesizeRegister();
-        imagesizeRegister();
-        integersArrayRegister();
-        form.validate({
-            rules: {
-                name: {
-                    required: true,
-                    minlength: 2
-                },
-                phone: {
-                    required: true
-                },
-                email: {
-                    required: true,
-                    email: true
-                },
-                image: {
-                    required: true,
-                    extension: "jpg|jpeg|png|gif",
-                    filesize: 500 * 1024,
-                    imagesize: {
-                        width: 250,
-                        height: 250
-                    }
-                },
-                "courses[]": {
-                    integerArray: true
-                }
-            },
-            messages: {
-                name: {
-                    required: "Name is required.",
-                    minlength: "Name must contain at least 2 characters."
-                },
-                phone: {
-                    required: "Phone is required."
-                },
-                email: {
-                    required: "Email is required.",
-                    email: "Enter a valid email address."
-                },
-                image: {
-                    required: "Image is required.",
-                    extension: "Image have to be jpg, png, gif file.",
-                    filesize: "Image must not exceed 500 KB.",
-                    imagesize: "Image too large."
-                },
-                "courses[]": {
-                    integerArray: "Courses must contain only integer IDs."
-                },
-            }
-        });
+        form.validate(studentValidationConfig());
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
         const coursesContainer = form.find(".courses-container");
@@ -143,58 +88,7 @@ export const studentHandlers = {
         const buttons = html.filter("#btn-row");
         const saveBtn = buttons.find("#save-student");
         const form = html.filter("#students-form");
-        filesizeRegister();
-        imagesizeRegister();
-        integersArrayRegister();
-        form.validate({
-            rules: {
-                name: {
-                    required: true,
-                    minlength: 2
-                },
-                phone: {
-                    required: true
-                },
-                email: {
-                    required: true,
-                    email: true
-                },
-                image: {
-                    required: false,
-                    extension: "jpg|jpeg|png|gif",
-                    filesize: 500 * 1024,
-                    imagesize: {
-                        width: 250,
-                        height: 250
-                    }
-                },
-                "courses[]": {
-                    integerArray: true
-                }
-            },
-            messages: {
-                name: {
-                    required: "Name is required.",
-                    minlength: "Name must contain at least 2 characters."
-                },
-                phone: {
-                    required: "Phone is required."
-                },
-                email: {
-                    required: "Email is required.",
-                    email: "Enter a valid email address."
-                },
-                image: {
-                    required: "Image is required.",
-                    extension: "Image have to be jpg, png, gif file.",
-                    filesize: "Image must not exceed 500 KB.",
-                    imagesize: "Image too large."
-                },
-                "courses[]": {
-                    integerArray: "Courses must contain only integer IDs."
-                },
-            }
-        });
+        form.validate(studentValidationConfig({ edit: true }));
         const coursesContainer = form.find(".courses-container");
         titleContainer.text("Edit Student");
         const btnContainer = $('<div class="col d-flex align-items-center"></div>');

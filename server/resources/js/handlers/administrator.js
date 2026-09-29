@@ -1,13 +1,10 @@
-import "jquery-validation";
-import "jquery-validation/dist/additional-methods";
 import template from "../../templates/partials/administrator.html?raw";
 import { display } from "../utils/image";
 import { administratorRender } from "../renders/administrator";
 import Swal from "sweetalert2";
 import AdministratorApi from "../api/administratorApi";
 import { resetAdministrationHandlers, setAdministrationWarningsHandler } from "./administration";
-import { filesizeRegister } from "../validators/filesize";
-import { imagesizeRegister } from "../validators/imagesize";
+import { administratorValidationConfig } from "../validations/administrator";
 
 function isAdministratorFormChanged(administrator) {
     return (
@@ -33,67 +30,7 @@ export const administratorHandlers = {
         const html = $(template);
         const saveBtn = html.find("#save-administrator");
         const form = html.filter("#administrators-form");
-        filesizeRegister();
-        imagesizeRegister();
-        form.validate({
-            rules: {
-                name: {
-                    required: true,
-                    minlength: 2
-                },
-                phone: {
-                    required: true
-                },
-                email: {
-                    required: true,
-                    email: true
-                },
-                role: {
-                    required: true,
-                    pattern: /^(manager|sales)$/
-                },
-                password: {
-                    required: true,
-                    minlength: 8
-                },
-                image: {
-                    required: true,
-                    extension: "jpg|jpeg|png|gif",
-                    filesize: 500 * 1024,
-                    imagesize: {
-                        width: 250,
-                        height: 250
-                    }
-                }
-            },
-            messages: {
-                name: {
-                    required: "Name is required.",
-                    minlength: "Name must contain at least 2 characters."
-                },
-                phone: {
-                    required: "Phone is required."
-                },
-                email: {
-                    required: "Email is required.",
-                    email: "Enter a valid email address."
-                },
-                role: {
-                    required: "Role is required.",
-                    pattern: "Role should be Manager or Sales"
-                },
-                password: {
-                    required: "Password is required.",
-                    minlength: "Password must contain at least 8 characters."
-                },
-                image: {
-                    required: "Image is required.",
-                    extension: "Image have to be jpg, png, gif file.",
-                    filesize: "Image must not exceed 500 KB.",
-                    imagesize: "Image too large."
-                }
-            }
-        });
+        form.validate(administratorValidationConfig());
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
         const roleInput = html.find("#role");
@@ -133,69 +70,10 @@ export const administratorHandlers = {
         const buttons = html.filter("#btn-row");
         const saveBtn = buttons.find("#save-administrator");
         const form = html.filter("#administrators-form");
-        filesizeRegister();
-        imagesizeRegister();
-        form.validate({
-            rules: {
-                name: {
-                    required: true,
-                    minlength: 2
-                },
-                phone: {
-                    required: true
-                },
-                email: {
-                    required: true,
-                    email: true
-                },
-                role: {
-                    required: false,
-                    pattern: administrator.role === "owner"
-                        ? /^owner$/
-                        : /^(manager|sales)$/
-                },
-                password: {
-                    required: false,
-                    minlength: 8
-                },
-                image: {
-                    required: false,
-                    extension: "jpg|jpeg|png|gif",
-                    filesize: 500 * 1024,
-                    imagesize: {
-                        width: 250,
-                        height: 250
-                    }
-                }
-            },
-            messages: {
-                name: {
-                    required: "Name is required.",
-                    minlength: "Name must contain at least 2 characters."
-                },
-                phone: {
-                    required: "Phone is required."
-                },
-                email: {
-                    required: "Email is required.",
-                    email: "Enter a valid email address."
-                },
-                role: {
-                    required: "Role is required.",
-                    pattern: "Role should be Owner, Manager or Sales"
-                },
-                password: {
-                    required: "Password is required.",
-                    minlength: "Password must contain at least 8 characters."
-                },
-                image: {
-                    required: "Image is required.",
-                    extension: "Image have to be jpg, png, gif file.",
-                    filesize: "Image must not exceed 500 KB.",
-                    imagesize: "Image too large."
-                }
-            }
-        });
+        form.validate(administratorValidationConfig({
+            edit: true,
+            owner: administrator.role === "owner"
+        }));
         titleContainer.text("Edit Administrator");
         const btnContainer = $('<div class="col d-flex align-items-center"></div>');
         const removeBtn = $(`
