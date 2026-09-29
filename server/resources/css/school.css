@@ -98,3 +98,8 @@
 .courses-container{
     margin-top: 8px;
 }
+
+#main-container pre{
+    margin-top: 160px;
+    text-align: center;
+}
