@@ -37,6 +37,10 @@
     width: 180px;
 }
 
+#btn-row {
+    margin-bottom: 10px;
+}
+
 #btn-row i {
     margin-left: 10px;
 }
@@ -67,4 +71,8 @@
     height: auto;
     border-radius: 50%;
     object-fit: cover;
+}
+
+#totals-row .col {
+    text-align: center;
 }

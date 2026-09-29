@@ -142,7 +142,13 @@ export const courseHandlers = {
         html.find("#name").val(course.name);
         html.find("#description").val(course.description);
         const imageElement = html.find("#image-upload");
-        html.find("#total").text(course.students.length);
+        const totalsRow = $(
+        `<div class="col">
+            <em>Total <b id="total"></b> students taking this course</em>
+        </div>`
+        );
+        totalsRow.find("#total").text(course.students.length);
+        html.filter("#totals-row").html(totalsRow);
         imageElement.attr("src", course.image);
         html.find("#image-file").on("change", function () { display(imageElement, this); });
         form.on("input change", () => updateCourseWarnings(course));

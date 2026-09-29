@@ -3,7 +3,6 @@ import courseListItemTemplate from "../../templates/partials/courseListItem.html
 import courseInfoTemplate from "../../templates/partials/courseInfo.html?raw";
 import courseMemberTemplate from "../../templates/partials/courseMember.html?raw";
 import { studentHandlers } from '../handlers/student';
-import AdministratorApi from '../api/administratorApi';
 
 export function courseRender(data) {
     $("#courses-container").html("");
@@ -40,8 +39,6 @@ export function courseInfoRender(data,admin) {
         });
         studentsContainer.append(member);
     });
-    //const editBtn = html.find("#edit");
-    //editBtn.on("click", () => courseHandlers.edit(data));
     $("#main-container").html(html);
 }
 
