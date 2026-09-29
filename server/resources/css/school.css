@@ -15,7 +15,7 @@
 }
 
 .view-row:nth-child(2) {
-    margin-top: 28px;
+    margin-top: 12px;
 }
 
 .management .item-row {
@@ -33,8 +33,21 @@
     margin-top: 2px;
 }
 
+/*
 #image-upload {
     width: 180px;
+} */
+
+.d-flex:has(> #image-upload) {
+        /* display: flex; */
+    justify-content: center;
+    align-items: center;
+}
+
+#image-upload {
+    width: 180px;
+    height: auto;
+    object-fit: cover;
 }
 
 #btn-row {
@@ -75,4 +88,13 @@
 
 #totals-row .col {
     text-align: center;
+}
+
+.bm {
+    margin-top: 18px !important;
+    margin-bottom: 10px;
+}
+
+.courses-container{
+    margin-top: 8px;
 }

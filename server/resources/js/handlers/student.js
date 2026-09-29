@@ -102,7 +102,7 @@ export const studentHandlers = {
         });
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
-        const coursesContainer = form.find("#courses-container");
+        const coursesContainer = form.find(".courses-container");
         fileInput.on("change", function () { display(imageElement, this); });
         form.on("input change", () => updateStudentWarnings());
         form.on("submit", function (e) {
@@ -195,7 +195,7 @@ export const studentHandlers = {
                 },
             }
         });
-        const coursesContainer = form.find("#courses-container");
+        const coursesContainer = form.find(".courses-container");
         titleContainer.text("Edit Student");
         const btnContainer = $('<div class="col d-flex align-items-center"></div>');
         const removeBtn = $(`
