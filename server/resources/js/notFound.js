@@ -1,7 +1,7 @@
 import template from '../templates/pages/404.html?raw';
-import { userRender } from './renders/user';
+import { navbarRender } from './renders/navbar';
 
 export default function notFound(user) {
     $('body').html(template);
-    userRender(user);
+    navbarRender(user);
 }
