@@ -9,7 +9,8 @@ export function administratorValidationConfig({
                 minlength: 2
             },
             phone: {
-                required: true
+                required: true,
+                phone: true
             },
             email: {
                 required: true,
@@ -41,7 +42,8 @@ export function administratorValidationConfig({
                 minlength: "Name must contain at least 2 characters."
             },
             phone: {
-                required: "Phone is required."
+                required: "Phone is required.",
+                phone: "Enter a valid phone number."
             },
             email: {
                 required: "Email is required.",

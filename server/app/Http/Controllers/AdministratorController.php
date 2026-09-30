@@ -79,7 +79,8 @@ class AdministratorController extends Controller
             'phone' => [
                 'required',
                 'string',
-                'max:16',
+                'max:20',
+                'regex:/^\+?[0-9](?:[0-9\s\-().]*[0-9])?$/',
             ],
             'password' => [
                 'required',
@@ -165,7 +166,8 @@ class AdministratorController extends Controller
             'phone' => [
                 'required',
                 'string',
-                'max:16',
+                'max:20',
+                'regex:/^\+?[0-9](?:[0-9\s\-().]*[0-9])?$/',
             ],
             'image' => [
                 'sometimes',

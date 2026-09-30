@@ -58,3 +58,21 @@ $.validator.addMethod(
     },
     "Courses must contain only integer IDs."
 );
+
+$.validator.addMethod(
+        "phone",
+        function (value, element) {
+            if (this.optional(element)) {
+                return true;
+            }
+
+            const digits = value.replace(/\D/g, "");
+
+            return (
+                /^[+]?[0-9\s\-()]$/.test(value) &&
+                digits.length >= 7 &&
+                digits.length <= 15
+            );
+        },
+        "Enter a valid phone number."
+    );
