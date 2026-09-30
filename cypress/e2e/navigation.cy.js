@@ -4,84 +4,103 @@ describe('Navigation', () => {
             .then(({ OWNER_EMAIL, OWNER_PASSWORD }) => {
                 cy.login(OWNER_EMAIL, OWNER_PASSWORD);
             });
+    });
 
-        it('opens the school page', () => {
-            cy.visit('/#!school');
+    it('opens the school page', () => {
+        cy.visit('/#!school');
 
-            cy.location('hash')
-                .should('eq', '#!school');
+        cy.location('hash')
+            .should('eq', '#!school');
 
-            cy.get('#students-container')
-                .should('be.visible');
+        cy.get('#students-container')
+            .should('be.visible');
 
-            cy.get('#courses-container')
-                .should('be.visible');
-        });
+        cy.get('#courses-container')
+            .should('be.visible');
+    });
 
-        it('navigates from school to administration', () => {
-            cy.contains('a', 'Administration')
-                .click();
+    it('navigates from school to administration', () => {
+        cy.visit('/#!school');
 
-            cy.location('hash')
-                .should('eq', '#!administration');
+        cy.contains('a', 'Administration')
+            .click();
 
-            cy.get('#administrators-container')
-                .should('be.visible');
-        });
+        cy.location('hash')
+            .should('eq', '#!administration');
 
-        it('navigates from administration back to school', () => {
-            cy.visit('/#!administration');
+        cy.get('#administrators-container')
+            .should('be.visible');
+    });
 
-            cy.contains('a', 'School')
-                .click();
+    it('navigates from administration back to school', () => {
+        cy.visit('/#!administration');
 
-            cy.location('hash')
-                .should('eq', '#!school');
+        cy.contains('a', 'School')
+            .click();
 
-            cy.get('#students-container')
-                .should('be.visible');
+        cy.location('hash')
+            .should('eq', '#!school');
 
-            cy.get('#courses-container')
-                .should('be.visible');
-        });
+        cy.get('#students-container')
+            .should('be.visible');
 
-        it('displays not found page for an unknown route', () => {
-            cy.visit('/#!unknown');
+        cy.get('#courses-container')
+            .should('be.visible');
+    });
 
-            cy.location('hash')
-                .should('eq', '#!unknown');
+    it('displays not found page for an unknown route', () => {
+        cy.visit('/#!unknown');
 
-            cy.contains('404')
-                .should('be.visible');
+        cy.location('hash')
+            .should('eq', '#!unknown');
 
-            cy.contains('Page Not Found')
-                .should('be.visible');
-        });
+        cy.contains('404')
+            .should('be.visible');
 
-        it('keeps an unsaved course form when row navigation is cancelled', () => {
-            const name = `Navigation Student ${Date.now()}`;
+        cy.contains('Page Not Found')
+            .should('be.visible');
+    });
 
-            cy.get('#add-student').click();
-            cy.get('#name').type(name);
-            cy.get('#email').type(`navigation-${Date.now()}@example.com`);
-            cy.get('#phone').type('0501234567');
-            cy.get('#image-file').selectFile('cypress/fixtures/student.png');
-            cy.get('#save-student').click();
+    it('keeps an unsaved course form when row navigation is cancelled', () => {
+        const name = `Navigation Student ${Date.now()}`;
 
-            cy.get('#student-name').should('have.text', name);
+        cy.visit('/#!school');
 
-            cy.get('#add-course').click();
-            cy.get('#name').type('Unsaved course');
+        cy.get('#add-student').click();
 
-            cy.contains('#students-container .item-row', name).click();
+        cy.get('#name').type(name);
+        cy.get('#email')
+            .type(`navigation-${Date.now()}@example.com`);
+        cy.get('#phone').type('0501234567');
 
-            cy.contains('.swal2-popup', 'all changes will be discarded')
-                .should('be.visible');
+        cy.get('#image-file')
+            .selectFile('cypress/fixtures/student.png');
 
-            cy.contains('.swal2-popup button', 'Cancel').click();
+        cy.get('#save-student').click();
 
-            cy.get('#courses-form').should('exist');
-            cy.get('#name').should('have.value', 'Unsaved course');
-        });
+        cy.get('#student-name')
+            .should('have.text', name);
+
+        cy.get('#add-course').click();
+
+        cy.get('#name')
+            .type('Unsaved course');
+
+        cy.contains('#students-container .item-row', name)
+            .click();
+
+        cy.contains(
+            '.swal2-popup',
+            'all changes will be discarded'
+        ).should('be.visible');
+
+        cy.contains('.swal2-popup button', 'Cancel')
+            .click();
+
+        cy.get('#courses-form')
+            .should('exist');
+
+        cy.get('#name')
+            .should('have.value', 'Unsaved course');
     });
 });

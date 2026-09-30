@@ -6,79 +6,73 @@ describe('Courses', () => {
 
                 cy.location('hash').should('eq', '#!school');
             });
+    });
 
-        it('creates, edits and deletes a course', () => {
-            const suffix = Date.now().toString().slice(-6);
-            const courseName = `Cypress Course ${suffix}`;
-            const updatedCourseName = `${courseName} Updated`;
+    it('creates, edits and deletes a course', () => {
+        const suffix = Date.now().toString().slice(-6);
+        const courseName = `Cypress Course ${suffix}`;
+        const updatedCourseName = `${courseName} Updated`;
 
-            // Create
-            cy.get('#add-course').click();
+        // Create
+        cy.get('#add-course').click();
 
-            cy.get('#container-title')
-                .should('contain.text', 'Add Course');
+        cy.get('#container-title')
+            .should('contain.text', 'Add Course');
 
-            cy.get('#name').type(courseName);
+        cy.get('#name').type(courseName);
 
-            cy.get('#description')
-                .type('Course created by Cypress E2E test');
+        cy.get('#description')
+            .type('Course created by Cypress E2E test');
 
-            cy.get('#image-file')
-                .selectFile('cypress/fixtures/course.png');
+        cy.get('#image-file')
+            .selectFile('cypress/fixtures/course.png');
 
-            cy.get('#save-course').click();
+        cy.get('#save-course').click();
 
-            cy.get('#course-name')
-                .should('contain.text', courseName);
+        cy.get('#course-name')
+            .should('contain.text', courseName);
 
-            cy.get('#course-description')
-                .should(
-                    'contain.text',
-                    'Course created by Cypress E2E test'
-                );
+        cy.get('#course-description')
+            .should(
+                'contain.text',
+                'Course created by Cypress E2E test'
+            );
 
-            // Edit
-            cy.get('#edit').click();
+        // Edit
+        cy.get('#edit').click();
 
-            cy.get('#container-title')
-                .should('contain.text', 'Edit Course');
+        cy.get('#container-title')
+            .should('contain.text', 'Edit Course');
 
-            cy.get('#name')
-                .clear()
-                .type(updatedCourseName);
+        cy.get('#name')
+            .clear()
+            .type(updatedCourseName);
 
-            cy.get('#description')
-                .clear()
-                .type('Updated by Cypress');
+        cy.get('#description')
+            .clear()
+            .type('Updated by Cypress');
 
-            cy.get('#save-course').click();
+        cy.get('#save-course').click();
 
-            cy.get('#course-name')
-                .should('contain.text', updatedCourseName);
+        cy.get('#course-name')
+            .should('contain.text', updatedCourseName);
 
-            cy.get('#course-description')
-                .should('contain.text', 'Updated by Cypress');
+        cy.get('#course-description')
+            .should('contain.text', 'Updated by Cypress');
 
-            // Delete
-            cy.get('#edit').click();
+        // Delete
+        cy.get('#edit').click();
 
-            cy.contains('button', 'Delete')
-                .click();
+        cy.contains('button', 'Delete').click();
+        cy.contains('button', 'Yes').click();
+        cy.contains('button', 'Continue').click();
 
-            cy.contains('button', 'Yes')
-                .click();
+        cy.contains('Course deleted successfully!')
+            .should('be.visible');
 
-            cy.contains('button', 'Continue')
-                .click();
+        cy.contains('button', 'OK').click();
 
-            cy.contains('Course deleted successfully!')
-                .should('be.visible');
-
-            cy.contains('button', 'OK')
-                .click();
-
-            cy.contains('.course-name', updatedCourseName)
-                .should('not.exist');
-        });
+        cy.contains('.course-name', updatedCourseName)
+            .should('not.exist');
     });
 });
