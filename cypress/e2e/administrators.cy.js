@@ -1,6 +1,6 @@
 describe('Administrators', () => {
     beforeEach(() => {
-        cy.login(cy.env('OWNER_EMAIL'), cy.env('OWNER_PASSWORD'));
+        cy.login(Cypress.expose('OWNER_EMAIL'), Cypress.expose('OWNER_PASSWORD'));
         cy.visit('/#!administration');
         cy.location('hash').should('eq', '#!administration');
         cy.get('#administrators-container .item-row').should('have.length.greaterThan', 0);

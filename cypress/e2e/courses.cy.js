@@ -1,8 +1,8 @@
 describe('Courses', () => {
     beforeEach(() => {
         cy.login(
-            cy.env('OWNER_EMAIL'),
-            cy.env('OWNER_PASSWORD')
+            Cypress.expose('OWNER_EMAIL'),
+            Cypress.expose('OWNER_PASSWORD')
         );
 
         cy.location('hash').should('eq', '#!school');

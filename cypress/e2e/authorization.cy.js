@@ -2,8 +2,8 @@ describe('Authorization', () => {
 
     it('allows owner to access administration', () => {
         cy.login(
-            cy.env('OWNER_EMAIL'),
-            cy.env('OWNER_PASSWORD')
+            Cypress.expose('OWNER_EMAIL'),
+            Cypress.expose('OWNER_PASSWORD')
         );
 
         cy.contains('a', 'Administration')
@@ -16,8 +16,8 @@ describe('Authorization', () => {
 
     it('allows manager to access administration', () => {
         cy.login(
-            cy.env('MANAGER_EMAIL'),
-            cy.env('MANAGER_PASSWORD')
+            Cypress.expose('MANAGER_EMAIL'),
+            Cypress.expose('MANAGER_PASSWORD')
         );
 
         cy.contains('a', 'Administration')
@@ -30,8 +30,8 @@ describe('Authorization', () => {
 
     it('hides administration from sales user', () => {
         cy.login(
-            cy.env('SALES_EMAIL'),
-            cy.env('SALES_PASSWORD')
+            Cypress.expose('SALES_EMAIL'),
+            Cypress.expose('SALES_PASSWORD')
         );
 
         cy.contains('a', 'Administration')
@@ -43,8 +43,8 @@ describe('Authorization', () => {
 
     it('redirects sales user from administration page', () => {
         cy.login(
-            cy.env('SALES_EMAIL'),
-            cy.env('SALES_PASSWORD')
+            Cypress.expose('SALES_EMAIL'),
+            Cypress.expose('SALES_PASSWORD')
         );
 
         cy.visit('/#!administration');
