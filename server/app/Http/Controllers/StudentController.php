@@ -59,6 +59,7 @@ class StudentController extends Controller
                 'required',
                 'string',
                 'max:32',
+                'min:2',
             ],
             'phone' => [
                 'required',
@@ -138,6 +139,7 @@ class StudentController extends Controller
                 'required',
                 'string',
                 'max:32',
+                'min:2',
             ],
             'phone' => [
                 'required',

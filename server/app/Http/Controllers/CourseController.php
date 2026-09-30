@@ -46,8 +46,8 @@ class CourseController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:32'],
-            'description' => ['required', 'string', 'max:500'],
+            'name' => ['required', 'string', 'max:32', 'min:8'],
+            'description' => ['required', 'string', 'max:500', 'min:8'],
             'image' => [
                 'required',
                 'image',
@@ -93,8 +93,8 @@ class CourseController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:32'],
-            'description' => ['required', 'string', 'max:500'],
+            'name' => ['required', 'string', 'max:32', 'min:8'],
+            'description' => ['required', 'string', 'max:500', 'min:8'],
             'image' => [
                 'sometimes',
                 'nullable',

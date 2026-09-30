@@ -71,6 +71,7 @@ class AdministratorController extends Controller
                 'required',
                 'string',
                 'max:32',
+                'min:2',
             ],
             'role' => [
                 'required',
@@ -158,6 +159,7 @@ class AdministratorController extends Controller
                 'required',
                 'string',
                 'max:32',
+                'min:2',
             ],
             'role' => [
                 'sometimes',

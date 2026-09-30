@@ -5,11 +5,13 @@ export function studentValidationConfig({
         rules: {
             name: {
                 required: true,
-                minlength: 2
+                minlength: 2,
+                maxlength: 32,
             },
             phone: {
                 required: true,
-                phone: true
+                phone: true,
+                maxlength: 20,
             },
             email: {
                 required: true,
@@ -31,11 +33,13 @@ export function studentValidationConfig({
         messages: {
             name: {
                 required: "Name is required.",
-                minlength: "Name must contain at least 2 characters."
+                minlength: "Name must contain at least 2 characters.",
+                maxlength: "Name too long",
             },
             phone: {
                 required: "Phone is required.",
-                phone: "Enter a valid phone number."
+                phone: "Enter a valid phone number.",
+                maxlength: "Phone too long",
             },
             email: {
                 required: "Email is required.",

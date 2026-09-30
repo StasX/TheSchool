@@ -71,7 +71,7 @@ $.validator.addMethod(
             return (
                 /^[+]?[0-9\s\-()]$/.test(value) &&
                 digits.length >= 7 &&
-                digits.length <= 15
+                digits.length <= 20
             );
         },
         "Enter a valid phone number."

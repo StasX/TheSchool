@@ -6,11 +6,13 @@ export function administratorValidationConfig({
         rules: {
             name: {
                 required: true,
-                minlength: 2
+                minlength: 2,
+                maxlength: 32,
             },
             phone: {
                 required: true,
-                phone: true
+                phone: true,
+                maxlength: 20,
             },
             email: {
                 required: true,
