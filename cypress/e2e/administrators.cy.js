@@ -1,6 +1,6 @@
 describe('Administrators', () => {
     beforeEach(() => {
-        cy.login(Cypress.env('OWNER_EMAIL'), Cypress.env('OWNER_PASSWORD'));
+        cy.login(cy.env('OWNER_EMAIL'), cy.env('OWNER_PASSWORD'));
         cy.visit('/#!administration');
         cy.location('hash').should('eq', '#!administration');
         cy.get('#administrators-container .item-row').should('have.length.greaterThan', 0);
@@ -34,7 +34,6 @@ describe('Administrators', () => {
         cy.get('#name').clear().type(updatedName);
         cy.get('#phone').clear().type('0507654321');
         cy.get('#role').select('sales');
-        //cy.get('#password').should('not.have.attr', 'required');
         cy.get('#save-administrator').click();
 
         cy.get('#name').should('have.value', updatedName);

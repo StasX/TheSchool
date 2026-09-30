@@ -1,8 +1,8 @@
 describe('Navigation', () => {
     beforeEach(() => {
         cy.login(
-            Cypress.env('OWNER_EMAIL'),
-            Cypress.env('OWNER_PASSWORD')
+            cy.env('OWNER_EMAIL'),
+            cy.env('OWNER_PASSWORD')
         );
     });
 

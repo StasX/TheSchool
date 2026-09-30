@@ -34,8 +34,8 @@ describe('Authentication', () => {
     });
 
     it('logs in with valid credentials', () => {
-        cy.get('#user').type(Cypress.env('OWNER_EMAIL'));
-        cy.get('#password').type(Cypress.env('OWNER_PASSWORD'));
+        cy.get('#user').type(cy.env('OWNER_EMAIL'));
+        cy.get('#password').type(cy.env('OWNER_PASSWORD'));
 
         cy.get('#login').submit();
 
