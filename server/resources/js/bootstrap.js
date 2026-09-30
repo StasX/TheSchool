@@ -69,7 +69,7 @@ $.validator.addMethod(
             const digits = value.replace(/\D/g, "");
 
             return (
-                /^[+]?[0-9\s\-()]$/.test(value) &&
+                /^\+?[0-9](?:[0-9\s\-().]*[0-9])?$/.test(value) &&
                 digits.length >= 7 &&
                 digits.length <= 20
             );
