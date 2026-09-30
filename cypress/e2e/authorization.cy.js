@@ -1,59 +1,59 @@
 describe('Authorization', () => {
+    cy.env(['OWNER_EMAIL', 'OWNER_PASSWORD'])
+        .then(({ OWNER_EMAIL, OWNER_PASSWORD }) => {
+            it('allows owner to access administration', () => {
+                cy.login(OWNER_EMAIL, OWNER_PASSWORD);
 
-    it('allows owner to access administration', () => {
-        cy.login(
-            Cypress.expose('OWNER_EMAIL'),
-            Cypress.expose('OWNER_PASSWORD')
-        );
+                cy.contains('a', 'Administration')
+                    .should('be.visible')
+                    .click();
 
-        cy.contains('a', 'Administration')
-            .should('be.visible')
-            .click();
+                cy.location('hash')
+                    .should('eq', '#!administration');
+            });
+        });
 
-        cy.location('hash')
-            .should('eq', '#!administration');
-    });
 
-    it('allows manager to access administration', () => {
-        cy.login(
-            Cypress.expose('MANAGER_EMAIL'),
-            Cypress.expose('MANAGER_PASSWORD')
-        );
+    cy.env(['MANAGER_EMAIL', 'MANAGER_PASSWORD'])
+        .then(({ MANAGER_EMAIL, MANAGER_PASSWORD }) => {
+            it('allows manager to access administration', () => {
+                cy.login(MANAGER_EMAIL, MANAGER_PASSWORD);
 
-        cy.contains('a', 'Administration')
-            .should('be.visible')
-            .click();
+                cy.contains('a', 'Administration')
+                    .should('be.visible')
+                    .click();
 
-        cy.location('hash')
-            .should('eq', '#!administration');
-    });
+                cy.location('hash')
+                    .should('eq', '#!administration');
+            });
+        });
 
-    it('hides administration from sales user', () => {
-        cy.login(
-            Cypress.expose('SALES_EMAIL'),
-            Cypress.expose('SALES_PASSWORD')
-        );
 
-        cy.contains('a', 'Administration')
-            .should('not.exist');
+    cy.env(['SALES_EMAIL', 'SALES_PASSWORD'])
+        .then(({ SALES_EMAIL, SALES_PASSWORD }) => {
+            it('hides administration from sales user', () => {
+                cy.login(SALES_EMAIL, SALES_PASSWORD);
 
-        cy.location('hash')
-            .should('eq', '#!school');
-    });
+                cy.contains('a', 'Administration')
+                    .should('not.exist');
 
-    it('redirects sales user from administration page', () => {
-        cy.login(
-            Cypress.expose('SALES_EMAIL'),
-            Cypress.expose('SALES_PASSWORD')
-        );
+                cy.location('hash')
+                    .should('eq', '#!school');
+            });
+        });
 
-        cy.visit('/#!administration');
+    cy.env(['SALES_EMAIL', 'SALES_PASSWORD'])
+        .then(({ SALES_EMAIL, SALES_PASSWORD }) => {
+            it('redirects sales user from administration page', () => {
+                cy.login(SALES_EMAIL, SALES_PASSWORD);
 
-        cy.location('hash')
-            .should('eq', '#!school');
+                cy.visit('/#!administration');
 
-        cy.contains('a', 'Administration')
-            .should('not.exist');
-    });
+                cy.location('hash')
+                    .should('eq', '#!school');
 
+                cy.contains('a', 'Administration')
+                    .should('not.exist');
+            });
+        });
 });

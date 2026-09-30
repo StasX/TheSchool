@@ -32,15 +32,17 @@ describe('Authentication', () => {
 
         cy.location('hash').should('eq', '');
     });
+    cy.env(['OWNER_EMAIL', 'OWNER_PASSWORD'])
+        .then(({ OWNER_EMAIL, OWNER_PASSWORD }) => {
+            it('logs in with valid credentials', () => {
+                cy.get('#user').type(OWNER_EMAIL);
+                cy.get('#password').type(OWNER_PASSWORD);
 
-    it('logs in with valid credentials', () => {
-        cy.get('#user').type(Cypress.expose('OWNER_EMAIL'));
-        cy.get('#password').type(Cypress.expose('OWNER_PASSWORD'));
+                cy.get('#login').submit();
 
-        cy.get('#login').submit();
+                cy.location('hash').should('eq', '#!school');
 
-        cy.location('hash').should('eq', '#!school');
-
-        cy.get('#login').should('not.exist');
-    });
+                cy.get('#login').should('not.exist');
+            });
+        });
 });
