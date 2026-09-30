@@ -482,4 +482,80 @@ class StudentTest extends TestCase
             )
         );
     }
+
+    public function test_unsubscribe_student_from_course(): void
+    {
+        $student = $this->createStudent();
+        $course = $this->createCourse();
+
+        $student->courses()->attach($course->Course_ID);
+
+        $this->assertTrue(
+            $student->courses()
+                ->where('courses.Course_ID', $course->Course_ID)
+                ->exists()
+        );
+
+        $this->deleteJson(
+            "/api/student/{$student->Student_ID}/course/{$course->Course_ID}"
+        )->assertNoContent();
+
+        $this->assertFalse(
+            $student->courses()
+                ->where('courses.Course_ID', $course->Course_ID)
+                ->exists()
+        );
+
+        $this->assertDatabaseHas('students', [
+            'Student_ID' => $student->Student_ID,
+        ]);
+
+        $this->assertDatabaseHas('courses', [
+            'Course_ID' => $course->Course_ID,
+        ]);
+    }
+
+    public function test_unsubscribe_returns_404_when_student_not_found(): void
+    {
+        $course = $this->createCourse();
+
+        $response = $this->delete(
+            "/api/student/999999/course/{$course->Course_ID}"
+        );
+
+        $response->assertNotFound();
+    }
+
+    public function test_unsubscribe_returns_204_when_student_is_not_subscribed(): void
+    {
+        $student = $this->createStudent();
+        $course = $this->createCourse();
+
+        $this->assertFalse(
+            $student->courses()
+                ->where('courses.Course_ID', $course->Course_ID)
+                ->exists()
+        );
+
+        $this->deleteJson(
+            "/api/student/{$student->Student_ID}/course/{$course->Course_ID}"
+        )->assertNoContent();
+
+        $this->assertFalse(
+            $student->courses()
+                ->where('courses.Course_ID', $course->Course_ID)
+                ->exists()
+        );
+    }
+
+    public function test_unsubscribe_returns_404_when_course_not_found(): void
+    {
+        $student = $this->createStudent();
+
+        $response = $this->delete(
+            "/api/student/{$student->Student_ID}/course/999999"
+        );
+
+        $response->assertNotFound();
+    }
 }

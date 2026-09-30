@@ -1,11 +1,11 @@
 describe('Courses', () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env('OWNER_EMAIL'),
-            Cypress.env('OWNER_PASSWORD')
-        );
+        cy.env(['OWNER_EMAIL', 'OWNER_PASSWORD'])
+            .then(({ OWNER_EMAIL, OWNER_PASSWORD }) => {
+                cy.login(OWNER_EMAIL, OWNER_PASSWORD);
 
-        cy.location('hash').should('eq', '#!school');
+                cy.location('hash').should('eq', '#!school');
+            });
     });
 
     it('creates, edits and deletes a course', () => {
@@ -63,20 +63,14 @@ describe('Courses', () => {
         // Delete
         cy.get('#edit').click();
 
-        cy.contains('button', 'Delete')
-            .click();
-
-        cy.contains('button', 'Yes')
-            .click();
-
-        cy.contains('button', 'Continue')
-            .click();
+        cy.contains('button', 'Delete').click();
+        cy.contains('button', 'Yes').click();
+        cy.contains('button', 'Continue').click();
 
         cy.contains('Course deleted successfully!')
             .should('be.visible');
 
-        cy.contains('button', 'OK')
-            .click();
+        cy.contains('button', 'OK').click();
 
         cy.contains('.course-name', updatedCourseName)
             .should('not.exist');

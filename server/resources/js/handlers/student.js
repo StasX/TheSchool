@@ -5,6 +5,33 @@ import { studentInfoRender, studentRender } from "../renders/student";
 import Swal from "sweetalert2";
 import StudentApi from "../api/studentApi";
 import CourseApi from "../api/courseApi";
+import { haveSameElements } from "../utils/arrays";
+import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
+import { courseHandlers } from "./course";
+import { studentValidationConfig } from "../validations/student";
+
+function isStudentFormChanged(student) {
+    const currentCourses = (student?.courses || []).map(obj => obj.id);
+    const selectedCourses = [];
+    $('input[name="course[]"]:checked').each(function () {
+        selectedCourses.push($(this).val());
+    });
+    return (
+        (student?.name ?? "") !== $("#name").val() ||
+        (student?.email ?? "") !== $("#email").val() ||
+        (student?.phone ?? "") !== $("#phone").val() ||
+        !!$('#image-file')[0].files.length ||
+        !haveSameElements(currentCourses, selectedCourses)
+    );
+}
+
+function updateStudentWarnings(student = null) {
+    if (isStudentFormChanged(student)) {
+        setSchoolWarningsHandler();
+    } else {
+        resetSchoolHandlers();
+    }
+}
 
 export const studentHandlers = {
     info: (id) => {
@@ -17,17 +44,21 @@ export const studentHandlers = {
         const html = $(template);
         const saveBtn = html.find("#save-student");
         const form = html.filter("#students-form");
+        form.validate(studentValidationConfig());
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
-        const coursesContainer = form.find("#courses-container");
+        const coursesContainer = form.find(".courses-container");
         fileInput.on("change", function () { display(imageElement, this); });
+        form.on("input change", () => updateStudentWarnings());
         form.on("submit", function (e) {
             e.preventDefault();
+            if (!form.valid()) return;
             const formData = new FormData(this);
             if (fileInput[0].files.length) {
                 formData.set("image", fileInput[0].files[0]);
             }
             StudentApi.add(formData).done((data) => {
+                resetSchoolHandlers();
                 studentHandlers.info(data.id);
                 StudentApi.getAll().done((students) => studentRender(students));
             }).fail(xhr => console.error(xhr));
@@ -57,7 +88,8 @@ export const studentHandlers = {
         const buttons = html.filter("#btn-row");
         const saveBtn = buttons.find("#save-student");
         const form = html.filter("#students-form");
-        const coursesContainer = form.find("#courses-container");
+        form.validate(studentValidationConfig({ edit: true }));
+        const coursesContainer = form.find(".courses-container");
         titleContainer.text("Edit Student");
         const btnContainer = $('<div class="col d-flex align-items-center"></div>');
         const removeBtn = $(`
@@ -65,15 +97,20 @@ export const studentHandlers = {
                 Delete <i class="fa-regular fa-trash-can"></i>
             </button>
         `);
-        fileInput.on("change", function () { display(imageElement, this); });
+        fileInput.on("change", function () {
+            display(imageElement, this);
+        });
+        form.on("input change", () => updateStudentWarnings(student));
         form.on("submit", function (e) {
             e.preventDefault();
+            if (!form.valid()) return;
             const formData = new FormData(this);
             formData.set("_method", "PUT");
             if (fileInput[0].files.length) {
                 formData.set("image", fileInput[0].files[0]);
             }
             StudentApi.update(student.id, formData).done((data) => {
+                resetSchoolHandlers();
                 studentHandlers.info(data.id);
                 StudentApi.getAll().done(students => studentRender(students));
             }).fail(xhr => console.error(xhr));
@@ -147,5 +184,10 @@ export const studentHandlers = {
                 });
             }
         });
+    },
+    unsubscribe: (courseId, studentId) => {
+        StudentApi.unsubscribe(courseId, studentId).done(() => {
+            courseHandlers.info(courseId);
+        }).fail(xhr => console.error(xhr));
     }
 }

@@ -2,7 +2,7 @@ import template from '../templates/pages/administration.html?raw';
 
 import { administratorRender } from './renders/administrator';
 import { administratorHandlers } from './handlers/administrator';
-import { userRender } from './renders/user';
+import { navbarRender } from './renders/navbar';
 import AdministratorApi from './api/administratorApi';
 
 export default function administration(user) {
@@ -11,7 +11,7 @@ export default function administration(user) {
         return;
     }
     $('body').html(template);
-    userRender(user);
+    navbarRender(user);
     AdministratorApi.getAll().done((data) => {
         administratorRender(data);
     })

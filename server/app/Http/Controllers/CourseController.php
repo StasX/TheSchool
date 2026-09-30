@@ -46,13 +46,14 @@ class CourseController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:32'],
-            'description' => ['required', 'string', 'max:500'],
+            'name' => ['required', 'string', 'max:32', 'min:8'],
+            'description' => ['required', 'string', 'max:500', 'min:8'],
             'image' => [
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:1024',
+                'dimensions:max_width=350,max_height=350',
             ],
         ]);
         $file = $request->file('image');
@@ -92,14 +93,15 @@ class CourseController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:32'],
-            'description' => ['required', 'string', 'max:500'],
+            'name' => ['required', 'string', 'max:32', 'min:8'],
+            'description' => ['required', 'string', 'max:500', 'min:8'],
             'image' => [
                 'sometimes',
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:1024',
+                'dimensions:max_width=350,max_height=350',
             ],
         ]);
         /** @var array<string, mixed> $data */
@@ -154,8 +156,10 @@ class CourseController extends Controller
         if (! $course) {
             return response('', Response::HTTP_NOT_FOUND);
         }
+        if ($course->students()->exists()) {
+            return response('', Response::HTTP_CONFLICT);
+        }
         $oldImage = $course->Image;
-        $course->students()->detach();
         $course->delete();
         if ($oldImage && Storage::disk('uploads')->exists(basename($oldImage))) {
             Storage::disk('uploads')->delete(basename($oldImage));

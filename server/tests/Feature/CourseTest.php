@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Administrator;
 use App\Models\Course;
+use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -354,6 +355,41 @@ class CourseTest extends TestCase
         $course->refresh();
 
         $this->assertSame('/upload/course.jpg', $course->Image);
+
+        $this->assertTrue(
+            Storage::disk('uploads')->exists('course.jpg')
+        );
+    }
+
+    public function test_cannot_delete_course_with_students(): void
+    {
+        Storage::disk('uploads')->put(
+            'course.jpg',
+            'course image'
+        );
+
+        $course = $this->createCourse([
+            'Image' => '/upload/course.jpg',
+        ]);
+
+        $student = Student::create([
+            'Name' => 'Test Student',
+            'Email' => 'student@example.com',
+            'Phone' => '0500000001',
+            'Image' => '/upload/student.jpg',
+        ]);
+
+        $course->students()->attach($student->Student_ID);
+
+        $response = $this->deleteJson(
+            "/api/course/{$course->Course_ID}"
+        );
+
+        $response->assertConflict();
+
+        $this->assertDatabaseHas('courses', [
+            'Course_ID' => $course->Course_ID,
+        ]);
 
         $this->assertTrue(
             Storage::disk('uploads')->exists('course.jpg')

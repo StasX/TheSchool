@@ -3,13 +3,13 @@ import { courseHandlers } from './handlers/course';
 import { studentRender } from "./renders/student";
 import { courseRender } from "./renders/course";
 import { studentHandlers } from './handlers/student';
-import { userRender } from './renders/user';
+import { navbarRender } from './renders/navbar';
 import StudentApi from './api/studentApi';
 import CourseApi from './api/courseApi';
 
 export default function school(user) {
     $('body').html(template);
-    userRender(user);
+    navbarRender(user);
     StudentApi.getAll().done((data) => {
         studentRender(data);
         $('#total-students').text(data.length);

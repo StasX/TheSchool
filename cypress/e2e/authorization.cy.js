@@ -1,10 +1,9 @@
 describe('Authorization', () => {
-
     it('allows owner to access administration', () => {
-        cy.login(
-            Cypress.env('OWNER_EMAIL'),
-            Cypress.env('OWNER_PASSWORD')
-        );
+        cy.env(['OWNER_EMAIL', 'OWNER_PASSWORD'])
+            .then(({ OWNER_EMAIL, OWNER_PASSWORD }) => {
+                cy.login(OWNER_EMAIL, OWNER_PASSWORD);
+            });
 
         cy.contains('a', 'Administration')
             .should('be.visible')
@@ -15,10 +14,10 @@ describe('Authorization', () => {
     });
 
     it('allows manager to access administration', () => {
-        cy.login(
-            Cypress.env('MANAGER_EMAIL'),
-            Cypress.env('MANAGER_PASSWORD')
-        );
+        cy.env(['MANAGER_EMAIL', 'MANAGER_PASSWORD'])
+            .then(({ MANAGER_EMAIL, MANAGER_PASSWORD }) => {
+                cy.login(MANAGER_EMAIL, MANAGER_PASSWORD);
+            });
 
         cy.contains('a', 'Administration')
             .should('be.visible')
@@ -29,10 +28,10 @@ describe('Authorization', () => {
     });
 
     it('hides administration from sales user', () => {
-        cy.login(
-            Cypress.env('SALES_EMAIL'),
-            Cypress.env('SALES_PASSWORD')
-        );
+        cy.env(['SALES_EMAIL', 'SALES_PASSWORD'])
+            .then(({ SALES_EMAIL, SALES_PASSWORD }) => {
+                cy.login(SALES_EMAIL, SALES_PASSWORD);
+            });
 
         cy.contains('a', 'Administration')
             .should('not.exist');
@@ -42,10 +41,10 @@ describe('Authorization', () => {
     });
 
     it('redirects sales user from administration page', () => {
-        cy.login(
-            Cypress.env('SALES_EMAIL'),
-            Cypress.env('SALES_PASSWORD')
-        );
+        cy.env(['SALES_EMAIL', 'SALES_PASSWORD'])
+            .then(({ SALES_EMAIL, SALES_PASSWORD }) => {
+                cy.login(SALES_EMAIL, SALES_PASSWORD);
+            });
 
         cy.visit('/#!administration');
 
@@ -55,5 +54,4 @@ describe('Authorization', () => {
         cy.contains('a', 'Administration')
             .should('not.exist');
     });
-
 });

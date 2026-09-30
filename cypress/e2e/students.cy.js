@@ -1,9 +1,14 @@
 describe('Students', () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env('OWNER_EMAIL'),
-            Cypress.env('OWNER_PASSWORD')
-        );
+        cy.env(['OWNER_EMAIL', 'OWNER_PASSWORD'])
+            .then(({ OWNER_EMAIL, OWNER_PASSWORD }) => {
+                cy.login(OWNER_EMAIL, OWNER_PASSWORD);
+            });
+
+        cy.visit('/#!school');
+
+        cy.location('hash')
+            .should('eq', '#!school');
     });
 
     it('creates, edits and deletes a student', () => {

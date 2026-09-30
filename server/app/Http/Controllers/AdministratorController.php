@@ -71,6 +71,7 @@ class AdministratorController extends Controller
                 'required',
                 'string',
                 'max:32',
+                'min:2',
             ],
             'role' => [
                 'required',
@@ -79,7 +80,8 @@ class AdministratorController extends Controller
             'phone' => [
                 'required',
                 'string',
-                'max:16',
+                'max:20',
+                'regex:/^\+?[0-9](?:[0-9\s\-().]*[0-9])?$/',
             ],
             'password' => [
                 'required',
@@ -90,7 +92,8 @@ class AdministratorController extends Controller
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:500',
+                'dimensions:max_width=250,max_height=250',
             ],
         ]);
         $file = $request->file('image');
@@ -156,6 +159,7 @@ class AdministratorController extends Controller
                 'required',
                 'string',
                 'max:32',
+                'min:2',
             ],
             'role' => [
                 'sometimes',
@@ -164,14 +168,16 @@ class AdministratorController extends Controller
             'phone' => [
                 'required',
                 'string',
-                'max:16',
+                'max:20',
+                'regex:/^\+?[0-9](?:[0-9\s\-().]*[0-9])?$/',
             ],
             'image' => [
                 'sometimes',
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:500',
+                'dimensions:max_width=250,max_height=250',
             ],
             'password' => [
                 'sometimes',

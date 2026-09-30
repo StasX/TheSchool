@@ -1,59 +1,58 @@
 describe('Administrators', () => {
     beforeEach(() => {
-        cy.login(
-            Cypress.env('OWNER_EMAIL'),
-            Cypress.env('OWNER_PASSWORD')
-        );
+        cy.env(['OWNER_EMAIL', 'OWNER_PASSWORD'])
+            .then(({ OWNER_EMAIL, OWNER_PASSWORD }) => {
+                cy.login(OWNER_EMAIL, OWNER_PASSWORD);
 
-        cy.visit('/#!administration');
+                cy.visit('/#!administration');
 
-        cy.location('hash')
-            .should('eq', '#!administration');
-    });
+                cy.location('hash')
+                    .should('eq', '#!administration');
 
-    it('creates, edits and deletes an administrator', () => {
-        const email = `cypress-admin-${Date.now()}@example.com`;
-        const updatedName = 'Updated Cypress Administrator';
+                cy.get('#administrators-container .item-row')
+                    .should('have.length.greaterThan', 0);
+            });
+    }); // <-- beforeEach MUST end here
 
-        // Create
+    it('creates, edits and deletes a non-owner administrator', () => {
+        const suffix = Date.now();
+        const email = `cypress-admin-${suffix}@example.com`;
+        const name = `Cypress Admin ${suffix}`;
+        const updatedName = `Updated Admin ${suffix}`;
+
         cy.get('#add-administrator').click();
 
         cy.get('#container-title')
             .should('contain.text', 'Add Administrator');
 
-        cy.get('#name')
-            .type('Cypress Administrator');
+        cy.get('#role option').then($options => {
+            expect(
+                [...$options].map(option => option.value)
+            ).to.deep.equal(['manager', 'sales']);
+        });
 
-        cy.get('#phone')
-            .type('0501234567');
-
-        cy.get('#email')
-            .type(email);
-
-        cy.get('#role')
-            .select('manager');
-
-        cy.get('#password')
-            .type('CypressPassword123!');
+        cy.get('#name').type(name);
+        cy.get('#phone').type('0501234567');
+        cy.get('#email').type(email);
+        cy.get('#role').select('manager');
+        cy.get('#password').type('CypressPassword123!');
 
         cy.get('#image-file')
             .selectFile('cypress/fixtures/administrator.png');
 
-        cy.get('#save-administrator')
-            .click();
+        cy.get('#save-administrator').click();
 
-        // After creation your handler immediately opens edit mode.
         cy.get('#container-title')
             .should('contain.text', 'Edit Administrator');
 
-        cy.get('#name')
-            .should('have.value', 'Cypress Administrator');
+        cy.get('#name').should('have.value', name);
+        cy.get('#email').should('have.value', email);
+        cy.get('#role').should('have.value', 'manager');
 
-        cy.get('#email')
-            .should('have.value', email);
-
-        cy.get('#role')
-            .should('have.value', 'manager');
+        cy.contains(
+            '#administrators-container .item-row',
+            name
+        ).should('exist');
 
         // Edit
         cy.get('#name')
@@ -64,12 +63,9 @@ describe('Administrators', () => {
             .clear()
             .type('0507654321');
 
-        cy.get('#role')
-            .select('sales');
+        cy.get('#role').select('sales');
 
-        // Password is optional during update.
-        cy.get('#save-administrator')
-            .click();
+        cy.get('#save-administrator').click();
 
         cy.get('#name')
             .should('have.value', updatedName);
@@ -80,30 +76,119 @@ describe('Administrators', () => {
         cy.get('#role')
             .should('have.value', 'sales');
 
-        // Make sure list was refreshed too.
-        cy.contains('.administrator-name', updatedName)
-            .should('exist');
-
-        cy.contains('.administrator-role', 'sales')
-            .should('exist');
+        cy.contains(
+            '#administrators-container .item-row',
+            updatedName
+        ).should('contain.text', 'sales');
 
         // Delete
-        cy.contains('button', 'Delete')
+        cy.contains('button', 'Delete').click();
+
+        cy.contains('.swal2-popup button', 'Yes').click();
+
+        cy.contains('.swal2-popup button', 'Continue').click();
+
+        cy.contains(
+            '.swal2-popup',
+            'Administrator deleted successfully!'
+        ).should('be.visible');
+
+        cy.contains('.swal2-popup button', 'OK').click();
+
+        cy.contains(
+            '#administrators-container .item-row',
+            updatedName
+        ).should('not.exist');
+    });
+
+    it('requires the fields needed to create an administrator', () => {
+        cy.get('#add-administrator').click();
+        cy.get('#save-administrator').click();
+
+        cy.get('#administrators-form')
+            .should('exist');
+
+        cy.get('#name-error')
+            .should('be.visible')
+            .and('contain.text', 'Name is required');
+
+        cy.get('#phone-error')
+            .should('be.visible')
+            .and('contain.text', 'Phone is required');
+
+        cy.get('#email-error')
+            .should('be.visible')
+            .and('contain.text', 'Email is required');
+
+        cy.get('#password-error')
+            .should('be.visible')
+            .and('contain.text', 'Password is required');
+
+        cy.get('#image-file-error')
+            .should('be.visible')
+            .and('contain.text', 'Image is required');
+    });
+
+    it('keeps changes on cancel and clears row navigation warnings on confirm', () => {
+        cy.get('#add-administrator').click();
+        cy.get('#name').type('Unsaved administrator');
+
+        cy.get('#administrators-container .item-row')
+            .first()
             .click();
 
-        cy.contains('button', 'Yes')
+        cy.contains(
+            '.swal2-popup',
+            'all changes will be discarded'
+        ).should('be.visible');
+
+        cy.contains('.swal2-popup button', 'Cancel').click();
+
+        cy.get('#name')
+            .should('have.value', 'Unsaved administrator');
+
+        cy.get('#administrators-container .item-row')
+            .first()
             .click();
 
-        cy.contains('button', 'Continue')
-            .click();
+        cy.contains('.swal2-popup button', 'Continue').click();
 
-        cy.contains('Administrator deleted successfully!')
-            .should('be.visible');
+        cy.get('#container-title')
+            .should('contain.text', 'Edit Administrator');
 
-        cy.contains('button', 'OK')
-            .click();
+        cy.get('#add-administrator').click();
 
-        cy.contains('.administrator-name', updatedName)
+        cy.get('.swal2-popup')
+            .should('not.exist');
+
+        cy.get('#container-title')
+            .should('contain.text', 'Add Administrator');
+    });
+
+    it('keeps changes on cancel and clears add warnings on confirm', () => {
+        cy.get('#add-administrator').click();
+        cy.get('#name').type('Unsaved administrator');
+
+        cy.get('#add-administrator').click();
+
+        cy.contains('.swal2-popup button', 'Cancel').click();
+
+        cy.get('#name')
+            .should('have.value', 'Unsaved administrator');
+
+        cy.get('#add-administrator').click();
+
+        cy.contains('.swal2-popup button', 'Continue').click();
+
+        cy.get('#container-title')
+            .should('contain.text', 'Add Administrator');
+
+        cy.get('#name')
+            .should('have.value', '');
+
+        cy.get('#add-administrator').click();
+
+        cy.get('.swal2-popup')
             .should('not.exist');
     });
 });

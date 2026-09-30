@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\StudentResource;
+use App\Models\Course;
 use App\Models\Student;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -58,17 +59,20 @@ class StudentController extends Controller
                 'required',
                 'string',
                 'max:32',
+                'min:2',
             ],
             'phone' => [
                 'required',
                 'string',
-                'max:54',
+                'max:20',
+                'regex:/^\+?[0-9](?:[0-9\s\-().]*[0-9])?$/',
             ],
             'image' => [
                 'required',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:500',
+                'dimensions:max_width=250,max_height=250',
             ],
             'courses' => [
                 'sometimes',
@@ -99,8 +103,8 @@ class StudentController extends Controller
         $student = Student::create($data);
         $student->courses()->sync($courses);
         return (new StudentResource($student->load('courses')))
-        ->response()
-        ->setStatusCode(201);
+            ->response()
+            ->setStatusCode(201);
     }
 
     //------------------------------------------------------------------------
@@ -135,18 +139,21 @@ class StudentController extends Controller
                 'required',
                 'string',
                 'max:32',
+                'min:2',
             ],
             'phone' => [
                 'required',
                 'string',
-                'max:54',
+                'max:20',
+                'regex:/^\+?[0-9](?:[0-9\s\-().]*[0-9])?$/',
             ],
             'image' => [
                 'sometimes',
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,gif',
-                'max:2048',
+                'max:500',
+                'dimensions:max_width=250,max_height=250',
             ],
             'courses' => [
                 'sometimes',
@@ -205,7 +212,7 @@ class StudentController extends Controller
 
         $student->refresh();
         return (new StudentResource($student->load('courses')))
-        ->response();
+            ->response();
     }
 
     //------------------------------------------------------------------------
@@ -224,6 +231,31 @@ class StudentController extends Controller
         if ($oldImage && Storage::disk('uploads')->exists(basename($oldImage))) {
             Storage::disk('uploads')->delete(basename($oldImage));
         }
+
+        return response('', Response::HTTP_NO_CONTENT);
+    }
+
+    //------------------------------------------------------------------------
+
+    public function unsubscribe(int $studentId, int $courseId): Response|JsonResponse
+    {
+        $student = Student::find($studentId);
+
+        if (! $student) {
+            return response()->json([
+                'error' => 'Student not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $course = Course::find($courseId);
+
+        if (! $course) {
+            return response()->json([
+                'error' => 'Course not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $student->courses()->detach($courseId);
 
         return response('', Response::HTTP_NO_CONTENT);
     }
