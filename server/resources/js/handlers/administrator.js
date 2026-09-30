@@ -5,6 +5,8 @@ import Swal from "sweetalert2";
 import AdministratorApi from "../api/administratorApi";
 import { resetAdministrationHandlers, setAdministrationWarningsHandler } from "./administration";
 import { administratorValidationConfig } from "../validations/administrator";
+import AuthApi from "../api/authApi";
+import { userRender } from "../renders/navbar";
 
 function isAdministratorFormChanged(administrator) {
     return (
@@ -114,6 +116,7 @@ export const administratorHandlers = {
             AdministratorApi.update(administrator.id, formData).done((data) => {
                 resetAdministrationHandlers();
                 administratorHandlers.edit(data);
+                AuthApi.auth().done((user) => userRender(user));
                 AdministratorApi.getAll().done(administrators => administratorRender(administrators));
             }).fail(xhr => console.error(xhr));
         });
