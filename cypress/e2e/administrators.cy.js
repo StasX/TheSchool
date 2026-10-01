@@ -16,9 +16,9 @@ describe('Administrators', () => {
 
     it('creates, edits and deletes a non-owner administrator', () => {
         const suffix = Date.now();
-        const email = `cypress-admin-${suffix}@example.com`;
-        const name = `Cypress Admin ${suffix}`;
-        const updatedName = `Updated Admin ${suffix}`;
+        const email = `admin-${suffix}@example.com`;
+        const name = `Admin ${suffix}`;
+        const updatedName = `Admin ${suffix}`;
 
         cy.get('#add-administrator').click();
 
