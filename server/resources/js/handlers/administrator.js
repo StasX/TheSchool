@@ -7,6 +7,7 @@ import { resetAdministrationHandlers, setAdministrationWarningsHandler } from ".
 import { administratorValidationConfig } from "../validations/administrator";
 import AuthApi from "../api/authApi";
 import { userRender } from "../renders/navbar";
+import { invalidAdministrator } from "../messages/invalidFields";
 
 function isAdministratorFormChanged(administrator) {
     return (
@@ -32,7 +33,7 @@ export const administratorHandlers = {
         const html = $(template);
         const saveBtn = html.find("#save-administrator");
         const form = html.filter("#administrators-form");
-        form.validate(administratorValidationConfig());
+        const validator = form.validate(administratorValidationConfig());
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
         const roleInput = html.find("#role");
@@ -47,7 +48,10 @@ export const administratorHandlers = {
         form.on("input change", () => updateAdministratorWarnings());
         form.on("submit", function (e) {
             e.preventDefault();
-            if (!form.valid()) return;
+            if (!form.valid()) {
+                invalidAdministrator(validator);
+                return;
+            }
             const formData = new FormData(this);
             if (fileInput[0].files.length) {
                 formData.set("image", fileInput[0].files[0]);
@@ -107,7 +111,10 @@ export const administratorHandlers = {
         form.on("input change", () => updateAdministratorWarnings(administrator));
         form.on("submit", function (e) {
             e.preventDefault();
-            if (!form.valid()) return;
+            if (!form.valid()){
+                invalidAdministrator(validator);
+                return;
+                }
             const formData = new FormData(this);
             formData.set("_method", "PUT");
             if (fileInput[0].files.length) {
