@@ -64,7 +64,7 @@ class StudentController extends Controller
             'phone' => [
                 'required',
                 'string',
-                'max:20',
+                'max:16',
                 'regex:/^\+?[0-9](?:[0-9\s\-().]*[0-9])?$/',
             ],
             'image' => [
@@ -144,7 +144,7 @@ class StudentController extends Controller
             'phone' => [
                 'required',
                 'string',
-                'max:20',
+                'max:16',
                 'regex:/^\+?[0-9](?:[0-9\s\-().]*[0-9])?$/',
             ],
             'image' => [

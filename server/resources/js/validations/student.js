@@ -11,7 +11,7 @@ export function studentValidationConfig({
             phone: {
                 required: true,
                 phone: true,
-                maxlength: 20,
+                maxlength: 16,
             },
             email: {
                 required: true,
