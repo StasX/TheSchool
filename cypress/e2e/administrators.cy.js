@@ -111,16 +111,16 @@ describe('Administrators', () => {
         cy.get('#name')
             .should('have.class', 'error');
 
-        cy.get('#phone-error')
+        cy.get('#phone')
             .should('have.class', 'error');
 
-        cy.get('#email-error')
+        cy.get('#email')
             .should('have.class', 'error');
 
-        cy.get('#password-error')
+        cy.get('#password')
             .should('have.class', 'error');
 
-        cy.get('#image-file-error')
+        cy.get('#image-file')
             .should('have.class', 'error');
     });
 
