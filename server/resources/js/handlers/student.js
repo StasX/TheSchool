@@ -9,6 +9,7 @@ import { haveSameElements } from "../utils/arrays";
 import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
 import { courseHandlers } from "./course";
 import { studentValidationConfig } from "../validations/student";
+import { invalidStudent } from "../messages/invalidFields";
 
 function isStudentFormChanged(student) {
     const currentCourses = (student?.courses || []).map(obj => obj.id);
@@ -44,7 +45,7 @@ export const studentHandlers = {
         const html = $(template);
         const saveBtn = html.find("#save-student");
         const form = html.filter("#students-form");
-        form.validate(studentValidationConfig());
+        const validator = form.validate(studentValidationConfig());
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
         const coursesContainer = form.find(".courses-container");
@@ -52,6 +53,10 @@ export const studentHandlers = {
         form.on("input change", () => updateStudentWarnings());
         form.on("submit", function (e) {
             e.preventDefault();
+            if (!form.valid()) {
+                invalidStudent(validator);
+                return;
+            }
             if (!form.valid()) return;
             const formData = new FormData(this);
             if (fileInput[0].files.length) {
@@ -88,7 +93,7 @@ export const studentHandlers = {
         const buttons = html.filter("#btn-row");
         const saveBtn = buttons.find("#save-student");
         const form = html.filter("#students-form");
-        form.validate(studentValidationConfig({ edit: true }));
+        const validator = form.validate(studentValidationConfig({ edit: true }));
         const coursesContainer = form.find(".courses-container");
         titleContainer.text("Edit Student");
         const btnContainer = $('<div class="col d-flex align-items-center"></div>');
@@ -103,7 +108,10 @@ export const studentHandlers = {
         form.on("input change", () => updateStudentWarnings(student));
         form.on("submit", function (e) {
             e.preventDefault();
-            if (!form.valid()) return;
+            if (!form.valid()) {
+                invalidStudent(validator);
+                return;
+            }
             const formData = new FormData(this);
             formData.set("_method", "PUT");
             if (fileInput[0].files.length) {

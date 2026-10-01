@@ -13,3 +13,7 @@ export function invalidCourse(validator) {
     const errors = validator.errorList.map(error => error.message).join('<br/>');
 showAlert(errors);
 }
+export function invalidStudent(validator) {
+    const errors = validator.errorList.map(error => error.message).join('<br/>');
+showAlert(errors);
+}
