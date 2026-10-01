@@ -25,6 +25,9 @@ export const loginValidationConfig = {
             maxlength: "Password is too long.",
         },
 
-    }
+    },
+
+    errorPlacement: function () {
+    },
 }
 

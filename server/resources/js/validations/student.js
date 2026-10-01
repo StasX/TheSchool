@@ -54,6 +54,9 @@ export function studentValidationConfig({
             "courses[]": {
                 integerArray: "Courses must contain only integer IDs."
             },
-        }
+        },
+
+        errorPlacement: function () {
+        },
     }
 }

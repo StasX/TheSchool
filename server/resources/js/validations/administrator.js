@@ -66,6 +66,9 @@ export function administratorValidationConfig({
                 filesize: "Image must not exceed 500 KB.",
                 imagesize: "Image dimensions must not exceed 250×250."
             }
-        }
+        },
+
+        errorPlacement: function () {
+        },
     };
 }
