@@ -33,6 +33,7 @@ export const courseHandlers = {
             });
         });
     },
+
     add: () => {
         const html = $(template);
         const form = html.filter("#courses-form");
@@ -48,7 +49,6 @@ export const courseHandlers = {
             if (!form.valid()) {
                 invalidCourse(validator);
                 return;
-
             }
             const formData = new FormData(this);
             if (fileInput[0].files.length) {
@@ -63,6 +63,7 @@ export const courseHandlers = {
         html.find("#save-course").on("click", () => form.trigger("submit"));
         $("#main-container").html(html);
     },
+
     edit: course => {
         const html = $(template);
         if (!course.students.length) {
@@ -103,6 +104,7 @@ export const courseHandlers = {
         html.find("#save-course").on("click", () => form.trigger("submit"));
         $("#main-container").html(html);
     },
+
     remove: course => {
         Swal.fire({
             title: `Do you really want to delete course: ${course.name}?`,
