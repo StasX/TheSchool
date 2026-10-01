@@ -134,6 +134,7 @@ class StudentController extends Controller
                 Rule::unique('students', 'Email')
                     ->ignore($id, 'Student_ID'),
                 'max:60',
+                'min:7',
             ],
             'name' => [
                 'required',

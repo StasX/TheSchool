@@ -66,6 +66,7 @@ class AdministratorController extends Controller
                 'email',
                 'unique:administrators,Email',
                 'max:64',
+                'min:7',
             ],
             'name' => [
                 'required',

@@ -19,10 +19,14 @@ class AuthController extends Controller
             'email' => [
                 'required',
                 'email',
+                'max:64',
+                'min:7',
             ],
             'password' => [
                 'required',
                 'string',
+                'max:16',
+                'min:8',
             ],
         ]);
 
