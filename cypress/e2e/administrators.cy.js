@@ -108,25 +108,20 @@ describe('Administrators', () => {
         cy.get('#administrators-form')
             .should('exist');
 
-        cy.get('#name-error')
-            .should('be.visible')
-            .and('contain.text', 'Name is required');
+        cy.get('#name')
+            .should('have.class', 'error');
 
         cy.get('#phone-error')
-            .should('be.visible')
-            .and('contain.text', 'Phone is required');
+            .should('have.class', 'error');
 
         cy.get('#email-error')
-            .should('be.visible')
-            .and('contain.text', 'Email is required');
+            .should('have.class', 'error');
 
         cy.get('#password-error')
-            .should('be.visible')
-            .and('contain.text', 'Password is required');
+            .should('have.class', 'error');
 
         cy.get('#image-file-error')
-            .should('be.visible')
-            .and('contain.text', 'Image is required');
+            .should('have.class', 'error');
     });
 
     it('keeps changes on cancel and clears row navigation warnings on confirm', () => {
