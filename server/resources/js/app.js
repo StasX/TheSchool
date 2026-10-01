@@ -3,6 +3,7 @@ import school from './school';
 import administration from './administration';
 import notFound from './notFound';
 import AuthApi from './api/authApi';
+import { loginValidationConfig } from './validations/login';
 
 
 $(function () {
@@ -30,9 +31,14 @@ $(function () {
     $(window).on('hashchange', () => render(user));
 
     if (!location.hash) {
-        $('#login').on('submit', function (e) {
+        const form = $('#login');
+        form.validate(loginValidationConfig);
+        form.on('submit', function (e) {
             e.preventDefault();
-
+            if (!form.valid()) {
+                invalidCredentials(true);
+                return;
+            }
             const data = {
                 email: $('#user').val(),
                 password: $('#password').val()
@@ -46,22 +52,12 @@ $(function () {
                 });
                 location.hash = '#!school';
             })
-                .fail(function (xhr) {
-                    const error = xhr.status === 401
-                        ? 'Invalid username or password'
-                        : 'An error occurred. Please try again later.';
-
-                    $('#alerts').html(`
-                        <div class="alert alert-danger" role="alert">
-                            ${error}
-                        </div>
-                    `);
-                });
+                .fail(xhr => invalidCredentials(xhr.status === 401));
         });
     } else {
         AuthApi.auth().done(function (data) {
-                render(data);
-            })
+            render(data);
+        })
             .fail(function () {
                 location.hash = '';
                 location.reload();

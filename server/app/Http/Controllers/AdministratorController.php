@@ -88,6 +88,7 @@ class AdministratorController extends Controller
                 'required',
                 'string',
                 'min:8',
+                'max:32',
             ],
             'image' => [
                 'required',

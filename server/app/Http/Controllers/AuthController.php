@@ -25,7 +25,7 @@ class AuthController extends Controller
             'password' => [
                 'required',
                 'string',
-                'max:16',
+                'max:32',
                 'min:8',
             ],
         ]);
