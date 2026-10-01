@@ -239,4 +239,40 @@ class AuthenticationTest extends TestCase
             ]);
         $this->assertGuest();
     }
+
+    public function test_login_fails_when_multiple_administrators_have_same_email(): void
+    {
+        $this->createAdministrator();
+
+        $this->createAdministrator([
+            'Email' => 'owner@example.com',
+            'Name' => 'Duplicate Owner',
+        ]);
+
+        $this->postJson('/api/login', [
+            'email' => 'owner@example.com',
+            'password' => 'password123',
+        ])
+            ->assertUnauthorized()
+            ->assertJson([
+                'error' => 'Invalid username or password.',
+            ]);
+
+        $this->assertGuest();
+    }
+
+    public function test_login_accepts_password_at_minimum_length(): void
+    {
+        $administrator = $this->createAdministrator([
+            'Password' => Hash::make('12345678'),
+        ]);
+
+        $this->postJson('/api/login', [
+            'email' => 'owner@example.com',
+            'password' => '12345678',
+        ])
+            ->assertOk();
+
+        $this->assertAuthenticatedAs($administrator);
+    }
 }
