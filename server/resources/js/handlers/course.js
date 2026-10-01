@@ -7,6 +7,7 @@ import CourseApi from "../api/courseApi";
 import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
 import AuthApi from "../api/authApi";
 import { courseValidationConfig } from "../validations/course";
+import { invalidCourse } from '../messages/invalidFields';
 
 function isCourseFormChanged(course) {
     return (
@@ -36,7 +37,7 @@ export const courseHandlers = {
         const html = $(template);
         const form = html.filter("#courses-form");
 
-        form.validate(courseValidationConfig());
+        const validator = form.validate(courseValidationConfig());
         const fileInput = html.find("#image-file");
         const imageElement = html.find("#image-upload");
         html.find("#total").text(0);
@@ -44,7 +45,11 @@ export const courseHandlers = {
         form.on("input change", () => updateCourseWarnings());
         form.on("submit", function (e) {
             e.preventDefault();
-            if (!form.valid()) return;
+            if (!form.valid()) {
+                invalidCourse(validator);
+                return;
+
+            }
             const formData = new FormData(this);
             if (fileInput[0].files.length) {
                 formData.set("image", fileInput[0].files[0]);
@@ -65,7 +70,7 @@ export const courseHandlers = {
         }
         const form = html.filter("#courses-form");
 
-        form.validate(courseValidationConfig({ edit: true }));
+        const validator = form.validate(courseValidationConfig({ edit: true }));
         html.find("#container-title").text("Edit Course");
         html.find("#name").val(course.name);
         html.find("#description").val(course.description);
@@ -83,7 +88,10 @@ export const courseHandlers = {
         html.find("#delete-course").on("click", () => courseHandlers.remove(course));
         form.on("submit", function (e) {
             e.preventDefault();
-            if (!form.valid()) return;
+            if (!form.valid()) {
+                invalidCourse(validator);
+                return;
+            }
             const formData = new FormData(this);
             formData.set("_method", "PUT");
             CourseApi.update(course.id, formData).done(data => {

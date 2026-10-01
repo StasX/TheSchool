@@ -4,7 +4,7 @@ import administration from './administration';
 import notFound from './notFound';
 import AuthApi from './api/authApi';
 import { loginValidationConfig } from './validations/login';
-import invalidCredentials from './messages/invalidFields';
+import {invalidCredentials} from './messages/invalidFields';
 
 
 $(function () {
@@ -25,7 +25,6 @@ $(function () {
                 if (location.hash) {
                     notFound(user);
                 }
-                break;
         }
     }
 
