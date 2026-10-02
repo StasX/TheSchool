@@ -2,6 +2,7 @@ import { invalidFields } from "./invalidFields";
 import failure from "./failure";
 import AuthFailure from "./authFailure";
 import noPermissions from "./noPermissions";
+import { courseNotFoundAlert } from "./courseFailure";
 
 function studentNotFoundAlert() {
     Swal.fire({

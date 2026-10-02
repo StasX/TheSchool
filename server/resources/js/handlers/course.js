@@ -9,7 +9,7 @@ import AuthApi from "../api/authApi";
 import { courseValidationConfig } from "../validations/course";
 import { invalidFields } from '../messages/invalidFields';
 import AuthFailure from "../messages/authFailure";
-import CourseFailure from "../messages/courseFailure";
+import {CourseFailure} from "../messages/courseFailure";
 
 function isCourseFormChanged(course) {
     return (
