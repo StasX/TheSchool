@@ -95,7 +95,15 @@ const StudentFailure = {
                 noPermissions();
                 break;
             case 404:
-                studentNotFoundAlert();
+                if (!xhr.responseJSON) {
+                    failure();
+                } else if (xhr.responseJSON.error === "Student not found") {
+                    studentNotFoundAlert();
+                } else if (xhr.responseJSON.error === "Course not found") {
+                    courseNotFoundAlert();
+                } else {
+                    failure();
+                }
                 break;
             default:
                 failure();

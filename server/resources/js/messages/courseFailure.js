@@ -1,7 +1,7 @@
 import { invalidFields } from "./invalidFields";
 import failure from "./failure";
 
-function courseNotFoundAlert() {
+export function courseNotFoundAlert() {
     Swal.fire({
         icon: "error",
         title: "Course not found",
@@ -14,7 +14,7 @@ function courseNotFoundAlert() {
     });
 }
 
-const CourseFailure = {
+export const CourseFailure = {
     get(xhr) {
         switch (xhr.status) {
             case 401:
@@ -85,4 +85,3 @@ const CourseFailure = {
     }
 }
 
-export default CourseFailure;
