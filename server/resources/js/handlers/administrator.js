@@ -7,7 +7,7 @@ import { resetAdministrationHandlers, setAdministrationWarningsHandler } from ".
 import { administratorValidationConfig } from "../validations/administrator";
 import AuthApi from "../api/authApi";
 import { userRender } from "../renders/navbar";
-import { invalidAdministrator } from "../messages/invalidFields";
+import { invalidFields } from "../messages/invalidFields";
 
 function isAdministratorFormChanged(administrator) {
     return (
@@ -49,7 +49,7 @@ export const administratorHandlers = {
         form.on("submit", function (e) {
             e.preventDefault();
             if (!form.valid()) {
-                invalidAdministrator(validator);
+                invalidFields(validator);
                 return;
             }
             const formData = new FormData(this);
@@ -112,7 +112,7 @@ export const administratorHandlers = {
         form.on("submit", function (e) {
             e.preventDefault();
             if (!form.valid()){
-                invalidAdministrator(validator);
+                invalidFields(validator);
                 return;
                 }
             const formData = new FormData(this);

@@ -7,7 +7,7 @@ import CourseApi from "../api/courseApi";
 import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
 import AuthApi from "../api/authApi";
 import { courseValidationConfig } from "../validations/course";
-import { invalidCourse } from '../messages/invalidFields';
+import { invalidFields } from '../messages/invalidFields';
 
 function isCourseFormChanged(course) {
     return (
@@ -47,7 +47,7 @@ export const courseHandlers = {
         form.on("submit", function (e) {
             e.preventDefault();
             if (!form.valid()) {
-                invalidCourse(validator);
+                invalidFields(validator);
                 return;
             }
             const formData = new FormData(this);
@@ -90,7 +90,7 @@ export const courseHandlers = {
         form.on("submit", function (e) {
             e.preventDefault();
             if (!form.valid()) {
-                invalidCourse(validator);
+                invalidFields(validator);
                 return;
             }
             const formData = new FormData(this);

@@ -9,7 +9,7 @@ import { haveSameElements } from "../utils/arrays";
 import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
 import { courseHandlers } from "./course";
 import { studentValidationConfig } from "../validations/student";
-import { invalidStudent } from "../messages/invalidFields";
+import { invalidFields } from "../messages/invalidFields";
 
 function isStudentFormChanged(student) {
     const currentCourses = (student?.courses || []).map(obj => obj.id);
@@ -54,7 +54,7 @@ export const studentHandlers = {
         form.on("submit", function (e) {
             e.preventDefault();
             if (!form.valid()) {
-                invalidStudent(validator);
+                invalidFields(validator);
                 return;
             }
             if (!form.valid()) return;
@@ -109,7 +109,7 @@ export const studentHandlers = {
         form.on("submit", function (e) {
             e.preventDefault();
             if (!form.valid()) {
-                invalidStudent(validator);
+                invalidFields(validator);
                 return;
             }
             const formData = new FormData(this);

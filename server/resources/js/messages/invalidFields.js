@@ -9,17 +9,8 @@ export function invalidCredentials(wrongCredentials) {
         showAlert(error);
 }
 
-export function invalidCourse(validator) {
+export function invalidFields(validator) {
     const errors = validator.errorList.map(error => error.message).join('<br/>');
 showAlert(errors);
 }
 
-export function invalidStudent(validator) {
-    const errors = validator.errorList.map(error => error.message).join('<br/>');
-showAlert(errors);
-}
-
-export function invalidAdministrator(validator) {
-    const errors = validator.errorList.map(error => error.message).join('<br/>');
-showAlert(errors);
-}
