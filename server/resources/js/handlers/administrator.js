@@ -9,6 +9,7 @@ import AuthApi from "../api/authApi";
 import { userRender } from "../renders/navbar";
 import { invalidFields } from "../messages/invalidFields";
 import AuthFailure from "../messages/authFailure";
+import AdministratorFailure from "../messages/administratorFailure";
 
 function isAdministratorFormChanged(administrator) {
     return (
@@ -60,8 +61,8 @@ export const administratorHandlers = {
             AdministratorApi.add(formData).done((data) => {
                 resetAdministrationHandlers();
                 administratorHandlers.edit(data);
-                AdministratorApi.getAll().done(administrator => administratorRender(administrator));
-            }).fail(xhr => console.error(xhr));
+                AdministratorApi.getAll().done(administrator => administratorRender(administrator)).fail(AdministratorFailure.get);
+            }).fail(AdministratorFailure.add);
         });
         saveBtn.on("click", () => form.trigger("submit"));
         $("#main-container").html(html);
@@ -125,8 +126,8 @@ export const administratorHandlers = {
                 resetAdministrationHandlers();
                 administratorHandlers.edit(data);
                 AuthApi.auth().done((user) => userRender(user)).fail(AuthFailure.auth);
-                AdministratorApi.getAll().done(administrators => administratorRender(administrators));
-            }).fail(xhr => console.error(xhr));
+                AdministratorApi.getAll().done(administrators => administratorRender(administrators)).fail(AdministratorFailure.get);
+            }).fail(AdministratorFailure.update);
         });
         saveBtn.on("click", () => form.trigger("submit"));
         if (administrator.role != 'owner') {
@@ -177,10 +178,10 @@ export const administratorHandlers = {
                                 title: "Administrator deleted successfully!",
                                 icon: "success",
                             }).then(() => {
-                                AdministratorApi.getAll().done(administrator => administratorRender(administrator));
+                                AdministratorApi.getAll().done(administrator => administratorRender(administrator)).fail(AdministratorFailure.get);
                                 $("#main-container").html("");
                             });
-                        }).fail(xhr => console.error(xhr));
+                        }).fail(AdministratorFailure.remove);
                     }
                 });
             }
