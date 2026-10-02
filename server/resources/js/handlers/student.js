@@ -39,7 +39,7 @@ export const studentHandlers = {
         StudentApi.getById(id).done((data) => {
             studentInfoRender(data);
         }
-        ).fail(xhr => console.error(xhr));
+        ).fail(StudentFailure.get);
     },
     add: () => {
         const html = $(template);
@@ -65,8 +65,8 @@ export const studentHandlers = {
             StudentApi.add(formData).done((data) => {
                 resetSchoolHandlers();
                 studentHandlers.info(data.id);
-                StudentApi.getAll().done((students) => studentRender(students));
-            }).fail(xhr => console.error(xhr));
+                StudentApi.getAll().done((students) => studentRender(students)).fail(StudentFailure.get);
+            }).fail(StudentFailure.add);
         });
         saveBtn.on("click", () => form.trigger("submit"));
         CourseApi.getAll().done((data) => $.each(data, (i, course) => {
@@ -120,8 +120,8 @@ export const studentHandlers = {
             StudentApi.update(student.id, formData).done((data) => {
                 resetSchoolHandlers();
                 studentHandlers.info(data.id);
-                StudentApi.getAll().done(students => studentRender(students));
-            }).fail(xhr => console.error(xhr));
+                StudentApi.getAll().done(students => studentRender(students)).fail(StudentFailure.get);
+            }).fail(StudentFailure.update);
         });
         removeBtn.on("click", () => studentHandlers.remove(student));
         saveBtn.on("click", () => form.trigger("submit"));
@@ -184,10 +184,10 @@ export const studentHandlers = {
                                 title: "Student deleted successfully!",
                                 icon: "success",
                             }).then(() => {
-                                StudentApi.getAll().done(students => studentRender(students));
+                                StudentApi.getAll().done(students => studentRender(students)).fail(StudentFailure.get);
                                 $("#main-container").html("");
                             });
-                        }).fail(xhr => console.error(xhr));
+                        }).fail(StudentFailure.remove);
                     }
                 });
             }
@@ -196,6 +196,6 @@ export const studentHandlers = {
     unsubscribe: (courseId, studentId) => {
         StudentApi.unsubscribe(courseId, studentId).done(() => {
             courseHandlers.info(courseId);
-        }).fail(xhr => console.error(xhr));
+        }).fail(StudentFailure.unsubscribe);
     }
 }
