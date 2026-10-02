@@ -10,6 +10,7 @@ import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
 import { courseHandlers } from "./course";
 import { studentValidationConfig } from "../validations/student";
 import { invalidFields } from "../messages/invalidFields";
+import StudentFailure from "../messages/studentFailure";
 
 function isStudentFormChanged(student) {
     const currentCourses = (student?.courses || []).map(obj => obj.id);
