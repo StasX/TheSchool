@@ -27,7 +27,7 @@ class EnsureRole
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        if (! in_array($administrator?->Role, $roles, true)) {
+        if (! in_array($administrator->Role, $roles, true)) {
             return response()->json([
                 'error' => 'Forbidden',
             ], Response::HTTP_FORBIDDEN);
