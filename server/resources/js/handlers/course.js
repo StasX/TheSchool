@@ -9,6 +9,7 @@ import AuthApi from "../api/authApi";
 import { courseValidationConfig } from "../validations/course";
 import { invalidFields } from '../messages/invalidFields';
 import AuthFailure from "../messages/authFailure";
+import CourseFailure from "../messages/courseFailure";
 
 function isCourseFormChanged(course) {
     return (
@@ -32,7 +33,7 @@ export const courseHandlers = {
             AuthApi.auth().done((admin) => {
                 courseInfoRender(data, admin);
             }).fail(AuthFailure.auth);
-        });
+        }).fail(CourseFailure.get);
     },
 
     add: () => {
@@ -58,8 +59,8 @@ export const courseHandlers = {
             CourseApi.add(formData).done(data => {
                 resetSchoolHandlers();
                 courseHandlers.info(data.id);
-                CourseApi.getAll().done(courses => courseRender(courses));
-            }).fail(xhr => console.error(xhr));
+                CourseApi.getAll().done(courses => courseRender(courses)).fail(CourseFailure.get);
+            }).fail(CourseFailure.add);
         });
         html.find("#save-course").on("click", () => form.trigger("submit"));
         $("#main-container").html(html);
@@ -99,8 +100,8 @@ export const courseHandlers = {
             CourseApi.update(course.id, formData).done(data => {
                 resetSchoolHandlers();
                 courseHandlers.info(data.id);
-                CourseApi.getAll().done(courses => courseRender(courses));
-            }).fail(xhr => console.error(xhr));
+                CourseApi.getAll().done(courses => courseRender(courses)).fail(CourseFailure.get);
+            }).fail(CourseFailure.update);
         });
         html.find("#save-course").on("click", () => form.trigger("submit"));
         $("#main-container").html(html);
@@ -141,10 +142,10 @@ export const courseHandlers = {
                                 title: "Course deleted successfully!",
                                 icon: "success",
                             }).then(() => {
-                                CourseApi.getAll().done(courses => courseRender(courses));
+                                CourseApi.getAll().done(courses => courseRender(courses)).fail(CourseFailure.get);
                                 $("#main-container").html("");
                             });
-                        }).fail(xhr => console.error(xhr));
+                        }).fail(CourseFailure.remove);
                     }
                 });
             }
