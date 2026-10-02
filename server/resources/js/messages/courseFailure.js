@@ -1,5 +1,6 @@
 import { invalidFields } from "./invalidFields";
 import failure from "./failure";
+import noPermissions from "./noPermissions";
 
 export function courseNotFoundAlert() {
     Swal.fire({
@@ -19,6 +20,10 @@ export const CourseFailure = {
         switch (xhr.status) {
             case 401:
                 AuthFailure.auth(xhr);
+                break;
+            case 403:
+                noPermissions();
+                break;
             case 404:
                 courseNotFoundAlert();
                 break;
@@ -33,6 +38,9 @@ export const CourseFailure = {
             case 401:
                 AuthFailure.auth(xhr);
                 break;
+            case 403:
+                noPermissions();
+                break;
             case 422:
                 invalidFields(xhr.responseJSON);
                 break;
@@ -46,6 +54,9 @@ export const CourseFailure = {
         switch (xhr.status) {
             case 401:
                 AuthFailure.auth(xhr);
+                break;
+            case 403:
+                noPermissions();
                 break;
             case 404:
                 courseNotFoundAlert();
@@ -63,6 +74,9 @@ export const CourseFailure = {
         switch (xhr.status) {
             case 401:
                 AuthFailure.auth(xhr);
+                break;
+            case 403:
+                noPermissions();
                 break;
             case 404:
                 courseNotFoundAlert();
