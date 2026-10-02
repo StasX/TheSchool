@@ -8,6 +8,7 @@ import { resetSchoolHandlers, setSchoolWarningsHandler } from "./school";
 import AuthApi from "../api/authApi";
 import { courseValidationConfig } from "../validations/course";
 import { invalidFields } from '../messages/invalidFields';
+import AuthFailure from "../messages/authFailure";
 
 function isCourseFormChanged(course) {
     return (
@@ -30,7 +31,7 @@ export const courseHandlers = {
         CourseApi.getById(id).done(data => {
             AuthApi.auth().done((admin) => {
                 courseInfoRender(data, admin);
-            });
+            }).fail(AuthFailure.auth);
         });
     },
 

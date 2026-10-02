@@ -5,6 +5,7 @@ import notFound from './notFound';
 import AuthApi from './api/authApi';
 import { loginValidationConfig } from './validations/login';
 import {invalidCredentials} from './messages/invalidFields';
+import AuthFailure from './messages/authFailure';
 
 
 $(function () {
@@ -51,16 +52,12 @@ $(function () {
                     }
                 });
                 location.hash = '#!school';
-            })
-                .fail(xhr => invalidCredentials(xhr.status === 401));
+            }).fail(AuthFailure.login);
         });
     } else {
         AuthApi.auth().done(function (data) {
             render(data);
         })
-            .fail(function () {
-                location.hash = '';
-                location.reload();
-            });
+            .fail(AuthFailure.auth);
     }
 });

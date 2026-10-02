@@ -8,6 +8,7 @@ import { administratorValidationConfig } from "../validations/administrator";
 import AuthApi from "../api/authApi";
 import { userRender } from "../renders/navbar";
 import { invalidFields } from "../messages/invalidFields";
+import AuthFailure from "../messages/authFailure";
 
 function isAdministratorFormChanged(administrator) {
     return (
@@ -123,7 +124,7 @@ export const administratorHandlers = {
             AdministratorApi.update(administrator.id, formData).done((data) => {
                 resetAdministrationHandlers();
                 administratorHandlers.edit(data);
-                AuthApi.auth().done((user) => userRender(user));
+                AuthApi.auth().done((user) => userRender(user)).fail(AuthFailure.auth);
                 AdministratorApi.getAll().done(administrators => administratorRender(administrators));
             }).fail(xhr => console.error(xhr));
         });
