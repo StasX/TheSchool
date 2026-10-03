@@ -130,13 +130,13 @@ class AdministratorController extends Controller
         $administrator = Administrator::find($id);
         if (! $administrator) {
             return response()->json([
-                'error' => 'Administrator not found',
+                'message' => 'Administrator not found',
             ], Response::HTTP_NOT_FOUND);
         }
 
         if ($administrator->Role === 'owner' && $admin->Role !== 'owner') {
             return response()->json([
-                'error' => 'Only an owner can modify an owner',
+                'message' => 'Only an owner can modify an owner',
             ], Response::HTTP_FORBIDDEN);
         }
         /**
@@ -203,7 +203,7 @@ class AdministratorController extends Controller
             $data['Role'] === 'owner'
         ) {
             return response()->json([
-                'error' => 'Owner role cannot be assigned',
+                'message' => 'Owner role cannot be assigned',
             ], Response::HTTP_FORBIDDEN);
         }
 
@@ -218,7 +218,7 @@ class AdministratorController extends Controller
 
             if (! $file instanceof UploadedFile) {
                 return response()->json([
-                    'error' => 'Invalid image',
+                    'message' => 'Invalid image',
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 

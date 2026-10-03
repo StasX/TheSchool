@@ -27,7 +27,7 @@ class CourseController extends Controller
 
         if (! $course) {
             return response()->json([
-                'error' => 'Course not found',
+                'message' => 'Course not found',
             ], Response::HTTP_NOT_FOUND);
         }
 
@@ -59,7 +59,7 @@ class CourseController extends Controller
         $file = $request->file('image');
         if (! $file instanceof UploadedFile) {
             return response()->json([
-                'error' => 'Invalid image',
+                'message' => 'Invalid image',
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
@@ -83,7 +83,7 @@ class CourseController extends Controller
         $course = Course::find($id);
 
         if (! $course) {
-            return response()->json(['error' => 'Course not found'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => 'Course not found'], Response::HTTP_NOT_FOUND);
         }
         /**
          * @var array{
@@ -117,7 +117,7 @@ class CourseController extends Controller
 
             if (! $file instanceof UploadedFile) {
                 return response()->json([
-                    'error' => 'Invalid image',
+                    'message' => 'Invalid image',
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 

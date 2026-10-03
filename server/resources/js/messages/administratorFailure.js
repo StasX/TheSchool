@@ -43,7 +43,7 @@ const AdministratorFailure = {
                 noPermissions();
                 break;
             case 422:
-                invalidFields(xhr.responseJSON);
+                invalidFields([xhr.responseJSON.message]);
                 break;
             default:
                 failure();
@@ -63,7 +63,7 @@ const AdministratorFailure = {
                 administratorNotFoundAlert();
                 break;
             case 422:
-                invalidFields(xhr.responseJSON);
+                invalidFields([xhr.responseJSON.message]);
                 break;
             default:
                 failure();

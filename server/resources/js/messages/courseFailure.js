@@ -42,7 +42,7 @@ export const CourseFailure = {
                 noPermissions();
                 break;
             case 422:
-                invalidFields(xhr.responseJSON);
+                invalidFields(xhr.responseJSON.message);
                 break;
             default:
                 failure();
@@ -62,8 +62,7 @@ export const CourseFailure = {
                 courseNotFoundAlert();
                 break;
             case 422:
-                console.log(xhr.responseJSON);
-                invalidFields(xhr.responseJSON);
+                invalidFields(xhr.responseJSON.message);
                 break;
             default:
                 failure();

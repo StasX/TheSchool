@@ -29,8 +29,8 @@ class StudentController extends Controller
 
         if (! $student) {
             return response()->json([
-                'error' => 'Student not found',
-            ], 404);
+                'message' => 'Student not found',
+            ], Response::HTTP_NOT_FOUND);
         }
 
         return (new StudentResource($student))->response();
@@ -87,8 +87,8 @@ class StudentController extends Controller
         $file = $request->file('image');
         if (! $file instanceof UploadedFile) {
             return response()->json([
-                'error' => 'Invalid image',
-            ], 422);
+                'message' => 'Invalid image',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         $filename = uniqid() . '.' . $file->getClientOriginalExtension();
         Storage::disk('uploads')->putFileAs('', $file, $filename);
@@ -115,8 +115,8 @@ class StudentController extends Controller
 
         if (! $student) {
             return response()->json([
-                'error' => 'Student not found',
-            ], 404);
+                'message' => 'Student not found',
+            ], Response::HTTP_NOT_FOUND);
         }
         /**
          * @var array{
@@ -182,8 +182,8 @@ class StudentController extends Controller
 
             if (! $file instanceof UploadedFile) {
                 return response()->json([
-                    'error' => 'Invalid image',
-                ], 422);
+                    'message' => 'Invalid image',
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
@@ -244,7 +244,7 @@ class StudentController extends Controller
 
         if (! $student) {
             return response()->json([
-                'error' => 'Student not found',
+                'message' => 'Student not found',
             ], Response::HTTP_NOT_FOUND);
         }
 
@@ -252,7 +252,7 @@ class StudentController extends Controller
 
         if (! $course) {
             return response()->json([
-                'error' => 'Course not found',
+                'message' => 'Course not found',
             ], Response::HTTP_NOT_FOUND);
         }
 

@@ -44,7 +44,7 @@ const StudentFailure = {
                 noPermissions();
                 break;
             case 422:
-                invalidFields(xhr.responseJSON);
+                invalidFields([xhr.responseJSON.message]);
                 break;
             default:
                 failure();
@@ -64,7 +64,7 @@ const StudentFailure = {
                 studentNotFoundAlert();
                 break;
             case 422:
-                invalidFields(xhr.responseJSON);
+                invalidFields([xhr.responseJSON.message]);
                 break;
             default:
                 failure();
@@ -96,11 +96,9 @@ const StudentFailure = {
                 noPermissions();
                 break;
             case 404:
-                if (!xhr.responseJSON) {
-                    failure();
-                } else if (xhr.responseJSON.error === "Student not found") {
+                if (xhr.responseJSON?.message === "Student not found") {
                     studentNotFoundAlert();
-                } else if (xhr.responseJSON.error === "Course not found") {
+                } else if (xhr.responseJSON?.message === "Course not found") {
                     courseNotFoundAlert();
                 } else {
                     failure();
