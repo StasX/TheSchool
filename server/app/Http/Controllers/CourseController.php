@@ -198,11 +198,7 @@ class CourseController extends Controller
             return response('', Response::HTTP_CONFLICT);
         }
         $oldImage = $course->Image;
-        try {
-            $course->delete();
-        } catch (Throwable $exception) {
-            throw new RuntimeException('Failed to delete course.', 0, $exception);
-        }
+        $course->delete();
         $this->cleanupImage($oldImage);
 
         return response('', Response::HTTP_NO_CONTENT);

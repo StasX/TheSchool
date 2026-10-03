@@ -274,11 +274,7 @@ class StudentController extends Controller
         }
         $oldImage = $student->Image;
         $student->courses()->detach();
-        try {
-            $student->delete();
-        } catch (Throwable $exception) {
-            throw new RuntimeException('Failed to delete student.', 0, $exception);
-        }
+        $student->delete();
         $this->cleanupImage($oldImage);
 
         return response('', Response::HTTP_NO_CONTENT);
