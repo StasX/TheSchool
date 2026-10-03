@@ -27,7 +27,7 @@ Route::prefix('api')->group(function () {
         return response('', Response::HTTP_OK);
     });
 
-    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:' . config('auth.login_rate_limit', 5) . ',1');
 
     Route::get('/help', function () {
                 if (! Auth::check()) {
