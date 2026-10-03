@@ -23,8 +23,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         JsonResource::withoutWrapping();
+
         RateLimiter::for('login', function (Request $request) {
-            return Limit::perMinute((int) config('auth.login_rate_limit', 5))
+            $rateLimit = config('auth.login_rate_limit', 5);
+
+            if (! is_numeric($rateLimit)) {
+                $rateLimit = 5;
+            }
+
+            return Limit::perMinute((int) $rateLimit)
                 ->by($request->ip());
         });
     }
