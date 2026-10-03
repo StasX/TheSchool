@@ -54,9 +54,12 @@ $.validator.addMethod(
                 return $(this).val();
             })
             .get();
-        return values.every(val => /^\d+$/.test(val)) &&
-            Number.isSafeInteger(Number(value)) &&
-            Number(value) > 0
+
+        return values.every(val =>
+            /^\d+$/.test(val) &&
+            Number.isSafeInteger(Number(val)) &&
+            Number(val) > 0
+        );
     },
     "Courses must contain only integer IDs."
 );
