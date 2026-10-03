@@ -283,8 +283,7 @@ class AdministratorController extends Controller
             throw $exception;
         }
 
-        if (
-            $imageChanged) {
+        if ($imageChanged) {
             Storage::disk('uploads')->delete(basename($oldImage));
         }
         return (new AdministratorResource($administrator))->response();
