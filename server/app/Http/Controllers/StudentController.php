@@ -11,9 +11,50 @@ use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use RuntimeException;
+use Throwable;
 
 class StudentController extends Controller
 {
+    private function storeImage(UploadedFile $file): string
+    {
+        $filename = uniqid() . '.' . $file->extension();
+
+        $path = Storage::disk('uploads')->putFileAs(
+            '',
+            $file,
+            $filename
+        );
+
+        if ($path === false) {
+            throw new RuntimeException('Failed to store image.');
+        }
+
+        return $filename;
+    }
+
+    //------------------------------------------------------------------------
+
+    private function cleanupImage(?string $image): void
+    {
+        if (! $image) {
+            return;
+        }
+
+        try {
+            $disk = Storage::disk('uploads');
+            $filename = basename($image);
+
+            if ($disk->exists($filename) && ! $disk->delete($filename)) {
+                throw new RuntimeException('Failed to delete image.');
+            }
+        } catch (Throwable $exception) {
+            report($exception);
+        }
+    }
+
+    //------------------------------------------------------------------------
+
     public function getAll(): JsonResponse
     {
         return StudentResource::collection(
@@ -90,18 +131,22 @@ class StudentController extends Controller
                 'message' => 'Invalid image',
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-        Storage::disk('uploads')->putFileAs('', $file, $filename);
-        /** @var array<string, mixed> $data */
-        $data = [
-            'Email' => $validated['email'],
-            'Name' => $validated['name'],
-            'Phone' => $validated['phone'],
-            'Image' => "/upload/$filename",
-        ];
-        $courses = $validated['courses'] ?? [];
-        $student = Student::create($data);
-        $student->courses()->sync($courses);
+        $filename = $this->storeImage($file);
+        try {
+            /** @var array<string, mixed> $data */
+            $data = [
+                'Email' => $validated['email'],
+                'Name' => $validated['name'],
+                'Phone' => $validated['phone'],
+                'Image' => "/upload/$filename",
+            ];
+            $courses = $validated['courses'] ?? [];
+            $student = Student::create($data);
+            $student->courses()->sync($courses);
+        } catch (Throwable $exception) {
+            $this->cleanupImage("/upload/$filename");
+            throw $exception;
+        }
         return (new StudentResource($student->load('courses')))
             ->response()
             ->setStatusCode(201);
@@ -176,6 +221,7 @@ class StudentController extends Controller
         $courses = $validated['courses'] ?? null;
 
         $oldImage = $student->Image;
+        $newImage = null;
         $imageChanged = $request->hasFile('image');
         if ($imageChanged) {
             $file = $request->file('image');
@@ -186,25 +232,26 @@ class StudentController extends Controller
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $filename = $this->storeImage($file);
 
             Storage::disk('uploads')->putFileAs(
                 '',
                 $file,
                 $filename
             );
-
-            $data['Image'] = "/upload/$filename";
+            $newImage = "/upload/$filename";
+            $data['Image'] = $newImage;
         }
 
-        $student->update($data);
+        try {
+            $student->update($data);
+        } catch (Throwable $exception) {
+            $this->cleanupImage($newImage);
+            throw $exception;
+        }
 
-        if (
-            $imageChanged &&
-            $oldImage &&
-            Storage::disk('uploads')->exists(basename($oldImage))
-        ) {
-            Storage::disk('uploads')->delete(basename($oldImage));
+        if ($imageChanged) {
+            $this->cleanupImage($oldImage);
         }
 
         if ($courses !== null) {
@@ -227,11 +274,12 @@ class StudentController extends Controller
         }
         $oldImage = $student->Image;
         $student->courses()->detach();
-        $student->delete();
-
-        if ($oldImage && Storage::disk('uploads')->exists(basename($oldImage))) {
-            Storage::disk('uploads')->delete(basename($oldImage));
+        try {
+            $student->delete();
+        } catch (Throwable $exception) {
+            throw new RuntimeException('Failed to delete student.', 0, $exception);
         }
+        $this->cleanupImage($oldImage);
 
         return response('', Response::HTTP_NO_CONTENT);
     }
