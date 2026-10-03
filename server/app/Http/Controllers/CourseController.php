@@ -17,7 +17,7 @@ class CourseController extends Controller
 {
     private function storeImage(UploadedFile $file): string
     {
-        $filename = Str::uuid() . '.' . $file->extension();
+        $filename = uniqid() . '.' . $file->extension();
 
         $path = Storage::disk('uploads')->putFileAs(
             '',
@@ -88,7 +88,7 @@ class CourseController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:32', 'min:8'],
+            'name' => ['required', 'string', 'max:32', 'min:2'],
             'description' => ['required', 'string', 'max:500', 'min:8'],
             'image' => [
                 'required',
@@ -139,7 +139,7 @@ class CourseController extends Controller
          * } $validated
          */
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:32', 'min:8'],
+            'name' => ['required', 'string', 'max:32', 'min:2'],
             'description' => ['required', 'string', 'max:500', 'min:8'],
             'image' => [
                 'sometimes',
