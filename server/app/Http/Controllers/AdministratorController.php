@@ -39,7 +39,7 @@ class AdministratorController extends Controller
 
         if (! $administrator) {
             return response()->json([
-                'error' => 'Administrator not found',
+                'message' => 'Administrator not found',
             ], Response::HTTP_NOT_FOUND);
         }
 
