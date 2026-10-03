@@ -449,7 +449,10 @@ jobs:
 
       - name: Prepare environment
         run: cp server/.env.example .env
-
+      
+      - name: Configure login limit for Cypress
+        run: echo 'LOGIN_RATE_LIMIT=1000' >> .env
+      
       - name: Start application
         run: docker compose up -d --build
 
