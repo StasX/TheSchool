@@ -1,8 +1,17 @@
-import { invalidCredentials } from "./invalidFields";
+import { invalidCredentials, showAlert } from "./invalidFields";
 
 const AuthFailure = {
     login(xhr) {
-        invalidCredentials(xhr.status === 401);
+        switch (xhr.status) {
+            case 401:
+                showAlert('Invalid username or password');
+                break;
+            case 429:
+                showAlert('Too many requests. Please try again later.');
+            default:
+                showAlert('An error occurred. Please try again later.');
+        }
+
     },
     logout(xhr) {
         Swal.fire({
@@ -17,7 +26,6 @@ const AuthFailure = {
         });
     },
     auth(xhr) {
-        console.log(xhr);
         if (xhr.status === 401) {
             location.hash = '';
             location.reload();

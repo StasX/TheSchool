@@ -4,7 +4,7 @@ import administration from './administration';
 import notFound from './notFound';
 import AuthApi from './api/authApi';
 import { loginValidationConfig } from './validations/login';
-import {invalidCredentials} from './messages/invalidFields';
+import {showAlert} from './messages/invalidFields';
 import AuthFailure from './messages/authFailure';
 
 
@@ -37,7 +37,7 @@ $(function () {
         form.on('submit', function (e) {
             e.preventDefault();
             if (!form.valid()) {
-                invalidCredentials(true);
+                showAlert('Too many requests. Please try again later.');;
                 return;
             }
             const data = {
